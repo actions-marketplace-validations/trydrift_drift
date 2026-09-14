@@ -624,6 +624,82 @@ describe('runtime compatibility: all four states', () => {
     assert.equal(analysis?.reason, 'unparseable');
   });
 
+  test('a matrix line is one place to fix, not one place per version', () => {
+    // `node: [ 18, 20, 22 ]` resolves to three declarations that all cite the
+    // same line. Both halves matter: `stateOf` needs all three, because one
+    // violating version breaks the build; the reviewer needs the one line,
+    // because that is what gets edited. Emitting three rows made a single
+    // line read as three findings and inflated every count downstream.
+    const analysis = analyze('>=24', {
+      '.github/workflows/ci.yml': [
+        'jobs:',
+        '  t:',
+        '    strategy:',
+        '      matrix:',
+        '        node: [ 18, 20, 22 ]',
+        '    steps:',
+        '      - with:',
+        '          node-version: ${{ matrix.node }}',
+        '',
+      ].join('\n'),
+    });
+
+    assert.equal(analysis?.state, 'incompatible');
+    assert.equal(analysis?.declarations.length, 3, 'every version still votes on the verdict');
+    assert.equal(analysis?.sites.length, 1, 'one line, one row');
+    assert.equal(analysis?.sites[0]?.line, 5);
+    assert.equal(analysis?.sites[0]?.runtimeVerdict, 'incompatible');
+  });
+
+  test('versions written on their own lines stay separate places', () => {
+    // The counterexample that keeps the collapse honest: a block list puts
+    // each version on a line of its own, and those are genuinely different
+    // places to edit.
+    const analysis = analyze('>=24', {
+      '.github/workflows/ci.yml': [
+        'jobs:',
+        '  t:',
+        '    strategy:',
+        '      matrix:',
+        '        node:',
+        '          - 18',
+        '          - 20',
+        '    steps:',
+        '      - with:',
+        '          node-version: ${{ matrix.node }}',
+        '',
+      ].join('\n'),
+    });
+
+    assert.equal(analysis?.sites.length, 2, 'two lines, two rows');
+    assert.deepEqual(
+      analysis?.sites.map((site) => site.line).sort((a, b) => a - b),
+      [6, 7],
+    );
+  });
+
+  test('the strongest verdict wins a line that carries more than one', () => {
+    // A line resolving to both a violating and a satisfying version is still
+    // a line someone has to change, and collapsing must not soften that.
+    const analysis = analyze('>=20', {
+      '.github/workflows/ci.yml': [
+        'jobs:',
+        '  t:',
+        '    strategy:',
+        '      matrix:',
+        '        node: [ 18, 22 ]',
+        '    steps:',
+        '      - with:',
+        '          node-version: ${{ matrix.node }}',
+        '',
+      ].join('\n'),
+    });
+
+    assert.equal(analysis?.state, 'incompatible');
+    assert.equal(analysis?.sites.length, 1);
+    assert.equal(analysis?.sites[0]?.runtimeVerdict, 'incompatible');
+  });
+
   test('Python equality is evaluated with PEP 440 equality semantics', () => {
     assert.equal(
       checkRuntimeCompatibility('python', [{ file: 'pyproject.toml', line: 1, requirement: '==3.10' }], '==3.10')[0]?.verdict,

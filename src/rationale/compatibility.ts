@@ -219,10 +219,32 @@ function sitesFor(
   const excerpt = (file: string, line: number) =>
     files.find((f) => f.path === file)?.content.split('\n')[line - 1]?.trim().slice(0, 200) ?? '';
 
-  const sites: ImpactSite[] = [];
+  // One row per place.
+  //
+  // `java: [ 8, 11, 17, 21, 25 ]` is one line that resolves to five
+  // declarations, and both halves of that matter. `stateOf` needs all five —
+  // if any one version violates the requirement the build breaks, so the
+  // declarations are left whole. A reviewer needs one: the fix is to edit that
+  // matrix, once. Emitting a row per version made a single line look like five
+  // findings, and inflated `impactCount` and `impactFiles` wherever a project
+  // tests across versions, which is most of them.
+  //
+  // The strongest verdict wins the row, so collapsing never softens the
+  // answer: an `incompatible` version keeps the line marked incompatible even
+  // when the other four are fine, and an `unresolved` declaration (always
+  // `unknown`) can never displace a verdict that was actually established.
+  const byPlace = new Map<string, ImpactSite>();
+  const consider = (site: ImpactSite): void => {
+    const key = `${site.file}:${site.line}`;
+    const existing = byPlace.get(key);
+    if (!existing || verdictSeverity(site.runtimeVerdict) > verdictSeverity(existing.runtimeVerdict)) {
+      byPlace.set(key, site);
+    }
+  };
+
   for (const declaration of declarations) {
     if (declaration.verdict === 'compatible') continue;
-    sites.push({
+    consider({
       breakingChangeId: change.id,
       file: declaration.file,
       line: declaration.line,
@@ -240,7 +262,7 @@ function sitesFor(
   }
 
   for (const declaration of unresolved) {
-    sites.push({
+    consider({
       breakingChangeId: change.id,
       file: declaration.file,
       line: declaration.line,
@@ -252,7 +274,12 @@ function sitesFor(
     });
   }
 
-  return sites;
+  return [...byPlace.values()];
+}
+
+/** Ordered by what a developer has to do about it, as `stateOf` orders states. */
+function verdictSeverity(verdict: ImpactSite['runtimeVerdict']): number {
+  return verdict === 'incompatible' ? 3 : verdict === 'partial' ? 2 : 1;
 }
 
 const RUNTIME_LABEL: Record<RuntimeName, string> = {
