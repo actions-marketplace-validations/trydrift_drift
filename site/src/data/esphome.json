@@ -6,10 +6,10 @@
   "language": "C++",
   "repo": "https://github.com/esphome/esphome",
   "blurb": "The firmware behind most ESP32 and ESP8266 home-automation devices.",
-  "capturedAt": "2026-09-14T20:52:25.595Z",
-  "commit": "5d713ad9ad3478732b1722f2e4d8464ee26ac0e0",
-  "engine": "1f948b75c9acc9b0",
-  "durationMs": 703219,
+  "capturedAt": "2026-09-14T23:33:19.069Z",
+  "commit": "8d61b35cdc5063fd6e267d85667963d98ec17fed",
+  "engine": "080b83b704b5dd01",
+  "durationMs": 15953,
   "packagesChecked": 31,
   "manifests": [
     "pyproject.toml",
@@ -22,7 +22,7 @@
   "timeline": [
     {
       "type": "progress",
-      "at": 140,
+      "at": 139,
       "phase": "Looking for manifests",
       "detail": "esphome/esphome",
       "done": 0,
@@ -30,7 +30,7 @@
     },
     {
       "type": "progress",
-      "at": 1302,
+      "at": 436,
       "phase": "Reading the workspace",
       "detail": "4 packages · undeclared",
       "done": 0,
@@ -38,7 +38,7 @@
     },
     {
       "type": "progress",
-      "at": 1306,
+      "at": 440,
       "phase": "Reading manifest",
       "detail": "pyproject.toml",
       "done": 0,
@@ -46,7 +46,7 @@
     },
     {
       "type": "progress",
-      "at": 1307,
+      "at": 440,
       "phase": "Reading manifest",
       "detail": "platformio.ini",
       "done": 0,
@@ -54,7 +54,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#qr-code-generator-library@1.7.0",
         "name": "qr-code-generator-library",
@@ -98,7 +98,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#arduino-MLX90393@1.0.2",
         "name": "arduino-MLX90393",
@@ -142,7 +142,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#HaierProtocol@0.9.31",
         "name": "HaierProtocol",
@@ -186,7 +186,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#dsmr_parser@1.9.0",
         "name": "dsmr_parser",
@@ -230,7 +230,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#noise-c@0.1.30",
         "name": "noise-c",
@@ -274,7 +274,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#Improv@1.2.7",
         "name": "Improv",
@@ -318,7 +318,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#pngle@1.1.0",
         "name": "pngle",
@@ -362,7 +362,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
         "name": "AsyncMqttClient-esphome",
@@ -406,7 +406,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#TM1651@1.0.1",
         "name": "TM1651",
@@ -450,7 +450,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#HeatpumpIR@1.0.42",
         "name": "HeatpumpIR",
@@ -494,7 +494,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#dlms_parser@1.1.0",
         "name": "dlms_parser",
@@ -538,7 +538,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#ArduinoJson@7.4.3",
         "name": "ArduinoJson",
@@ -582,7 +582,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#lvgl@9.5.0",
         "name": "lvgl",
@@ -626,7 +626,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#FastLED@3.9.16",
         "name": "FastLED",
@@ -670,7 +670,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#ESPAsyncTCP@2.0.0",
         "name": "ESPAsyncTCP",
@@ -714,7 +714,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#ESPAsyncWebServer@3.9.6",
         "name": "ESPAsyncWebServer",
@@ -758,7 +758,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#NeoPixelBus@2.8.0",
         "name": "NeoPixelBus",
@@ -802,7 +802,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#esp_wireguard@0.4.5",
         "name": "esp_wireguard",
@@ -846,7 +846,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#ESP32-audioI2S@2.3.0",
         "name": "ESP32-audioI2S",
@@ -890,7 +890,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#RPAsyncTCP@1.3.2",
         "name": "RPAsyncTCP",
@@ -934,7 +934,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1311,
+      "at": 442,
       "candidate": {
         "id": "platformio.ini#AsyncTCP@3.4.5",
         "name": "AsyncTCP",
@@ -978,7 +978,7 @@
     },
     {
       "type": "progress",
-      "at": 1311,
+      "at": 442,
       "phase": "Reading manifest",
       "detail": ".github/scripts/auto-label-pr/package.json",
       "done": 0,
@@ -986,7 +986,7 @@
     },
     {
       "type": "progress",
-      "at": 1314,
+      "at": 442,
       "phase": "Reading manifest",
       "detail": "esphome/components/nrf52/requirements.txt",
       "done": 0,
@@ -994,7 +994,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1315,
+      "at": 442,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#west@1.5.0",
         "name": "west",
@@ -1038,7 +1038,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1315,
+      "at": 442,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
         "name": "ninja",
@@ -1082,7 +1082,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1315,
+      "at": 442,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
         "name": "cmake",
@@ -1126,7 +1126,7 @@
     },
     {
       "type": "progress",
-      "at": 1315,
+      "at": 442,
       "phase": "Reading manifest",
       "detail": "script/setup.py",
       "done": 0,
@@ -1134,7 +1134,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1677,
+      "at": 562,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#adafruit-nrfutil@0.5.3.post16",
         "name": "adafruit-nrfutil",
@@ -1178,7 +1178,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 8749,
+      "at": 908,
       "candidate": {
         "id": "platformio.ini#WiFi@1.2.7",
         "name": "WiFi",
@@ -1222,7 +1222,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 8749,
+      "at": 908,
       "candidate": {
         "id": "platformio.ini#HTTPClient@2.2.0",
         "name": "HTTPClient",
@@ -1266,7 +1266,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 8749,
+      "at": 908,
       "candidate": {
         "id": "platformio.ini#Updater@1.1.0",
         "name": "Updater",
@@ -1310,7 +1310,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10068,
+      "at": 1179,
       "candidate": {
         "id": "platformio.ini#googletest@1.17.0",
         "name": "googletest",
@@ -1354,7 +1354,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10068,
+      "at": 1179,
       "candidate": {
         "id": "platformio.ini#DNSServer@1.1.0",
         "name": "DNSServer",
@@ -1398,7 +1398,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10082,
+      "at": 1179,
       "candidate": {
         "id": "platformio.ini#http-parser@2.9.4",
         "name": "http-parser",
@@ -1442,7 +1442,7 @@
     },
     {
       "type": "progress",
-      "at": 10082,
+      "at": 1179,
       "phase": "Indexing your code",
       "detail": "Walking source files",
       "done": 0,
@@ -1450,7 +1450,7 @@
     },
     {
       "type": "progress",
-      "at": 10082,
+      "at": 1179,
       "phase": "Checking registries",
       "detail": "31 direct dependencies",
       "done": 0,
@@ -1458,7 +1458,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10082,
+      "at": 1179,
       "candidate": {
         "id": "platformio.ini#qr-code-generator-library@1.7.0",
         "name": "qr-code-generator-library",
@@ -1502,7 +1502,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10082,
+      "at": 1179,
       "candidate": {
         "id": "platformio.ini#arduino-MLX90393@1.0.2",
         "name": "arduino-MLX90393",
@@ -1546,7 +1546,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10082,
+      "at": 1179,
       "candidate": {
         "id": "platformio.ini#HaierProtocol@0.9.31",
         "name": "HaierProtocol",
@@ -1590,7 +1590,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10082,
+      "at": 1179,
       "candidate": {
         "id": "platformio.ini#dsmr_parser@1.9.0",
         "name": "dsmr_parser",
@@ -1634,7 +1634,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10082,
+      "at": 1179,
       "candidate": {
         "id": "platformio.ini#noise-c@0.1.30",
         "name": "noise-c",
@@ -1678,7 +1678,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1179,
       "candidate": {
         "id": "platformio.ini#Improv@1.2.7",
         "name": "Improv",
@@ -1722,7 +1722,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1179,
       "candidate": {
         "id": "platformio.ini#pngle@1.1.0",
         "name": "pngle",
@@ -1766,7 +1766,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1179,
       "candidate": {
         "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
         "name": "AsyncMqttClient-esphome",
@@ -1810,7 +1810,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1179,
       "candidate": {
         "id": "platformio.ini#TM1651@1.0.1",
         "name": "TM1651",
@@ -1854,7 +1854,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1179,
       "candidate": {
         "id": "platformio.ini#HeatpumpIR@1.0.42",
         "name": "HeatpumpIR",
@@ -1898,7 +1898,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#dlms_parser@1.1.0",
         "name": "dlms_parser",
@@ -1942,7 +1942,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#ArduinoJson@7.4.3",
         "name": "ArduinoJson",
@@ -1986,7 +1986,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#lvgl@9.5.0",
         "name": "lvgl",
@@ -2030,7 +2030,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#FastLED@3.9.16",
         "name": "FastLED",
@@ -2074,7 +2074,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#ESPAsyncTCP@2.0.0",
         "name": "ESPAsyncTCP",
@@ -2118,7 +2118,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#ESPAsyncWebServer@3.9.6",
         "name": "ESPAsyncWebServer",
@@ -2162,7 +2162,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#NeoPixelBus@2.8.0",
         "name": "NeoPixelBus",
@@ -2206,7 +2206,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#esp_wireguard@0.4.5",
         "name": "esp_wireguard",
@@ -2250,7 +2250,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#ESP32-audioI2S@2.3.0",
         "name": "ESP32-audioI2S",
@@ -2294,7 +2294,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#RPAsyncTCP@1.3.2",
         "name": "RPAsyncTCP",
@@ -2338,7 +2338,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#AsyncTCP@3.4.5",
         "name": "AsyncTCP",
@@ -2382,7 +2382,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#west@1.5.0",
         "name": "west",
@@ -2426,7 +2426,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
         "name": "ninja",
@@ -2470,7 +2470,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
         "name": "cmake",
@@ -2514,7 +2514,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#adafruit-nrfutil@0.5.3.post16",
         "name": "adafruit-nrfutil",
@@ -2558,7 +2558,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#WiFi@1.2.7",
         "name": "WiFi",
@@ -2602,7 +2602,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#HTTPClient@2.2.0",
         "name": "HTTPClient",
@@ -2646,7 +2646,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10083,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#Updater@1.1.0",
         "name": "Updater",
@@ -2690,7 +2690,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10084,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#googletest@1.17.0",
         "name": "googletest",
@@ -2734,7 +2734,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10084,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#DNSServer@1.1.0",
         "name": "DNSServer",
@@ -2778,7 +2778,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10084,
+      "at": 1180,
       "candidate": {
         "id": "platformio.ini#http-parser@2.9.4",
         "name": "http-parser",
@@ -2822,12 +2822,12 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10092,
+      "at": 1182,
       "id": "esphome/components/nrf52/requirements.txt#adafruit-nrfutil@0.5.3.post16"
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Up to date",
       "detail": "adafruit-nrfutil@0.5.3.post16",
       "done": 1,
@@ -2835,7 +2835,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10092,
+      "at": 1182,
       "candidate": {
         "id": "platformio.ini#HaierProtocol@0.9.31",
         "name": "HaierProtocol",
@@ -2881,7 +2881,7 @@
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Outdated",
       "detail": "HaierProtocol 0.9.31 → 0.9.32",
       "done": 2,
@@ -2889,12 +2889,12 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10092,
+      "at": 1182,
       "id": "platformio.ini#pngle@1.1.0"
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Up to date",
       "detail": "pngle@1.1.0",
       "done": 3,
@@ -2902,12 +2902,12 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10092,
+      "at": 1182,
       "id": "platformio.ini#HeatpumpIR@1.0.42"
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Up to date",
       "detail": "HeatpumpIR@1.0.42",
       "done": 4,
@@ -2915,12 +2915,12 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10092,
+      "at": 1182,
       "id": "platformio.ini#ArduinoJson@7.4.3"
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Up to date",
       "detail": "ArduinoJson@7.4.3",
       "done": 5,
@@ -2928,12 +2928,12 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10092,
+      "at": 1182,
       "id": "platformio.ini#lvgl@9.5.0"
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Up to date",
       "detail": "lvgl@9.5.0",
       "done": 6,
@@ -2941,7 +2941,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 10092,
+      "at": 1182,
       "candidate": {
         "id": "platformio.ini#FastLED@3.9.16",
         "name": "FastLED",
@@ -2996,7 +2996,7 @@
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Outdated",
       "detail": "FastLED 3.9.16 → 3.10.5",
       "done": 7,
@@ -3004,12 +3004,12 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10092,
+      "at": 1182,
       "id": "platformio.ini#ESPAsyncTCP@2.0.0"
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Up to date",
       "detail": "ESPAsyncTCP@2.0.0",
       "done": 8,
@@ -3017,12 +3017,12 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10092,
+      "at": 1182,
       "id": "platformio.ini#ESPAsyncWebServer@3.9.6"
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Up to date",
       "detail": "ESPAsyncWebServer@3.9.6",
       "done": 9,
@@ -3030,12 +3030,12 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10092,
+      "at": 1182,
       "id": "platformio.ini#RPAsyncTCP@1.3.2"
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Up to date",
       "detail": "RPAsyncTCP@1.3.2",
       "done": 10,
@@ -3043,12 +3043,12 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10092,
+      "at": 1182,
       "id": "platformio.ini#AsyncTCP@3.4.5"
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Up to date",
       "detail": "AsyncTCP@3.4.5",
       "done": 11,
@@ -3056,12 +3056,12 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10092,
+      "at": 1182,
       "id": "platformio.ini#WiFi@1.2.7"
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Up to date",
       "detail": "WiFi@1.2.7",
       "done": 12,
@@ -3069,12 +3069,12 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10092,
+      "at": 1182,
       "id": "platformio.ini#HTTPClient@2.2.0"
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Up to date",
       "detail": "HTTPClient@2.2.0",
       "done": 13,
@@ -3082,12 +3082,12 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10092,
+      "at": 1182,
       "id": "platformio.ini#Updater@1.1.0"
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Up to date",
       "detail": "Updater@1.1.0",
       "done": 14,
@@ -3095,12 +3095,12 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10092,
+      "at": 1182,
       "id": "platformio.ini#googletest@1.17.0"
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Up to date",
       "detail": "googletest@1.17.0",
       "done": 15,
@@ -3108,12 +3108,12 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10092,
+      "at": 1182,
       "id": "platformio.ini#DNSServer@1.1.0"
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Up to date",
       "detail": "DNSServer@1.1.0",
       "done": 16,
@@ -3121,12 +3121,12 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10092,
+      "at": 1182,
       "id": "platformio.ini#http-parser@2.9.4"
     },
     {
       "type": "progress",
-      "at": 10092,
+      "at": 1182,
       "phase": "Up to date",
       "detail": "http-parser@2.9.4",
       "done": 17,
@@ -3134,301 +3134,20 @@
     },
     {
       "type": "candidate-drop",
-      "at": 10946,
-      "id": "platformio.ini#qr-code-generator-library@1.7.0"
+      "at": 1317,
+      "id": "esphome/components/nrf52/requirements.txt#west@1.5.0"
     },
     {
       "type": "progress",
-      "at": 10946,
+      "at": 1317,
       "phase": "Up to date",
-      "detail": "qr-code-generator-library@1.7.0",
+      "detail": "west@1.5.0",
       "done": 18,
       "total": 31
     },
     {
-      "type": "candidate-drop",
-      "at": 11010,
-      "id": "platformio.ini#arduino-MLX90393@1.0.2"
-    },
-    {
-      "type": "progress",
-      "at": 11010,
-      "phase": "Up to date",
-      "detail": "arduino-MLX90393@1.0.2",
-      "done": 19,
-      "total": 31
-    },
-    {
-      "type": "candidate-drop",
-      "at": 11021,
-      "id": "platformio.ini#Improv@1.2.7"
-    },
-    {
-      "type": "progress",
-      "at": 11021,
-      "phase": "Up to date",
-      "detail": "Improv@1.2.7",
-      "done": 20,
-      "total": 31
-    },
-    {
       "type": "candidate-upsert",
-      "at": 11021,
-      "candidate": {
-        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
-        "name": "AsyncMqttClient-esphome",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "2.0.0",
-        "latest": "2.1.0",
-        "selected": "2.1.0",
-        "safeLatest": null,
-        "publishedVersions": [
-          "2.1.0"
-        ],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Waiting to be checked",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 11021,
-      "phase": "Outdated",
-      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
-      "done": 21,
-      "total": 31
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 11021,
-      "candidate": {
-        "id": "platformio.ini#dsmr_parser@1.9.0",
-        "name": "dsmr_parser",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "1.9.0",
-        "latest": "1.10.0",
-        "selected": "1.10.0",
-        "safeLatest": null,
-        "publishedVersions": [
-          "1.10.0"
-        ],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Waiting to be checked",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 11021,
-      "phase": "Outdated",
-      "detail": "dsmr_parser 1.9.0 → 1.10.0",
-      "done": 22,
-      "total": 31
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 11022,
-      "candidate": {
-        "id": "platformio.ini#dlms_parser@1.1.0",
-        "name": "dlms_parser",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "1.1.0",
-        "latest": "2.2.0",
-        "selected": "2.2.0",
-        "safeLatest": null,
-        "publishedVersions": [
-          "2.2.0"
-        ],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Waiting to be checked",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 11022,
-      "phase": "Outdated",
-      "detail": "dlms_parser 1.1.0 → 2.2.0",
-      "done": 23,
-      "total": 31
-    },
-    {
-      "type": "candidate-drop",
-      "at": 11023,
-      "id": "platformio.ini#noise-c@0.1.30"
-    },
-    {
-      "type": "progress",
-      "at": 11023,
-      "phase": "Up to date",
-      "detail": "noise-c@0.1.30",
-      "done": 24,
-      "total": 31
-    },
-    {
-      "type": "candidate-drop",
-      "at": 11026,
-      "id": "platformio.ini#TM1651@1.0.1"
-    },
-    {
-      "type": "progress",
-      "at": 11026,
-      "phase": "Up to date",
-      "detail": "TM1651@1.0.1",
-      "done": 25,
-      "total": 31
-    },
-    {
-      "type": "candidate-drop",
-      "at": 11028,
-      "id": "platformio.ini#esp_wireguard@0.4.5"
-    },
-    {
-      "type": "progress",
-      "at": 11028,
-      "phase": "Up to date",
-      "detail": "esp_wireguard@0.4.5",
-      "done": 26,
-      "total": 31
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 11028,
-      "candidate": {
-        "id": "platformio.ini#NeoPixelBus@2.8.0",
-        "name": "NeoPixelBus",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "2.8.0",
-        "latest": "2.8.4",
-        "selected": "2.8.4",
-        "safeLatest": null,
-        "publishedVersions": [
-          "2.8.4"
-        ],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Waiting to be checked",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 11028,
-      "phase": "Outdated",
-      "detail": "NeoPixelBus 2.8.0 → 2.8.4",
-      "done": 27,
-      "total": 31
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 17512,
+      "at": 1320,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
         "name": "ninja",
@@ -3474,41 +3193,15 @@
     },
     {
       "type": "progress",
-      "at": 17512,
+      "at": 1320,
       "phase": "Outdated",
       "detail": "ninja 1.13.0 → 1.13.2",
-      "done": 28,
-      "total": 31
-    },
-    {
-      "type": "candidate-drop",
-      "at": 17514,
-      "id": "platformio.ini#ESP32-audioI2S@2.3.0"
-    },
-    {
-      "type": "progress",
-      "at": 17514,
-      "phase": "Up to date",
-      "detail": "ESP32-audioI2S@2.3.0",
-      "done": 29,
-      "total": 31
-    },
-    {
-      "type": "candidate-drop",
-      "at": 17527,
-      "id": "esphome/components/nrf52/requirements.txt#west@1.5.0"
-    },
-    {
-      "type": "progress",
-      "at": 17527,
-      "phase": "Up to date",
-      "detail": "west@1.5.0",
-      "done": 30,
+      "done": 19,
       "total": 31
     },
     {
       "type": "candidate-upsert",
-      "at": 18450,
+      "at": 1402,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
         "name": "cmake",
@@ -3557,15 +3250,322 @@
     },
     {
       "type": "progress",
-      "at": 18450,
+      "at": 1402,
       "phase": "Outdated",
       "detail": "cmake 4.3.2 → 4.4.3",
+      "done": 20,
+      "total": 31
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 1406,
+      "candidate": {
+        "id": "platformio.ini#dsmr_parser@1.9.0",
+        "name": "dsmr_parser",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "1.9.0",
+        "latest": "1.10.0",
+        "selected": "1.10.0",
+        "safeLatest": null,
+        "publishedVersions": [
+          "1.10.0"
+        ],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Waiting to be checked",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 1406,
+      "phase": "Outdated",
+      "detail": "dsmr_parser 1.9.0 → 1.10.0",
+      "done": 21,
+      "total": 31
+    },
+    {
+      "type": "candidate-drop",
+      "at": 1407,
+      "id": "platformio.ini#arduino-MLX90393@1.0.2"
+    },
+    {
+      "type": "progress",
+      "at": 1407,
+      "phase": "Up to date",
+      "detail": "arduino-MLX90393@1.0.2",
+      "done": 22,
+      "total": 31
+    },
+    {
+      "type": "candidate-drop",
+      "at": 1407,
+      "id": "platformio.ini#qr-code-generator-library@1.7.0"
+    },
+    {
+      "type": "progress",
+      "at": 1407,
+      "phase": "Up to date",
+      "detail": "qr-code-generator-library@1.7.0",
+      "done": 23,
+      "total": 31
+    },
+    {
+      "type": "candidate-drop",
+      "at": 1407,
+      "id": "platformio.ini#noise-c@0.1.30"
+    },
+    {
+      "type": "progress",
+      "at": 1407,
+      "phase": "Up to date",
+      "detail": "noise-c@0.1.30",
+      "done": 24,
+      "total": 31
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 1407,
+      "candidate": {
+        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
+        "name": "AsyncMqttClient-esphome",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "2.0.0",
+        "latest": "2.1.0",
+        "selected": "2.1.0",
+        "safeLatest": null,
+        "publishedVersions": [
+          "2.1.0"
+        ],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Waiting to be checked",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 1407,
+      "phase": "Outdated",
+      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
+      "done": 25,
+      "total": 31
+    },
+    {
+      "type": "candidate-drop",
+      "at": 1407,
+      "id": "platformio.ini#TM1651@1.0.1"
+    },
+    {
+      "type": "progress",
+      "at": 1407,
+      "phase": "Up to date",
+      "detail": "TM1651@1.0.1",
+      "done": 26,
+      "total": 31
+    },
+    {
+      "type": "candidate-drop",
+      "at": 1407,
+      "id": "platformio.ini#Improv@1.2.7"
+    },
+    {
+      "type": "progress",
+      "at": 1407,
+      "phase": "Up to date",
+      "detail": "Improv@1.2.7",
+      "done": 27,
+      "total": 31
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 1407,
+      "candidate": {
+        "id": "platformio.ini#dlms_parser@1.1.0",
+        "name": "dlms_parser",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "1.1.0",
+        "latest": "2.2.0",
+        "selected": "2.2.0",
+        "safeLatest": null,
+        "publishedVersions": [
+          "2.2.0"
+        ],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Waiting to be checked",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 1407,
+      "phase": "Outdated",
+      "detail": "dlms_parser 1.1.0 → 2.2.0",
+      "done": 28,
+      "total": 31
+    },
+    {
+      "type": "candidate-drop",
+      "at": 1408,
+      "id": "platformio.ini#esp_wireguard@0.4.5"
+    },
+    {
+      "type": "progress",
+      "at": 1408,
+      "phase": "Up to date",
+      "detail": "esp_wireguard@0.4.5",
+      "done": 29,
+      "total": 31
+    },
+    {
+      "type": "candidate-drop",
+      "at": 1408,
+      "id": "platformio.ini#ESP32-audioI2S@2.3.0"
+    },
+    {
+      "type": "progress",
+      "at": 1408,
+      "phase": "Up to date",
+      "detail": "ESP32-audioI2S@2.3.0",
+      "done": 30,
+      "total": 31
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 1408,
+      "candidate": {
+        "id": "platformio.ini#NeoPixelBus@2.8.0",
+        "name": "NeoPixelBus",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "2.8.0",
+        "latest": "2.8.4",
+        "selected": "2.8.4",
+        "safeLatest": null,
+        "publishedVersions": [
+          "2.8.4"
+        ],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Waiting to be checked",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 1408,
+      "phase": "Outdated",
+      "detail": "NeoPixelBus 2.8.0 → 2.8.4",
       "done": 31,
       "total": 31
     },
     {
       "type": "progress",
-      "at": 18450,
+      "at": 1408,
       "phase": "Reading release notes and changelog",
       "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
       "done": 0,
@@ -3573,7 +3573,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18450,
+      "at": 1409,
       "candidate": {
         "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
         "name": "AsyncMqttClient-esphome",
@@ -3617,7 +3617,7 @@
     },
     {
       "type": "progress",
-      "at": 18450,
+      "at": 1409,
       "phase": "Checking package metadata",
       "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
       "done": 0,
@@ -3625,7 +3625,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18450,
+      "at": 1409,
       "candidate": {
         "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
         "name": "AsyncMqttClient-esphome",
@@ -3669,7 +3669,7 @@
     },
     {
       "type": "progress",
-      "at": 18450,
+      "at": 1409,
       "phase": "Reading release notes and changelog",
       "detail": "cmake 4.3.2 → 4.4.3",
       "done": 0,
@@ -3677,7 +3677,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18450,
+      "at": 1409,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
         "name": "cmake",
@@ -3721,7 +3721,7 @@
     },
     {
       "type": "progress",
-      "at": 18451,
+      "at": 1409,
       "phase": "Checking package metadata",
       "detail": "cmake 4.3.2 → 4.4.3",
       "done": 0,
@@ -3729,7 +3729,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18451,
+      "at": 1409,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
         "name": "cmake",
@@ -3773,7 +3773,7 @@
     },
     {
       "type": "progress",
-      "at": 18451,
+      "at": 1409,
       "phase": "Reading release notes and changelog",
       "detail": "dlms_parser 1.1.0 → 2.2.0",
       "done": 0,
@@ -3781,7 +3781,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18451,
+      "at": 1409,
       "candidate": {
         "id": "platformio.ini#dlms_parser@1.1.0",
         "name": "dlms_parser",
@@ -3825,7 +3825,7 @@
     },
     {
       "type": "progress",
-      "at": 18451,
+      "at": 1409,
       "phase": "Checking package metadata",
       "detail": "dlms_parser 1.1.0 → 2.2.0",
       "done": 0,
@@ -3833,7 +3833,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18451,
+      "at": 1409,
       "candidate": {
         "id": "platformio.ini#dlms_parser@1.1.0",
         "name": "dlms_parser",
@@ -3877,7 +3877,7 @@
     },
     {
       "type": "progress",
-      "at": 18451,
+      "at": 1409,
       "phase": "Reading release notes and changelog",
       "detail": "dsmr_parser 1.9.0 → 1.10.0",
       "done": 0,
@@ -3885,7 +3885,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18451,
+      "at": 1409,
       "candidate": {
         "id": "platformio.ini#dsmr_parser@1.9.0",
         "name": "dsmr_parser",
@@ -3929,7 +3929,7 @@
     },
     {
       "type": "progress",
-      "at": 18451,
+      "at": 1409,
       "phase": "Checking package metadata",
       "detail": "dsmr_parser 1.9.0 → 1.10.0",
       "done": 0,
@@ -3937,7 +3937,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18451,
+      "at": 1409,
       "candidate": {
         "id": "platformio.ini#dsmr_parser@1.9.0",
         "name": "dsmr_parser",
@@ -3981,7 +3981,7 @@
     },
     {
       "type": "progress",
-      "at": 18451,
+      "at": 1409,
       "phase": "Reading release notes and changelog",
       "detail": "FastLED 3.9.16 → 3.10.5",
       "done": 0,
@@ -3989,7 +3989,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18451,
+      "at": 1409,
       "candidate": {
         "id": "platformio.ini#FastLED@3.9.16",
         "name": "FastLED",
@@ -4033,7 +4033,7 @@
     },
     {
       "type": "progress",
-      "at": 18451,
+      "at": 1409,
       "phase": "Checking package metadata",
       "detail": "FastLED 3.9.16 → 3.10.5",
       "done": 0,
@@ -4041,7 +4041,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18451,
+      "at": 1409,
       "candidate": {
         "id": "platformio.ini#FastLED@3.9.16",
         "name": "FastLED",
@@ -4085,7 +4085,7 @@
     },
     {
       "type": "progress",
-      "at": 18451,
+      "at": 1409,
       "phase": "Reading release notes and changelog",
       "detail": "HaierProtocol 0.9.31 → 0.9.32",
       "done": 0,
@@ -4093,7 +4093,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18451,
+      "at": 1409,
       "candidate": {
         "id": "platformio.ini#HaierProtocol@0.9.31",
         "name": "HaierProtocol",
@@ -4137,7 +4137,7 @@
     },
     {
       "type": "progress",
-      "at": 18451,
+      "at": 1409,
       "phase": "Checking package metadata",
       "detail": "HaierProtocol 0.9.31 → 0.9.32",
       "done": 0,
@@ -4145,7 +4145,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18451,
+      "at": 1409,
       "candidate": {
         "id": "platformio.ini#HaierProtocol@0.9.31",
         "name": "HaierProtocol",
@@ -4189,7 +4189,7 @@
     },
     {
       "type": "progress",
-      "at": 18451,
+      "at": 1409,
       "phase": "Reading release notes and changelog",
       "detail": "NeoPixelBus 2.8.0 → 2.8.4",
       "done": 0,
@@ -4197,7 +4197,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18451,
+      "at": 1409,
       "candidate": {
         "id": "platformio.ini#NeoPixelBus@2.8.0",
         "name": "NeoPixelBus",
@@ -4241,7 +4241,7 @@
     },
     {
       "type": "progress",
-      "at": 18451,
+      "at": 1409,
       "phase": "Checking package metadata",
       "detail": "NeoPixelBus 2.8.0 → 2.8.4",
       "done": 0,
@@ -4249,7 +4249,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18451,
+      "at": 1409,
       "candidate": {
         "id": "platformio.ini#NeoPixelBus@2.8.0",
         "name": "NeoPixelBus",
@@ -4293,7 +4293,7 @@
     },
     {
       "type": "progress",
-      "at": 18451,
+      "at": 1409,
       "phase": "Reading release notes and changelog",
       "detail": "ninja 1.13.0 → 1.13.2",
       "done": 0,
@@ -4301,7 +4301,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18451,
+      "at": 1409,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
         "name": "ninja",
@@ -4345,7 +4345,7 @@
     },
     {
       "type": "progress",
-      "at": 18452,
+      "at": 1409,
       "phase": "Checking package metadata",
       "detail": "ninja 1.13.0 → 1.13.2",
       "done": 0,
@@ -4353,7 +4353,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18452,
+      "at": 1409,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
         "name": "ninja",
@@ -4397,7 +4397,7 @@
     },
     {
       "type": "progress",
-      "at": 18452,
+      "at": 1410,
       "phase": "Checking repository status",
       "detail": "cmake 4.3.2 → 4.4.3",
       "done": 0,
@@ -4405,7 +4405,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18453,
+      "at": 1410,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
         "name": "cmake",
@@ -4449,7 +4449,7 @@
     },
     {
       "type": "progress",
-      "at": 18453,
+      "at": 1410,
       "phase": "Checking repository status",
       "detail": "ninja 1.13.0 → 1.13.2",
       "done": 0,
@@ -4457,7 +4457,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18453,
+      "at": 1410,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
         "name": "ninja",
@@ -4501,7 +4501,7 @@
     },
     {
       "type": "progress",
-      "at": 18453,
+      "at": 1410,
       "phase": "Checking repository status",
       "detail": "FastLED 3.9.16 → 3.10.5",
       "done": 0,
@@ -4509,7 +4509,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18453,
+      "at": 1410,
       "candidate": {
         "id": "platformio.ini#FastLED@3.9.16",
         "name": "FastLED",
@@ -4553,7 +4553,7 @@
     },
     {
       "type": "progress",
-      "at": 18453,
+      "at": 1410,
       "phase": "Checking repository status",
       "detail": "HaierProtocol 0.9.31 → 0.9.32",
       "done": 0,
@@ -4561,7 +4561,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18453,
+      "at": 1410,
       "candidate": {
         "id": "platformio.ini#HaierProtocol@0.9.31",
         "name": "HaierProtocol",
@@ -4605,7 +4605,7 @@
     },
     {
       "type": "progress",
-      "at": 18453,
+      "at": 1411,
       "phase": "Checking repository status",
       "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
       "done": 0,
@@ -4613,7 +4613,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18453,
+      "at": 1411,
       "candidate": {
         "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
         "name": "AsyncMqttClient-esphome",
@@ -4657,7 +4657,7 @@
     },
     {
       "type": "progress",
-      "at": 18454,
+      "at": 1411,
       "phase": "Checking repository status",
       "detail": "dlms_parser 1.1.0 → 2.2.0",
       "done": 0,
@@ -4665,7 +4665,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18454,
+      "at": 1411,
       "candidate": {
         "id": "platformio.ini#dlms_parser@1.1.0",
         "name": "dlms_parser",
@@ -4709,7 +4709,7 @@
     },
     {
       "type": "progress",
-      "at": 18454,
+      "at": 1411,
       "phase": "Checking repository status",
       "detail": "dsmr_parser 1.9.0 → 1.10.0",
       "done": 0,
@@ -4717,7 +4717,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18454,
+      "at": 1411,
       "candidate": {
         "id": "platformio.ini#dsmr_parser@1.9.0",
         "name": "dsmr_parser",
@@ -4761,7 +4761,7 @@
     },
     {
       "type": "progress",
-      "at": 18454,
+      "at": 1411,
       "phase": "Checking repository status",
       "detail": "NeoPixelBus 2.8.0 → 2.8.4",
       "done": 0,
@@ -4769,7 +4769,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 18454,
+      "at": 1411,
       "candidate": {
         "id": "platformio.ini#NeoPixelBus@2.8.0",
         "name": "NeoPixelBus",
@@ -4813,7 +4813,7 @@
     },
     {
       "type": "progress",
-      "at": 21340,
+      "at": 1490,
       "phase": "Checking security advisories",
       "detail": "ninja 1.13.0 → 1.13.2",
       "done": 0,
@@ -4821,7 +4821,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 21340,
+      "at": 1490,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
         "name": "ninja",
@@ -4865,7 +4865,7 @@
     },
     {
       "type": "progress",
-      "at": 21340,
+      "at": 1491,
       "phase": "Checking security advisories",
       "detail": "HaierProtocol 0.9.31 → 0.9.32",
       "done": 0,
@@ -4873,7 +4873,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 21340,
+      "at": 1491,
       "candidate": {
         "id": "platformio.ini#HaierProtocol@0.9.31",
         "name": "HaierProtocol",
@@ -4917,59 +4917,7 @@
     },
     {
       "type": "progress",
-      "at": 21340,
-      "phase": "Checking license",
-      "detail": "HaierProtocol 0.9.31 → 0.9.32",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 21340,
-      "candidate": {
-        "id": "platformio.ini#HaierProtocol@0.9.31",
-        "name": "HaierProtocol",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "0.9.31",
-        "latest": "0.9.31",
-        "selected": "0.9.31",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking license",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 22009,
+      "at": 1491,
       "phase": "Checking security advisories",
       "detail": "FastLED 3.9.16 → 3.10.5",
       "done": 0,
@@ -4977,7 +4925,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 22009,
+      "at": 1491,
       "candidate": {
         "id": "platformio.ini#FastLED@3.9.16",
         "name": "FastLED",
@@ -5021,7 +4969,475 @@
     },
     {
       "type": "progress",
-      "at": 22009,
+      "at": 1491,
+      "phase": "Checking security advisories",
+      "detail": "cmake 4.3.2 → 4.4.3",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 1491,
+      "candidate": {
+        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
+        "name": "cmake",
+        "ecosystem": "pypi",
+        "manifestPath": "esphome/components/nrf52/requirements.txt",
+        "workspace": "esphome/components/nrf52",
+        "workspaceName": null,
+        "current": "4.3.2",
+        "latest": "4.3.2",
+        "selected": "4.3.2",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking security advisories",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 1499,
+      "phase": "Checking security advisories",
+      "detail": "dlms_parser 1.1.0 → 2.2.0",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 1499,
+      "candidate": {
+        "id": "platformio.ini#dlms_parser@1.1.0",
+        "name": "dlms_parser",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "1.1.0",
+        "latest": "1.1.0",
+        "selected": "1.1.0",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking security advisories",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 1499,
+      "phase": "Checking security advisories",
+      "detail": "dsmr_parser 1.9.0 → 1.10.0",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 1499,
+      "candidate": {
+        "id": "platformio.ini#dsmr_parser@1.9.0",
+        "name": "dsmr_parser",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "1.9.0",
+        "latest": "1.9.0",
+        "selected": "1.9.0",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking security advisories",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 1500,
+      "phase": "Checking security advisories",
+      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 1500,
+      "candidate": {
+        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
+        "name": "AsyncMqttClient-esphome",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "2.0.0",
+        "latest": "2.0.0",
+        "selected": "2.0.0",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking security advisories",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 1502,
+      "phase": "Checking security advisories",
+      "detail": "NeoPixelBus 2.8.0 → 2.8.4",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 1502,
+      "candidate": {
+        "id": "platformio.ini#NeoPixelBus@2.8.0",
+        "name": "NeoPixelBus",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "2.8.0",
+        "latest": "2.8.0",
+        "selected": "2.8.0",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking security advisories",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 1700,
+      "phase": "Checking license",
+      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 1700,
+      "candidate": {
+        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
+        "name": "AsyncMqttClient-esphome",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "2.0.0",
+        "latest": "2.0.0",
+        "selected": "2.0.0",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking license",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 1700,
+      "phase": "Checking license",
+      "detail": "cmake 4.3.2 → 4.4.3",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 1700,
+      "candidate": {
+        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
+        "name": "cmake",
+        "ecosystem": "pypi",
+        "manifestPath": "esphome/components/nrf52/requirements.txt",
+        "workspace": "esphome/components/nrf52",
+        "workspaceName": null,
+        "current": "4.3.2",
+        "latest": "4.3.2",
+        "selected": "4.3.2",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking license",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 1700,
+      "phase": "Checking license",
+      "detail": "dlms_parser 1.1.0 → 2.2.0",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 1700,
+      "candidate": {
+        "id": "platformio.ini#dlms_parser@1.1.0",
+        "name": "dlms_parser",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "1.1.0",
+        "latest": "1.1.0",
+        "selected": "1.1.0",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking license",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 1700,
+      "phase": "Checking license",
+      "detail": "dsmr_parser 1.9.0 → 1.10.0",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 1700,
+      "candidate": {
+        "id": "platformio.ini#dsmr_parser@1.9.0",
+        "name": "dsmr_parser",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "1.9.0",
+        "latest": "1.9.0",
+        "selected": "1.9.0",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking license",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 1700,
       "phase": "Checking license",
       "detail": "FastLED 3.9.16 → 3.10.5",
       "done": 0,
@@ -5029,7 +5445,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 22009,
+      "at": 1700,
       "candidate": {
         "id": "platformio.ini#FastLED@3.9.16",
         "name": "FastLED",
@@ -5073,7 +5489,111 @@
     },
     {
       "type": "progress",
-      "at": 24285,
+      "at": 1700,
+      "phase": "Checking license",
+      "detail": "HaierProtocol 0.9.31 → 0.9.32",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 1701,
+      "candidate": {
+        "id": "platformio.ini#HaierProtocol@0.9.31",
+        "name": "HaierProtocol",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "0.9.31",
+        "latest": "0.9.31",
+        "selected": "0.9.31",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking license",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 1701,
+      "phase": "Checking license",
+      "detail": "NeoPixelBus 2.8.0 → 2.8.4",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 1701,
+      "candidate": {
+        "id": "platformio.ini#NeoPixelBus@2.8.0",
+        "name": "NeoPixelBus",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "2.8.0",
+        "latest": "2.8.0",
+        "selected": "2.8.0",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking license",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 1701,
       "phase": "Checking license",
       "detail": "ninja 1.13.0 → 1.13.2",
       "done": 0,
@@ -5081,7 +5601,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 24285,
+      "at": 1701,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
         "name": "ninja",
@@ -5125,527 +5645,7 @@
     },
     {
       "type": "progress",
-      "at": 24353,
-      "phase": "Checking security advisories",
-      "detail": "dlms_parser 1.1.0 → 2.2.0",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 24353,
-      "candidate": {
-        "id": "platformio.ini#dlms_parser@1.1.0",
-        "name": "dlms_parser",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "1.1.0",
-        "latest": "1.1.0",
-        "selected": "1.1.0",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking security advisories",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 24353,
-      "phase": "Checking license",
-      "detail": "dlms_parser 1.1.0 → 2.2.0",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 24353,
-      "candidate": {
-        "id": "platformio.ini#dlms_parser@1.1.0",
-        "name": "dlms_parser",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "1.1.0",
-        "latest": "1.1.0",
-        "selected": "1.1.0",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking license",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 25972,
-      "phase": "Checking security advisories",
-      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 25972,
-      "candidate": {
-        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
-        "name": "AsyncMqttClient-esphome",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "2.0.0",
-        "latest": "2.0.0",
-        "selected": "2.0.0",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking security advisories",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 25972,
-      "phase": "Checking license",
-      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 25972,
-      "candidate": {
-        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
-        "name": "AsyncMqttClient-esphome",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "2.0.0",
-        "latest": "2.0.0",
-        "selected": "2.0.0",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking license",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 26531,
-      "phase": "Checking security advisories",
-      "detail": "NeoPixelBus 2.8.0 → 2.8.4",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 26531,
-      "candidate": {
-        "id": "platformio.ini#NeoPixelBus@2.8.0",
-        "name": "NeoPixelBus",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "2.8.0",
-        "latest": "2.8.0",
-        "selected": "2.8.0",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking security advisories",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 26531,
-      "phase": "Checking license",
-      "detail": "NeoPixelBus 2.8.0 → 2.8.4",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 26531,
-      "candidate": {
-        "id": "platformio.ini#NeoPixelBus@2.8.0",
-        "name": "NeoPixelBus",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "2.8.0",
-        "latest": "2.8.0",
-        "selected": "2.8.0",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking license",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 26862,
-      "phase": "Checking security advisories",
-      "detail": "cmake 4.3.2 → 4.4.3",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 26862,
-      "candidate": {
-        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
-        "name": "cmake",
-        "ecosystem": "pypi",
-        "manifestPath": "esphome/components/nrf52/requirements.txt",
-        "workspace": "esphome/components/nrf52",
-        "workspaceName": null,
-        "current": "4.3.2",
-        "latest": "4.3.2",
-        "selected": "4.3.2",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking security advisories",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 26862,
-      "phase": "Checking license",
-      "detail": "cmake 4.3.2 → 4.4.3",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 26862,
-      "candidate": {
-        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
-        "name": "cmake",
-        "ecosystem": "pypi",
-        "manifestPath": "esphome/components/nrf52/requirements.txt",
-        "workspace": "esphome/components/nrf52",
-        "workspaceName": null,
-        "current": "4.3.2",
-        "latest": "4.3.2",
-        "selected": "4.3.2",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking license",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 28169,
-      "phase": "Checking security advisories",
-      "detail": "dsmr_parser 1.9.0 → 1.10.0",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 28169,
-      "candidate": {
-        "id": "platformio.ini#dsmr_parser@1.9.0",
-        "name": "dsmr_parser",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "1.9.0",
-        "latest": "1.9.0",
-        "selected": "1.9.0",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking security advisories",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 28169,
-      "phase": "Checking license",
-      "detail": "dsmr_parser 1.9.0 → 1.10.0",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 28169,
-      "candidate": {
-        "id": "platformio.ini#dsmr_parser@1.9.0",
-        "name": "dsmr_parser",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "1.9.0",
-        "latest": "1.9.0",
-        "selected": "1.9.0",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking license",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 29341,
+      "at": 1770,
       "phase": "Reading release notes and changelog",
       "detail": "HaierProtocol 0.9.31 → 0.9.32",
       "done": 0,
@@ -5653,7 +5653,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 29341,
+      "at": 1770,
       "candidate": {
         "id": "platformio.ini#HaierProtocol@0.9.31",
         "name": "HaierProtocol",
@@ -5697,7 +5697,7 @@
     },
     {
       "type": "progress",
-      "at": 29341,
+      "at": 1770,
       "phase": "Comparing the public API surface",
       "detail": "HaierProtocol 0.9.31 → 0.9.32 · 1 evidence source",
       "done": 0,
@@ -5705,7 +5705,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 29341,
+      "at": 1770,
       "candidate": {
         "id": "platformio.ini#HaierProtocol@0.9.31",
         "name": "HaierProtocol",
@@ -5749,7 +5749,7 @@
     },
     {
       "type": "progress",
-      "at": 29341,
+      "at": 1770,
       "phase": "No breaking changes to look for",
       "detail": "HaierProtocol 0.9.31 → 0.9.32",
       "done": 0,
@@ -5757,7 +5757,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 29341,
+      "at": 1770,
       "candidate": {
         "id": "platformio.ini#HaierProtocol@0.9.31",
         "name": "HaierProtocol",
@@ -5801,7 +5801,7 @@
     },
     {
       "type": "progress",
-      "at": 30354,
+      "at": 1772,
       "phase": "Comparing the public API surface",
       "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
       "done": 0,
@@ -5809,7 +5809,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 30354,
+      "at": 1772,
       "candidate": {
         "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
         "name": "AsyncMqttClient-esphome",
@@ -5853,163 +5853,7 @@
     },
     {
       "type": "progress",
-      "at": 31623,
-      "phase": "Reading release notes and changelog",
-      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 31623,
-      "candidate": {
-        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
-        "name": "AsyncMqttClient-esphome",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "2.0.0",
-        "latest": "2.0.0",
-        "selected": "2.0.0",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Reading release notes and changelog",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 31623,
-      "phase": "Comparing the public API surface",
-      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0 · 1 evidence source",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 31623,
-      "candidate": {
-        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
-        "name": "AsyncMqttClient-esphome",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "2.0.0",
-        "latest": "2.0.0",
-        "selected": "2.0.0",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Comparing the public API surface",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 31623,
-      "phase": "No breaking changes to look for",
-      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 31623,
-      "candidate": {
-        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
-        "name": "AsyncMqttClient-esphome",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "2.0.0",
-        "latest": "2.0.0",
-        "selected": "2.0.0",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "No breaking changes to look for",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 32035,
+      "at": 1772,
       "phase": "Comparing the public API surface",
       "detail": "dlms_parser 1.1.0 → 2.2.0",
       "done": 0,
@@ -6017,7 +5861,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 32035,
+      "at": 1773,
       "candidate": {
         "id": "platformio.ini#dlms_parser@1.1.0",
         "name": "dlms_parser",
@@ -6061,7 +5905,7 @@
     },
     {
       "type": "progress",
-      "at": 32036,
+      "at": 1773,
       "phase": "Reading release notes and changelog",
       "detail": "dlms_parser 1.1.0 → 2.2.0",
       "done": 0,
@@ -6069,7 +5913,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 32036,
+      "at": 1773,
       "candidate": {
         "id": "platformio.ini#dlms_parser@1.1.0",
         "name": "dlms_parser",
@@ -6113,7 +5957,7 @@
     },
     {
       "type": "progress",
-      "at": 32036,
+      "at": 1773,
       "phase": "Comparing the public API surface",
       "detail": "dlms_parser 1.1.0 → 2.2.0 · 2 evidence sources",
       "done": 0,
@@ -6121,7 +5965,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 32036,
+      "at": 1773,
       "candidate": {
         "id": "platformio.ini#dlms_parser@1.1.0",
         "name": "dlms_parser",
@@ -6165,7 +6009,7 @@
     },
     {
       "type": "progress",
-      "at": 32037,
+      "at": 1775,
       "phase": "Searching your code for 43 breaking changes",
       "detail": "dlms_parser 1.1.0 → 2.2.0",
       "done": 0,
@@ -6173,7 +6017,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 32037,
+      "at": 1775,
       "candidate": {
         "id": "platformio.ini#dlms_parser@1.1.0",
         "name": "dlms_parser",
@@ -6217,7 +6061,7 @@
     },
     {
       "type": "progress",
-      "at": 32139,
+      "at": 1807,
       "phase": "Comparing the public API surface",
       "detail": "NeoPixelBus 2.8.0 → 2.8.4",
       "done": 0,
@@ -6225,7 +6069,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 32139,
+      "at": 1807,
       "candidate": {
         "id": "platformio.ini#NeoPixelBus@2.8.0",
         "name": "NeoPixelBus",
@@ -6269,7 +6113,7 @@
     },
     {
       "type": "progress",
-      "at": 36562,
+      "at": 2018,
       "phase": "Reading release notes and changelog",
       "detail": "NeoPixelBus 2.8.0 → 2.8.4",
       "done": 0,
@@ -6277,7 +6121,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 36562,
+      "at": 2018,
       "candidate": {
         "id": "platformio.ini#NeoPixelBus@2.8.0",
         "name": "NeoPixelBus",
@@ -6321,7 +6165,7 @@
     },
     {
       "type": "progress",
-      "at": 36562,
+      "at": 2018,
       "phase": "Comparing the public API surface",
       "detail": "NeoPixelBus 2.8.0 → 2.8.4 · 1 evidence source",
       "done": 0,
@@ -6329,7 +6173,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 36562,
+      "at": 2018,
       "candidate": {
         "id": "platformio.ini#NeoPixelBus@2.8.0",
         "name": "NeoPixelBus",
@@ -6373,7 +6217,7 @@
     },
     {
       "type": "progress",
-      "at": 36562,
+      "at": 2018,
       "phase": "No breaking changes to look for",
       "detail": "NeoPixelBus 2.8.0 → 2.8.4",
       "done": 0,
@@ -6381,7 +6225,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 36562,
+      "at": 2018,
       "candidate": {
         "id": "platformio.ini#NeoPixelBus@2.8.0",
         "name": "NeoPixelBus",
@@ -6425,77 +6269,25 @@
     },
     {
       "type": "progress",
-      "at": 58489,
-      "phase": "Comparing the public API surface",
-      "detail": "dsmr_parser 1.9.0 → 1.10.0",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 58490,
-      "candidate": {
-        "id": "platformio.ini#dsmr_parser@1.9.0",
-        "name": "dsmr_parser",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "1.9.0",
-        "latest": "1.9.0",
-        "selected": "1.9.0",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Comparing the public API surface",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 58490,
+      "at": 2019,
       "phase": "Reading release notes and changelog",
-      "detail": "dsmr_parser 1.9.0 → 1.10.0",
+      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
       "done": 0,
       "total": 8
     },
     {
       "type": "candidate-upsert",
-      "at": 58490,
+      "at": 2019,
       "candidate": {
-        "id": "platformio.ini#dsmr_parser@1.9.0",
-        "name": "dsmr_parser",
+        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
+        "name": "AsyncMqttClient-esphome",
         "ecosystem": "arduino",
         "manifestPath": "platformio.ini",
         "workspace": "",
         "workspaceName": null,
-        "current": "1.9.0",
-        "latest": "1.9.0",
-        "selected": "1.9.0",
+        "current": "2.0.0",
+        "latest": "2.0.0",
+        "selected": "2.0.0",
         "safeLatest": null,
         "publishedVersions": [],
         "provenance": {
@@ -6529,25 +6321,25 @@
     },
     {
       "type": "progress",
-      "at": 58490,
+      "at": 2019,
       "phase": "Comparing the public API surface",
-      "detail": "dsmr_parser 1.9.0 → 1.10.0 · 1 evidence source",
+      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0 · 1 evidence source",
       "done": 0,
       "total": 8
     },
     {
       "type": "candidate-upsert",
-      "at": 58490,
+      "at": 2019,
       "candidate": {
-        "id": "platformio.ini#dsmr_parser@1.9.0",
-        "name": "dsmr_parser",
+        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
+        "name": "AsyncMqttClient-esphome",
         "ecosystem": "arduino",
         "manifestPath": "platformio.ini",
         "workspace": "",
         "workspaceName": null,
-        "current": "1.9.0",
-        "latest": "1.9.0",
-        "selected": "1.9.0",
+        "current": "2.0.0",
+        "latest": "2.0.0",
+        "selected": "2.0.0",
         "safeLatest": null,
         "publishedVersions": [],
         "provenance": {
@@ -6581,25 +6373,25 @@
     },
     {
       "type": "progress",
-      "at": 58490,
+      "at": 2019,
       "phase": "No breaking changes to look for",
-      "detail": "dsmr_parser 1.9.0 → 1.10.0",
+      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
       "done": 0,
       "total": 8
     },
     {
       "type": "candidate-upsert",
-      "at": 58490,
+      "at": 2020,
       "candidate": {
-        "id": "platformio.ini#dsmr_parser@1.9.0",
-        "name": "dsmr_parser",
+        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
+        "name": "AsyncMqttClient-esphome",
         "ecosystem": "arduino",
         "manifestPath": "platformio.ini",
         "workspace": "",
         "workspaceName": null,
-        "current": "1.9.0",
-        "latest": "1.9.0",
-        "selected": "1.9.0",
+        "current": "2.0.0",
+        "latest": "2.0.0",
+        "selected": "2.0.0",
         "safeLatest": null,
         "publishedVersions": [],
         "provenance": {
@@ -6633,7 +6425,7 @@
     },
     {
       "type": "progress",
-      "at": 58615,
+      "at": 2153,
       "phase": "Comparing the public API surface",
       "detail": "cmake 4.3.2 → 4.4.3",
       "done": 0,
@@ -6641,7 +6433,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 58615,
+      "at": 2153,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
         "name": "cmake",
@@ -6685,7 +6477,7 @@
     },
     {
       "type": "progress",
-      "at": 58615,
+      "at": 2153,
       "phase": "Comparing the public API surface",
       "detail": "ninja 1.13.0 → 1.13.2",
       "done": 0,
@@ -6693,7 +6485,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 58615,
+      "at": 2153,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
         "name": "ninja",
@@ -6737,7 +6529,7 @@
     },
     {
       "type": "progress",
-      "at": 58637,
+      "at": 2153,
       "phase": "Reading release notes and changelog",
       "detail": "ninja 1.13.0 → 1.13.2",
       "done": 0,
@@ -6745,7 +6537,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 58637,
+      "at": 2153,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
         "name": "ninja",
@@ -6789,7 +6581,7 @@
     },
     {
       "type": "progress",
-      "at": 58637,
+      "at": 2153,
       "phase": "Comparing the public API surface",
       "detail": "ninja 1.13.0 → 1.13.2 · 1 evidence source",
       "done": 0,
@@ -6797,7 +6589,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 58637,
+      "at": 2153,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
         "name": "ninja",
@@ -6841,7 +6633,7 @@
     },
     {
       "type": "progress",
-      "at": 58637,
+      "at": 2153,
       "phase": "No breaking changes to look for",
       "detail": "ninja 1.13.0 → 1.13.2",
       "done": 0,
@@ -6849,7 +6641,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 58637,
+      "at": 2153,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
         "name": "ninja",
@@ -6893,77 +6685,25 @@
     },
     {
       "type": "progress",
-      "at": 647193,
-      "phase": "Reading release notes and changelog",
-      "detail": "cmake 4.3.2 → 4.4.3",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 647193,
-      "candidate": {
-        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
-        "name": "cmake",
-        "ecosystem": "pypi",
-        "manifestPath": "esphome/components/nrf52/requirements.txt",
-        "workspace": "esphome/components/nrf52",
-        "workspaceName": null,
-        "current": "4.3.2",
-        "latest": "4.3.2",
-        "selected": "4.3.2",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Reading release notes and changelog",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 647194,
+      "at": 4187,
       "phase": "Comparing the public API surface",
-      "detail": "cmake 4.3.2 → 4.4.3 · 1 evidence source",
+      "detail": "dsmr_parser 1.9.0 → 1.10.0",
       "done": 0,
       "total": 8
     },
     {
       "type": "candidate-upsert",
-      "at": 647194,
+      "at": 4188,
       "candidate": {
-        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
-        "name": "cmake",
-        "ecosystem": "pypi",
-        "manifestPath": "esphome/components/nrf52/requirements.txt",
-        "workspace": "esphome/components/nrf52",
+        "id": "platformio.ini#dsmr_parser@1.9.0",
+        "name": "dsmr_parser",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
         "workspaceName": null,
-        "current": "4.3.2",
-        "latest": "4.3.2",
-        "selected": "4.3.2",
+        "current": "1.9.0",
+        "latest": "1.9.0",
+        "selected": "1.9.0",
         "safeLatest": null,
         "publishedVersions": [],
         "provenance": {
@@ -6997,25 +6737,129 @@
     },
     {
       "type": "progress",
-      "at": 647194,
-      "phase": "No breaking changes to look for",
-      "detail": "cmake 4.3.2 → 4.4.3",
+      "at": 4188,
+      "phase": "Reading release notes and changelog",
+      "detail": "dsmr_parser 1.9.0 → 1.10.0",
       "done": 0,
       "total": 8
     },
     {
       "type": "candidate-upsert",
-      "at": 647194,
+      "at": 4188,
       "candidate": {
-        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
-        "name": "cmake",
-        "ecosystem": "pypi",
-        "manifestPath": "esphome/components/nrf52/requirements.txt",
-        "workspace": "esphome/components/nrf52",
+        "id": "platformio.ini#dsmr_parser@1.9.0",
+        "name": "dsmr_parser",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
         "workspaceName": null,
-        "current": "4.3.2",
-        "latest": "4.3.2",
-        "selected": "4.3.2",
+        "current": "1.9.0",
+        "latest": "1.9.0",
+        "selected": "1.9.0",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Reading release notes and changelog",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 4188,
+      "phase": "Comparing the public API surface",
+      "detail": "dsmr_parser 1.9.0 → 1.10.0 · 1 evidence source",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 4188,
+      "candidate": {
+        "id": "platformio.ini#dsmr_parser@1.9.0",
+        "name": "dsmr_parser",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "1.9.0",
+        "latest": "1.9.0",
+        "selected": "1.9.0",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Comparing the public API surface",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 4188,
+      "phase": "No breaking changes to look for",
+      "detail": "dsmr_parser 1.9.0 → 1.10.0",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 4188,
+      "candidate": {
+        "id": "platformio.ini#dsmr_parser@1.9.0",
+        "name": "dsmr_parser",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "1.9.0",
+        "latest": "1.9.0",
+        "selected": "1.9.0",
         "safeLatest": null,
         "publishedVersions": [],
         "provenance": {
@@ -7049,7 +6893,7 @@
     },
     {
       "type": "progress",
-      "at": 652089,
+      "at": 5167,
       "phase": "Comparing the public API surface",
       "detail": "FastLED 3.9.16 → 3.10.5",
       "done": 0,
@@ -7057,7 +6901,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 652089,
+      "at": 5167,
       "candidate": {
         "id": "platformio.ini#FastLED@3.9.16",
         "name": "FastLED",
@@ -7101,7 +6945,7 @@
     },
     {
       "type": "progress",
-      "at": 652092,
+      "at": 5169,
       "phase": "Reading release notes and changelog",
       "detail": "FastLED 3.9.16 → 3.10.5",
       "done": 0,
@@ -7109,7 +6953,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 652092,
+      "at": 5169,
       "candidate": {
         "id": "platformio.ini#FastLED@3.9.16",
         "name": "FastLED",
@@ -7153,7 +6997,7 @@
     },
     {
       "type": "progress",
-      "at": 652092,
+      "at": 5169,
       "phase": "Comparing the public API surface",
       "detail": "FastLED 3.9.16 → 3.10.5 · 5 evidence sources",
       "done": 0,
@@ -7161,7 +7005,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 652092,
+      "at": 5169,
       "candidate": {
         "id": "platformio.ini#FastLED@3.9.16",
         "name": "FastLED",
@@ -7205,7 +7049,7 @@
     },
     {
       "type": "progress",
-      "at": 652139,
+      "at": 5183,
       "phase": "Searching your code for 662 breaking changes",
       "detail": "FastLED 3.9.16 → 3.10.5",
       "done": 0,
@@ -7213,7 +7057,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 652139,
+      "at": 5183,
       "candidate": {
         "id": "platformio.ini#FastLED@3.9.16",
         "name": "FastLED",
@@ -7257,7 +7101,163 @@
     },
     {
       "type": "progress",
-      "at": 696648,
+      "at": 5332,
+      "phase": "Reading release notes and changelog",
+      "detail": "cmake 4.3.2 → 4.4.3",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 5332,
+      "candidate": {
+        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
+        "name": "cmake",
+        "ecosystem": "pypi",
+        "manifestPath": "esphome/components/nrf52/requirements.txt",
+        "workspace": "esphome/components/nrf52",
+        "workspaceName": null,
+        "current": "4.3.2",
+        "latest": "4.3.2",
+        "selected": "4.3.2",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Reading release notes and changelog",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 5332,
+      "phase": "Comparing the public API surface",
+      "detail": "cmake 4.3.2 → 4.4.3 · 1 evidence source",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 5332,
+      "candidate": {
+        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
+        "name": "cmake",
+        "ecosystem": "pypi",
+        "manifestPath": "esphome/components/nrf52/requirements.txt",
+        "workspace": "esphome/components/nrf52",
+        "workspaceName": null,
+        "current": "4.3.2",
+        "latest": "4.3.2",
+        "selected": "4.3.2",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Comparing the public API surface",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 5332,
+      "phase": "No breaking changes to look for",
+      "detail": "cmake 4.3.2 → 4.4.3",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 5332,
+      "candidate": {
+        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
+        "name": "cmake",
+        "ecosystem": "pypi",
+        "manifestPath": "esphome/components/nrf52/requirements.txt",
+        "workspace": "esphome/components/nrf52",
+        "workspaceName": null,
+        "current": "4.3.2",
+        "latest": "4.3.2",
+        "selected": "4.3.2",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "No breaking changes to look for",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 13488,
       "phase": "Indexing your code",
       "detail": "5025 files indexed · 31 direct dependencies to check",
       "done": 0,
@@ -7265,7 +7265,7 @@
     },
     {
       "type": "progress",
-      "at": 698684,
+      "at": 14515,
       "phase": "Weighing what this upgrade is worth",
       "detail": "HaierProtocol 0.9.31 → 0.9.32",
       "done": 0,
@@ -7273,7 +7273,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 698684,
+      "at": 14515,
       "candidate": {
         "id": "platformio.ini#HaierProtocol@0.9.31",
         "name": "HaierProtocol",
@@ -7317,59 +7317,7 @@
     },
     {
       "type": "progress",
-      "at": 699277,
-      "phase": "Weighing what this upgrade is worth",
-      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 699277,
-      "candidate": {
-        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
-        "name": "AsyncMqttClient-esphome",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "2.0.0",
-        "latest": "2.0.0",
-        "selected": "2.0.0",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Weighing what this upgrade is worth",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 699881,
+      "at": 14734,
       "phase": "Weighing what this upgrade is worth",
       "detail": "dlms_parser 1.1.0 → 2.2.0",
       "done": 0,
@@ -7377,7 +7325,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 699881,
+      "at": 14734,
       "candidate": {
         "id": "platformio.ini#dlms_parser@1.1.0",
         "name": "dlms_parser",
@@ -7421,7 +7369,7 @@
     },
     {
       "type": "progress",
-      "at": 700370,
+      "at": 14971,
       "phase": "Weighing what this upgrade is worth",
       "detail": "NeoPixelBus 2.8.0 → 2.8.4",
       "done": 0,
@@ -7429,7 +7377,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 700370,
+      "at": 14971,
       "candidate": {
         "id": "platformio.ini#NeoPixelBus@2.8.0",
         "name": "NeoPixelBus",
@@ -7473,25 +7421,25 @@
     },
     {
       "type": "progress",
-      "at": 700772,
+      "at": 15130,
       "phase": "Weighing what this upgrade is worth",
-      "detail": "dsmr_parser 1.9.0 → 1.10.0",
+      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
       "done": 0,
       "total": 8
     },
     {
       "type": "candidate-upsert",
-      "at": 700772,
+      "at": 15130,
       "candidate": {
-        "id": "platformio.ini#dsmr_parser@1.9.0",
-        "name": "dsmr_parser",
+        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
+        "name": "AsyncMqttClient-esphome",
         "ecosystem": "arduino",
         "manifestPath": "platformio.ini",
         "workspace": "",
         "workspaceName": null,
-        "current": "1.9.0",
-        "latest": "1.9.0",
-        "selected": "1.9.0",
+        "current": "2.0.0",
+        "latest": "2.0.0",
+        "selected": "2.0.0",
         "safeLatest": null,
         "publishedVersions": [],
         "provenance": {
@@ -7525,7 +7473,7 @@
     },
     {
       "type": "progress",
-      "at": 701141,
+      "at": 15250,
       "phase": "Weighing what this upgrade is worth",
       "detail": "ninja 1.13.0 → 1.13.2",
       "done": 0,
@@ -7533,7 +7481,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 701142,
+      "at": 15250,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
         "name": "ninja",
@@ -7577,25 +7525,25 @@
     },
     {
       "type": "progress",
-      "at": 701550,
+      "at": 15375,
       "phase": "Weighing what this upgrade is worth",
-      "detail": "cmake 4.3.2 → 4.4.3",
+      "detail": "dsmr_parser 1.9.0 → 1.10.0",
       "done": 0,
       "total": 8
     },
     {
       "type": "candidate-upsert",
-      "at": 701550,
+      "at": 15375,
       "candidate": {
-        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
-        "name": "cmake",
-        "ecosystem": "pypi",
-        "manifestPath": "esphome/components/nrf52/requirements.txt",
-        "workspace": "esphome/components/nrf52",
+        "id": "platformio.ini#dsmr_parser@1.9.0",
+        "name": "dsmr_parser",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
         "workspaceName": null,
-        "current": "4.3.2",
-        "latest": "4.3.2",
-        "selected": "4.3.2",
+        "current": "1.9.0",
+        "latest": "1.9.0",
+        "selected": "1.9.0",
         "safeLatest": null,
         "publishedVersions": [],
         "provenance": {
@@ -7629,7 +7577,7 @@
     },
     {
       "type": "progress",
-      "at": 702839,
+      "at": 15695,
       "phase": "Weighing what this upgrade is worth",
       "detail": "FastLED 3.9.16 → 3.10.5",
       "done": 0,
@@ -7637,7 +7585,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 702840,
+      "at": 15695,
       "candidate": {
         "id": "platformio.ini#FastLED@3.9.16",
         "name": "FastLED",
@@ -7681,7 +7629,59 @@
     },
     {
       "type": "progress",
-      "at": 703161,
+      "at": 15810,
+      "phase": "Weighing what this upgrade is worth",
+      "detail": "cmake 4.3.2 → 4.4.3",
+      "done": 0,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 15810,
+      "candidate": {
+        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
+        "name": "cmake",
+        "ecosystem": "pypi",
+        "manifestPath": "esphome/components/nrf52/requirements.txt",
+        "workspace": "esphome/components/nrf52",
+        "workspaceName": null,
+        "current": "4.3.2",
+        "latest": "4.3.2",
+        "selected": "4.3.2",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Weighing what this upgrade is worth",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 15934,
       "phase": "Checking maintenance signals",
       "detail": "HaierProtocol 0.9.31 → 0.9.32",
       "done": 0,
@@ -7689,7 +7689,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 703161,
+      "at": 15934,
       "candidate": {
         "id": "platformio.ini#HaierProtocol@0.9.31",
         "name": "HaierProtocol",
@@ -7733,59 +7733,7 @@
     },
     {
       "type": "progress",
-      "at": 703162,
-      "phase": "Checking maintenance signals",
-      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
-      "done": 0,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 703162,
-      "candidate": {
-        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
-        "name": "AsyncMqttClient-esphome",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "2.0.0",
-        "latest": "2.0.0",
-        "selected": "2.0.0",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking maintenance signals",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 703162,
+      "at": 15934,
       "phase": "Checking maintenance signals",
       "detail": "dlms_parser 1.1.0 → 2.2.0",
       "done": 0,
@@ -7793,7 +7741,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 703162,
+      "at": 15934,
       "candidate": {
         "id": "platformio.ini#dlms_parser@1.1.0",
         "name": "dlms_parser",
@@ -7837,7 +7785,7 @@
     },
     {
       "type": "progress",
-      "at": 703163,
+      "at": 15934,
       "phase": "Checking maintenance signals",
       "detail": "NeoPixelBus 2.8.0 → 2.8.4",
       "done": 0,
@@ -7845,7 +7793,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 703163,
+      "at": 15934,
       "candidate": {
         "id": "platformio.ini#NeoPixelBus@2.8.0",
         "name": "NeoPixelBus",
@@ -7889,25 +7837,25 @@
     },
     {
       "type": "progress",
-      "at": 703163,
+      "at": 15934,
       "phase": "Checking maintenance signals",
-      "detail": "dsmr_parser 1.9.0 → 1.10.0",
+      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0",
       "done": 0,
       "total": 8
     },
     {
       "type": "candidate-upsert",
-      "at": 703163,
+      "at": 15934,
       "candidate": {
-        "id": "platformio.ini#dsmr_parser@1.9.0",
-        "name": "dsmr_parser",
+        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
+        "name": "AsyncMqttClient-esphome",
         "ecosystem": "arduino",
         "manifestPath": "platformio.ini",
         "workspace": "",
         "workspaceName": null,
-        "current": "1.9.0",
-        "latest": "1.9.0",
-        "selected": "1.9.0",
+        "current": "2.0.0",
+        "latest": "2.0.0",
+        "selected": "2.0.0",
         "safeLatest": null,
         "publishedVersions": [],
         "provenance": {
@@ -7941,7 +7889,7 @@
     },
     {
       "type": "progress",
-      "at": 703163,
+      "at": 15934,
       "phase": "Checking maintenance signals",
       "detail": "ninja 1.13.0 → 1.13.2",
       "done": 0,
@@ -7949,7 +7897,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 703163,
+      "at": 15934,
       "candidate": {
         "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
         "name": "ninja",
@@ -7993,25 +7941,25 @@
     },
     {
       "type": "progress",
-      "at": 703164,
+      "at": 15934,
       "phase": "Checking maintenance signals",
-      "detail": "cmake 4.3.2 → 4.4.3",
+      "detail": "dsmr_parser 1.9.0 → 1.10.0",
       "done": 0,
       "total": 8
     },
     {
       "type": "candidate-upsert",
-      "at": 703164,
+      "at": 15934,
       "candidate": {
-        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
-        "name": "cmake",
-        "ecosystem": "pypi",
-        "manifestPath": "esphome/components/nrf52/requirements.txt",
-        "workspace": "esphome/components/nrf52",
+        "id": "platformio.ini#dsmr_parser@1.9.0",
+        "name": "dsmr_parser",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
         "workspaceName": null,
-        "current": "4.3.2",
-        "latest": "4.3.2",
-        "selected": "4.3.2",
+        "current": "1.9.0",
+        "latest": "1.9.0",
+        "selected": "1.9.0",
         "safeLatest": null,
         "publishedVersions": [],
         "provenance": {
@@ -8045,7 +7993,7 @@
     },
     {
       "type": "progress",
-      "at": 703165,
+      "at": 15935,
       "phase": "Checking maintenance signals",
       "detail": "FastLED 3.9.16 → 3.10.5",
       "done": 0,
@@ -8053,7 +8001,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 703165,
+      "at": 15935,
       "candidate": {
         "id": "platformio.ini#FastLED@3.9.16",
         "name": "FastLED",
@@ -8096,8 +8044,60 @@
       }
     },
     {
+      "type": "progress",
+      "at": 15940,
+      "phase": "Checking maintenance signals",
+      "detail": "cmake 4.3.2 → 4.4.3",
+      "done": 0,
+      "total": 8
+    },
+    {
       "type": "candidate-upsert",
-      "at": 703212,
+      "at": 15940,
+      "candidate": {
+        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
+        "name": "cmake",
+        "ecosystem": "pypi",
+        "manifestPath": "esphome/components/nrf52/requirements.txt",
+        "workspace": "esphome/components/nrf52",
+        "workspaceName": null,
+        "current": "4.3.2",
+        "latest": "4.3.2",
+        "selected": "4.3.2",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking maintenance signals",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 15950,
       "candidate": {
         "id": "platformio.ini#HaierProtocol@0.9.31",
         "name": "HaierProtocol",
@@ -8163,7 +8163,7 @@
     },
     {
       "type": "progress",
-      "at": 703212,
+      "at": 15950,
       "phase": "Checked",
       "detail": "HaierProtocol 0.9.31 → 0.9.32 · safe for your code · no breaking changes found — not deeply verified",
       "done": 1,
@@ -8171,78 +8171,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 703212,
-      "candidate": {
-        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
-        "name": "AsyncMqttClient-esphome",
-        "ecosystem": "arduino",
-        "manifestPath": "platformio.ini",
-        "workspace": "",
-        "workspaceName": null,
-        "current": "2.0.0",
-        "latest": "2.1.0",
-        "selected": "2.1.0",
-        "safeLatest": null,
-        "publishedVersions": [
-          "2.1.0"
-        ],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "clean",
-        "phase": null,
-        "risk": "none",
-        "summary": "Safe to upgrade. OSV has no advisory coverage for arduino packages, so this upgrade's effect on known vulnerabilities could not be looked up.",
-        "recommendation": "safe-to-upgrade",
-        "hasCompatibilityEvidence": true,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "clean",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": {
-          "localizationRan": true,
-          "localizationComplete": false,
-          "sourceFilesDiscovered": 5308,
-          "sourceFilesIndexed": 5000,
-          "sourceTruncated": true,
-          "generatedFilesSkipped": 0,
-          "oversizedSourceSkipped": 0,
-          "runtimeConfigsDiscovered": 25,
-          "runtimeConfigsIndexed": 25,
-          "runtimeConfigComplete": true
-        },
-        "surfaceAssessment": {
-          "available": true,
-          "inspection": "succeeded",
-          "tool": "header diff"
-        },
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 1,
-        "gaps": [
-          "OSV has no advisory coverage for arduino packages, so this upgrade's effect on known vulnerabilities could not be looked up."
-        ],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 703212,
-      "phase": "Checked",
-      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0 · safe for your code · no breaking changes found — not deeply verified",
-      "done": 2,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 703212,
+      "at": 15950,
       "candidate": {
         "id": "platformio.ini#dlms_parser@1.1.0",
         "name": "dlms_parser",
@@ -8751,15 +8680,15 @@
     },
     {
       "type": "progress",
-      "at": 703212,
+      "at": 15950,
       "phase": "Checked",
       "detail": "dlms_parser 1.1.0 → 2.2.0 · localization incomplete · drift searched the indexed source subset, but the file limit prevented proving the breaking api is unused",
-      "done": 3,
+      "done": 2,
       "total": 8
     },
     {
       "type": "candidate-upsert",
-      "at": 703212,
+      "at": 15950,
       "candidate": {
         "id": "platformio.ini#NeoPixelBus@2.8.0",
         "name": "NeoPixelBus",
@@ -8822,15 +8751,155 @@
     },
     {
       "type": "progress",
-      "at": 703212,
+      "at": 15950,
       "phase": "Checked",
       "detail": "NeoPixelBus 2.8.0 → 2.8.4 · safe for your code · no breaking changes found — not deeply verified",
+      "done": 3,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 15950,
+      "candidate": {
+        "id": "platformio.ini#AsyncMqttClient-esphome@2.0.0",
+        "name": "AsyncMqttClient-esphome",
+        "ecosystem": "arduino",
+        "manifestPath": "platformio.ini",
+        "workspace": "",
+        "workspaceName": null,
+        "current": "2.0.0",
+        "latest": "2.1.0",
+        "selected": "2.1.0",
+        "safeLatest": null,
+        "publishedVersions": [
+          "2.1.0"
+        ],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "clean",
+        "phase": null,
+        "risk": "none",
+        "summary": "Safe to upgrade. OSV has no advisory coverage for arduino packages, so this upgrade's effect on known vulnerabilities could not be looked up.",
+        "recommendation": "safe-to-upgrade",
+        "hasCompatibilityEvidence": true,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "clean",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": {
+          "localizationRan": true,
+          "localizationComplete": false,
+          "sourceFilesDiscovered": 5308,
+          "sourceFilesIndexed": 5000,
+          "sourceTruncated": true,
+          "generatedFilesSkipped": 0,
+          "oversizedSourceSkipped": 0,
+          "runtimeConfigsDiscovered": 25,
+          "runtimeConfigsIndexed": 25,
+          "runtimeConfigComplete": true
+        },
+        "surfaceAssessment": {
+          "available": true,
+          "inspection": "succeeded",
+          "tool": "header diff"
+        },
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 1,
+        "gaps": [
+          "OSV has no advisory coverage for arduino packages, so this upgrade's effect on known vulnerabilities could not be looked up."
+        ],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 15950,
+      "phase": "Checked",
+      "detail": "AsyncMqttClient-esphome 2.0.0 → 2.1.0 · safe for your code · no breaking changes found — not deeply verified",
       "done": 4,
       "total": 8
     },
     {
       "type": "candidate-upsert",
-      "at": 703212,
+      "at": 15950,
+      "candidate": {
+        "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
+        "name": "ninja",
+        "ecosystem": "pypi",
+        "manifestPath": "esphome/components/nrf52/requirements.txt",
+        "workspace": "esphome/components/nrf52",
+        "workspaceName": null,
+        "current": "1.13.0",
+        "latest": "1.13.2",
+        "selected": "1.13.2",
+        "safeLatest": null,
+        "publishedVersions": [
+          "1.13.2"
+        ],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "clean",
+        "phase": null,
+        "risk": "none",
+        "summary": "Safe to upgrade. No breaking changes found for this version of ninja.",
+        "recommendation": "safe-to-upgrade",
+        "hasCompatibilityEvidence": true,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "clean",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": {
+          "localizationRan": true,
+          "localizationComplete": false,
+          "sourceFilesDiscovered": 5308,
+          "sourceFilesIndexed": 5000,
+          "sourceTruncated": true,
+          "generatedFilesSkipped": 0,
+          "oversizedSourceSkipped": 0,
+          "runtimeConfigsDiscovered": 25,
+          "runtimeConfigsIndexed": 25,
+          "runtimeConfigComplete": true
+        },
+        "surfaceAssessment": {
+          "available": true,
+          "inspection": "succeeded",
+          "tool": "python ast"
+        },
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 1,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 15950,
+      "phase": "Checked",
+      "detail": "ninja 1.13.0 → 1.13.2 · safe for your code · no breaking changes found — not deeply verified",
+      "done": 5,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 15950,
       "candidate": {
         "id": "platformio.ini#dsmr_parser@1.9.0",
         "name": "dsmr_parser",
@@ -8893,158 +8962,15 @@
     },
     {
       "type": "progress",
-      "at": 703212,
+      "at": 15950,
       "phase": "Checked",
       "detail": "dsmr_parser 1.9.0 → 1.10.0 · safe for your code · no breaking changes found — not deeply verified",
-      "done": 5,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 703212,
-      "candidate": {
-        "id": "esphome/components/nrf52/requirements.txt#ninja@1.13.0",
-        "name": "ninja",
-        "ecosystem": "pypi",
-        "manifestPath": "esphome/components/nrf52/requirements.txt",
-        "workspace": "esphome/components/nrf52",
-        "workspaceName": null,
-        "current": "1.13.0",
-        "latest": "1.13.2",
-        "selected": "1.13.2",
-        "safeLatest": null,
-        "publishedVersions": [
-          "1.13.2"
-        ],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "clean",
-        "phase": null,
-        "risk": "none",
-        "summary": "Safe to upgrade. No breaking changes found for this version of ninja.",
-        "recommendation": "safe-to-upgrade",
-        "hasCompatibilityEvidence": true,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "clean",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": {
-          "localizationRan": true,
-          "localizationComplete": false,
-          "sourceFilesDiscovered": 5308,
-          "sourceFilesIndexed": 5000,
-          "sourceTruncated": true,
-          "generatedFilesSkipped": 0,
-          "oversizedSourceSkipped": 0,
-          "runtimeConfigsDiscovered": 25,
-          "runtimeConfigsIndexed": 25,
-          "runtimeConfigComplete": true
-        },
-        "surfaceAssessment": {
-          "available": true,
-          "inspection": "succeeded",
-          "tool": "python ast"
-        },
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 1,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 703212,
-      "phase": "Checked",
-      "detail": "ninja 1.13.0 → 1.13.2 · safe for your code · no breaking changes found — not deeply verified",
       "done": 6,
       "total": 8
     },
     {
       "type": "candidate-upsert",
-      "at": 703212,
-      "candidate": {
-        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
-        "name": "cmake",
-        "ecosystem": "pypi",
-        "manifestPath": "esphome/components/nrf52/requirements.txt",
-        "workspace": "esphome/components/nrf52",
-        "workspaceName": null,
-        "current": "4.3.2",
-        "latest": "4.4.3",
-        "selected": "4.4.3",
-        "safeLatest": null,
-        "publishedVersions": [
-          "4.4.3",
-          "4.4.2",
-          "4.4.0",
-          "4.3.4"
-        ],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "clean",
-        "phase": null,
-        "risk": "none",
-        "summary": "Safe to upgrade. No release notes, changelog, or migration guide was reachable for cmake 4.4.3.",
-        "recommendation": "safe-to-upgrade",
-        "hasCompatibilityEvidence": true,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "clean",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": {
-          "localizationRan": true,
-          "localizationComplete": false,
-          "sourceFilesDiscovered": 5308,
-          "sourceFilesIndexed": 5000,
-          "sourceTruncated": true,
-          "generatedFilesSkipped": 0,
-          "oversizedSourceSkipped": 0,
-          "runtimeConfigsDiscovered": 25,
-          "runtimeConfigsIndexed": 25,
-          "runtimeConfigComplete": true
-        },
-        "surfaceAssessment": {
-          "available": true,
-          "inspection": "succeeded",
-          "tool": "python ast"
-        },
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 1,
-        "gaps": [
-          "No release notes, changelog, or migration guide was reachable for cmake 4.4.3."
-        ],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 703212,
-      "phase": "Checked",
-      "detail": "cmake 4.3.2 → 4.4.3 · safe for your code · no breaking changes found — not deeply verified",
-      "done": 7,
-      "total": 8
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 703212,
+      "at": 15950,
       "candidate": {
         "id": "platformio.ini#FastLED@3.9.16",
         "name": "FastLED",
@@ -14598,9 +14524,81 @@
     },
     {
       "type": "progress",
-      "at": 703215,
+      "at": 15952,
       "phase": "Checked",
       "detail": "FastLED 3.9.16 → 3.10.5 · may affect your code · 25 local sites drift flagged but could not confirm — review required; check before upgrading",
+      "done": 7,
+      "total": 8
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 15952,
+      "candidate": {
+        "id": "esphome/components/nrf52/requirements.txt#cmake@4.3.2",
+        "name": "cmake",
+        "ecosystem": "pypi",
+        "manifestPath": "esphome/components/nrf52/requirements.txt",
+        "workspace": "esphome/components/nrf52",
+        "workspaceName": null,
+        "current": "4.3.2",
+        "latest": "4.4.3",
+        "selected": "4.4.3",
+        "safeLatest": null,
+        "publishedVersions": [
+          "4.4.3",
+          "4.4.2",
+          "4.4.0",
+          "4.3.4"
+        ],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "clean",
+        "phase": null,
+        "risk": "none",
+        "summary": "Safe to upgrade. No breaking changes found for this version of cmake.",
+        "recommendation": "safe-to-upgrade",
+        "hasCompatibilityEvidence": true,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "clean",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": {
+          "localizationRan": true,
+          "localizationComplete": false,
+          "sourceFilesDiscovered": 5308,
+          "sourceFilesIndexed": 5000,
+          "sourceTruncated": true,
+          "generatedFilesSkipped": 0,
+          "oversizedSourceSkipped": 0,
+          "runtimeConfigsDiscovered": 25,
+          "runtimeConfigsIndexed": 25,
+          "runtimeConfigComplete": true
+        },
+        "surfaceAssessment": {
+          "available": true,
+          "inspection": "succeeded",
+          "tool": "python ast"
+        },
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 1,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 15952,
+      "phase": "Checked",
+      "detail": "cmake 4.3.2 → 4.4.3 · safe for your code · no breaking changes found — not deeply verified",
       "done": 8,
       "total": 8
     }
@@ -20744,7 +20742,7 @@
       "status": "clean",
       "phase": null,
       "risk": "none",
-      "summary": "Safe to upgrade. No release notes, changelog, or migration guide was reachable for cmake 4.4.3.",
+      "summary": "Safe to upgrade. No breaking changes found for this version of cmake.",
       "recommendation": "safe-to-upgrade",
       "hasCompatibilityEvidence": true,
       "runtimeCompatibility": null,
@@ -20777,9 +20775,7 @@
       "impactCount": 0,
       "impactFiles": 0,
       "evidenceCount": 1,
-      "gaps": [
-        "No release notes, changelog, or migration guide was reachable for cmake 4.4.3."
-      ],
+      "gaps": [],
       "breaking": []
     },
     {
