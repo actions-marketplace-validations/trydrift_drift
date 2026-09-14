@@ -6,10 +6,10 @@
   "language": "Swift",
   "repo": "https://github.com/layoutBox/FlexLayout",
   "blurb": "A Swift flexbox layout library, with the Podfile that pins its pods.",
-  "capturedAt": "2026-09-14T20:53:06.224Z",
+  "capturedAt": "2026-09-14T23:33:49.905Z",
   "commit": "320a19f1e842f335f0d636dd810e07498eae9f0b",
-  "engine": "1f948b75c9acc9b0",
-  "durationMs": 27444,
+  "engine": "080b83b704b5dd01",
+  "durationMs": 188,
   "packagesChecked": 5,
   "manifests": [
     "Package.swift",
@@ -19,7 +19,7 @@
   "timeline": [
     {
       "type": "progress",
-      "at": 1734,
+      "at": 90,
       "phase": "Looking for manifests",
       "detail": "layoutBox/FlexLayout",
       "done": 0,
@@ -27,7 +27,7 @@
     },
     {
       "type": "progress",
-      "at": 1763,
+      "at": 106,
       "phase": "Reading manifest",
       "detail": "Package.swift",
       "done": 0,
@@ -35,7 +35,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1764,
+      "at": 107,
       "candidate": {
         "id": "Package.swift#facebook/yoga@3.2.1",
         "name": "facebook/yoga",
@@ -79,7 +79,7 @@
     },
     {
       "type": "progress",
-      "at": 1764,
+      "at": 107,
       "phase": "Reading manifest",
       "detail": "Podfile",
       "done": 0,
@@ -87,7 +87,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1765,
+      "at": 107,
       "candidate": {
         "id": "Podfile#Yoga@3.2.1",
         "name": "Yoga",
@@ -131,7 +131,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1765,
+      "at": 107,
       "candidate": {
         "id": "Podfile#FlexLayout@2.2.1",
         "name": "FlexLayout",
@@ -175,7 +175,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1765,
+      "at": 107,
       "candidate": {
         "id": "Podfile#PinLayout@1.10.5",
         "name": "PinLayout",
@@ -219,7 +219,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1765,
+      "at": 107,
       "candidate": {
         "id": "Podfile#SwiftLint@0.55.1",
         "name": "SwiftLint",
@@ -263,7 +263,7 @@
     },
     {
       "type": "progress",
-      "at": 1765,
+      "at": 107,
       "phase": "Indexing your code",
       "detail": "Walking source files",
       "done": 0,
@@ -271,7 +271,7 @@
     },
     {
       "type": "progress",
-      "at": 1765,
+      "at": 107,
       "phase": "Checking registries",
       "detail": "5 direct dependencies",
       "done": 0,
@@ -279,7 +279,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1765,
+      "at": 107,
       "candidate": {
         "id": "Package.swift#facebook/yoga@3.2.1",
         "name": "facebook/yoga",
@@ -323,7 +323,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1765,
+      "at": 108,
       "candidate": {
         "id": "Podfile#Yoga@3.2.1",
         "name": "Yoga",
@@ -367,7 +367,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1766,
+      "at": 108,
       "candidate": {
         "id": "Podfile#FlexLayout@2.2.1",
         "name": "FlexLayout",
@@ -411,7 +411,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1766,
+      "at": 108,
       "candidate": {
         "id": "Podfile#PinLayout@1.10.5",
         "name": "PinLayout",
@@ -455,7 +455,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 1766,
+      "at": 108,
       "candidate": {
         "id": "Podfile#SwiftLint@0.55.1",
         "name": "SwiftLint",
@@ -498,21 +498,8 @@
       }
     },
     {
-      "type": "candidate-drop",
-      "at": 2955,
-      "id": "Podfile#Yoga@3.2.1"
-    },
-    {
-      "type": "progress",
-      "at": 2955,
-      "phase": "Up to date",
-      "detail": "Yoga@3.2.1",
-      "done": 1,
-      "total": 5
-    },
-    {
       "type": "candidate-upsert",
-      "at": 3172,
+      "at": 110,
       "candidate": {
         "id": "Podfile#FlexLayout@2.2.1",
         "name": "FlexLayout",
@@ -559,23 +546,28 @@
     },
     {
       "type": "progress",
-      "at": 3172,
+      "at": 110,
       "phase": "Outdated",
       "detail": "FlexLayout 2.2.1 → 2.2.3",
+      "done": 1,
+      "total": 5
+    },
+    {
+      "type": "candidate-drop",
+      "at": 111,
+      "id": "Package.swift#facebook/yoga@3.2.1"
+    },
+    {
+      "type": "progress",
+      "at": 111,
+      "phase": "Up to date",
+      "detail": "facebook/yoga@3.2.1",
       "done": 2,
       "total": 5
     },
     {
-      "type": "progress",
-      "at": 3394,
-      "phase": "Indexing your code",
-      "detail": "59 files indexed · 5 direct dependencies to check",
-      "done": 0,
-      "total": 5
-    },
-    {
       "type": "candidate-upsert",
-      "at": 3863,
+      "at": 111,
       "candidate": {
         "id": "Podfile#PinLayout@1.10.5",
         "name": "PinLayout",
@@ -621,7 +613,7 @@
     },
     {
       "type": "progress",
-      "at": 3863,
+      "at": 111,
       "phase": "Outdated",
       "detail": "PinLayout 1.10.5 → 1.10.6",
       "done": 3,
@@ -629,20 +621,20 @@
     },
     {
       "type": "candidate-drop",
-      "at": 3933,
-      "id": "Package.swift#facebook/yoga@3.2.1"
+      "at": 111,
+      "id": "Podfile#Yoga@3.2.1"
     },
     {
       "type": "progress",
-      "at": 3933,
+      "at": 111,
       "phase": "Up to date",
-      "detail": "facebook/yoga@3.2.1",
+      "detail": "Yoga@3.2.1",
       "done": 4,
       "total": 5
     },
     {
       "type": "candidate-upsert",
-      "at": 5498,
+      "at": 112,
       "candidate": {
         "id": "Podfile#SwiftLint@0.55.1",
         "name": "SwiftLint",
@@ -705,7 +697,7 @@
     },
     {
       "type": "progress",
-      "at": 5498,
+      "at": 112,
       "phase": "Outdated",
       "detail": "SwiftLint 0.55.1 → 0.65.1",
       "done": 5,
@@ -713,7 +705,7 @@
     },
     {
       "type": "progress",
-      "at": 5498,
+      "at": 112,
       "phase": "Reading release notes and changelog",
       "detail": "FlexLayout 2.2.1 → 2.2.3",
       "done": 0,
@@ -721,7 +713,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 5499,
+      "at": 112,
       "candidate": {
         "id": "Podfile#FlexLayout@2.2.1",
         "name": "FlexLayout",
@@ -765,7 +757,7 @@
     },
     {
       "type": "progress",
-      "at": 5499,
+      "at": 112,
       "phase": "Checking package metadata",
       "detail": "FlexLayout 2.2.1 → 2.2.3",
       "done": 0,
@@ -773,7 +765,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 5499,
+      "at": 112,
       "candidate": {
         "id": "Podfile#FlexLayout@2.2.1",
         "name": "FlexLayout",
@@ -817,7 +809,7 @@
     },
     {
       "type": "progress",
-      "at": 5499,
+      "at": 112,
       "phase": "Reading release notes and changelog",
       "detail": "PinLayout 1.10.5 → 1.10.6",
       "done": 0,
@@ -825,7 +817,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 5499,
+      "at": 112,
       "candidate": {
         "id": "Podfile#PinLayout@1.10.5",
         "name": "PinLayout",
@@ -869,7 +861,7 @@
     },
     {
       "type": "progress",
-      "at": 5499,
+      "at": 112,
       "phase": "Checking package metadata",
       "detail": "PinLayout 1.10.5 → 1.10.6",
       "done": 0,
@@ -877,7 +869,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 5499,
+      "at": 112,
       "candidate": {
         "id": "Podfile#PinLayout@1.10.5",
         "name": "PinLayout",
@@ -921,7 +913,7 @@
     },
     {
       "type": "progress",
-      "at": 5499,
+      "at": 113,
       "phase": "Reading release notes and changelog",
       "detail": "SwiftLint 0.55.1 → 0.65.1",
       "done": 0,
@@ -929,7 +921,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 5499,
+      "at": 113,
       "candidate": {
         "id": "Podfile#SwiftLint@0.55.1",
         "name": "SwiftLint",
@@ -973,7 +965,7 @@
     },
     {
       "type": "progress",
-      "at": 5499,
+      "at": 113,
       "phase": "Checking package metadata",
       "detail": "SwiftLint 0.55.1 → 0.65.1",
       "done": 0,
@@ -981,7 +973,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 5499,
+      "at": 113,
       "candidate": {
         "id": "Podfile#SwiftLint@0.55.1",
         "name": "SwiftLint",
@@ -1025,59 +1017,7 @@
     },
     {
       "type": "progress",
-      "at": 19993,
-      "phase": "Checking repository status",
-      "detail": "PinLayout 1.10.5 → 1.10.6",
-      "done": 0,
-      "total": 3
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 19993,
-      "candidate": {
-        "id": "Podfile#PinLayout@1.10.5",
-        "name": "PinLayout",
-        "ecosystem": "cocoapods",
-        "manifestPath": "Podfile",
-        "workspace": null,
-        "workspaceName": null,
-        "current": "1.10.5",
-        "latest": "1.10.5",
-        "selected": "1.10.5",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking repository status",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 20011,
+      "at": 115,
       "phase": "Checking repository status",
       "detail": "FlexLayout 2.2.1 → 2.2.3",
       "done": 0,
@@ -1085,7 +1025,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 20011,
+      "at": 115,
       "candidate": {
         "id": "Podfile#FlexLayout@2.2.1",
         "name": "FlexLayout",
@@ -1129,7 +1069,59 @@
     },
     {
       "type": "progress",
-      "at": 20014,
+      "at": 116,
+      "phase": "Checking repository status",
+      "detail": "PinLayout 1.10.5 → 1.10.6",
+      "done": 0,
+      "total": 3
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 116,
+      "candidate": {
+        "id": "Podfile#PinLayout@1.10.5",
+        "name": "PinLayout",
+        "ecosystem": "cocoapods",
+        "manifestPath": "Podfile",
+        "workspace": null,
+        "workspaceName": null,
+        "current": "1.10.5",
+        "latest": "1.10.5",
+        "selected": "1.10.5",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking repository status",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 117,
       "phase": "Checking repository status",
       "detail": "SwiftLint 0.55.1 → 0.65.1",
       "done": 0,
@@ -1137,7 +1129,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 20014,
+      "at": 117,
       "candidate": {
         "id": "Podfile#SwiftLint@0.55.1",
         "name": "SwiftLint",
@@ -1181,111 +1173,7 @@
     },
     {
       "type": "progress",
-      "at": 22207,
-      "phase": "Checking security advisories",
-      "detail": "PinLayout 1.10.5 → 1.10.6",
-      "done": 0,
-      "total": 3
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 22207,
-      "candidate": {
-        "id": "Podfile#PinLayout@1.10.5",
-        "name": "PinLayout",
-        "ecosystem": "cocoapods",
-        "manifestPath": "Podfile",
-        "workspace": null,
-        "workspaceName": null,
-        "current": "1.10.5",
-        "latest": "1.10.5",
-        "selected": "1.10.5",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking security advisories",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 22207,
-      "phase": "Checking license",
-      "detail": "PinLayout 1.10.5 → 1.10.6",
-      "done": 0,
-      "total": 3
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 22207,
-      "candidate": {
-        "id": "Podfile#PinLayout@1.10.5",
-        "name": "PinLayout",
-        "ecosystem": "cocoapods",
-        "manifestPath": "Podfile",
-        "workspace": null,
-        "workspaceName": null,
-        "current": "1.10.5",
-        "latest": "1.10.5",
-        "selected": "1.10.5",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking license",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 22329,
+      "at": 118,
       "phase": "Checking security advisories",
       "detail": "FlexLayout 2.2.1 → 2.2.3",
       "done": 0,
@@ -1293,7 +1181,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 22329,
+      "at": 118,
       "candidate": {
         "id": "Podfile#FlexLayout@2.2.1",
         "name": "FlexLayout",
@@ -1337,7 +1225,7 @@
     },
     {
       "type": "progress",
-      "at": 22329,
+      "at": 118,
       "phase": "Checking license",
       "detail": "FlexLayout 2.2.1 → 2.2.3",
       "done": 0,
@@ -1345,7 +1233,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 22329,
+      "at": 118,
       "candidate": {
         "id": "Podfile#FlexLayout@2.2.1",
         "name": "FlexLayout",
@@ -1389,7 +1277,111 @@
     },
     {
       "type": "progress",
-      "at": 23138,
+      "at": 122,
+      "phase": "Checking security advisories",
+      "detail": "PinLayout 1.10.5 → 1.10.6",
+      "done": 0,
+      "total": 3
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 122,
+      "candidate": {
+        "id": "Podfile#PinLayout@1.10.5",
+        "name": "PinLayout",
+        "ecosystem": "cocoapods",
+        "manifestPath": "Podfile",
+        "workspace": null,
+        "workspaceName": null,
+        "current": "1.10.5",
+        "latest": "1.10.5",
+        "selected": "1.10.5",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking security advisories",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 122,
+      "phase": "Checking license",
+      "detail": "PinLayout 1.10.5 → 1.10.6",
+      "done": 0,
+      "total": 3
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 122,
+      "candidate": {
+        "id": "Podfile#PinLayout@1.10.5",
+        "name": "PinLayout",
+        "ecosystem": "cocoapods",
+        "manifestPath": "Podfile",
+        "workspace": null,
+        "workspaceName": null,
+        "current": "1.10.5",
+        "latest": "1.10.5",
+        "selected": "1.10.5",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking license",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 128,
       "phase": "Checking security advisories",
       "detail": "SwiftLint 0.55.1 → 0.65.1",
       "done": 0,
@@ -1397,7 +1389,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 23138,
+      "at": 128,
       "candidate": {
         "id": "Podfile#SwiftLint@0.55.1",
         "name": "SwiftLint",
@@ -1441,7 +1433,7 @@
     },
     {
       "type": "progress",
-      "at": 23138,
+      "at": 128,
       "phase": "Checking license",
       "detail": "SwiftLint 0.55.1 → 0.65.1",
       "done": 0,
@@ -1449,7 +1441,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 23138,
+      "at": 128,
       "candidate": {
         "id": "Podfile#SwiftLint@0.55.1",
         "name": "SwiftLint",
@@ -1493,7 +1485,163 @@
     },
     {
       "type": "progress",
-      "at": 24604,
+      "at": 163,
+      "phase": "Reading release notes and changelog",
+      "detail": "FlexLayout 2.2.1 → 2.2.3",
+      "done": 0,
+      "total": 3
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 163,
+      "candidate": {
+        "id": "Podfile#FlexLayout@2.2.1",
+        "name": "FlexLayout",
+        "ecosystem": "cocoapods",
+        "manifestPath": "Podfile",
+        "workspace": null,
+        "workspaceName": null,
+        "current": "2.2.1",
+        "latest": "2.2.1",
+        "selected": "2.2.1",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Reading release notes and changelog",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 163,
+      "phase": "Comparing the public API surface",
+      "detail": "FlexLayout 2.2.1 → 2.2.3 · 1 evidence source",
+      "done": 0,
+      "total": 3
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 163,
+      "candidate": {
+        "id": "Podfile#FlexLayout@2.2.1",
+        "name": "FlexLayout",
+        "ecosystem": "cocoapods",
+        "manifestPath": "Podfile",
+        "workspace": null,
+        "workspaceName": null,
+        "current": "2.2.1",
+        "latest": "2.2.1",
+        "selected": "2.2.1",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Comparing the public API surface",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 163,
+      "phase": "No breaking changes to look for",
+      "detail": "FlexLayout 2.2.1 → 2.2.3",
+      "done": 0,
+      "total": 3
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 163,
+      "candidate": {
+        "id": "Podfile#FlexLayout@2.2.1",
+        "name": "FlexLayout",
+        "ecosystem": "cocoapods",
+        "manifestPath": "Podfile",
+        "workspace": null,
+        "workspaceName": null,
+        "current": "2.2.1",
+        "latest": "2.2.1",
+        "selected": "2.2.1",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "No breaking changes to look for",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 163,
       "phase": "Reading release notes and changelog",
       "detail": "PinLayout 1.10.5 → 1.10.6",
       "done": 0,
@@ -1501,7 +1649,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 24604,
+      "at": 163,
       "candidate": {
         "id": "Podfile#PinLayout@1.10.5",
         "name": "PinLayout",
@@ -1545,7 +1693,7 @@
     },
     {
       "type": "progress",
-      "at": 24604,
+      "at": 163,
       "phase": "Comparing the public API surface",
       "detail": "PinLayout 1.10.5 → 1.10.6 · 1 evidence source",
       "done": 0,
@@ -1553,7 +1701,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 24604,
+      "at": 163,
       "candidate": {
         "id": "Podfile#PinLayout@1.10.5",
         "name": "PinLayout",
@@ -1597,7 +1745,7 @@
     },
     {
       "type": "progress",
-      "at": 24604,
+      "at": 163,
       "phase": "No breaking changes to look for",
       "detail": "PinLayout 1.10.5 → 1.10.6",
       "done": 0,
@@ -1605,7 +1753,7 @@
     },
     {
       "type": "candidate-upsert",
-      "at": 24604,
+      "at": 163,
       "candidate": {
         "id": "Podfile#PinLayout@1.10.5",
         "name": "PinLayout",
@@ -1649,203 +1797,25 @@
     },
     {
       "type": "progress",
-      "at": 24604,
-      "phase": "Weighing what this upgrade is worth",
-      "detail": "PinLayout 1.10.5 → 1.10.6",
-      "done": 0,
-      "total": 3
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 24604,
-      "candidate": {
-        "id": "Podfile#PinLayout@1.10.5",
-        "name": "PinLayout",
-        "ecosystem": "cocoapods",
-        "manifestPath": "Podfile",
-        "workspace": null,
-        "workspaceName": null,
-        "current": "1.10.5",
-        "latest": "1.10.5",
-        "selected": "1.10.5",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Weighing what this upgrade is worth",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 24610,
-      "phase": "Checking maintenance signals",
-      "detail": "PinLayout 1.10.5 → 1.10.6",
-      "done": 0,
-      "total": 3
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 24610,
-      "candidate": {
-        "id": "Podfile#PinLayout@1.10.5",
-        "name": "PinLayout",
-        "ecosystem": "cocoapods",
-        "manifestPath": "Podfile",
-        "workspace": null,
-        "workspaceName": null,
-        "current": "1.10.5",
-        "latest": "1.10.5",
-        "selected": "1.10.5",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking maintenance signals",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 24610,
-      "candidate": {
-        "id": "Podfile#PinLayout@1.10.5",
-        "name": "PinLayout",
-        "ecosystem": "cocoapods",
-        "manifestPath": "Podfile",
-        "workspace": null,
-        "workspaceName": null,
-        "current": "1.10.5",
-        "latest": "1.10.6",
-        "selected": "1.10.6",
-        "safeLatest": null,
-        "publishedVersions": [
-          "1.10.6"
-        ],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "clean",
-        "phase": null,
-        "risk": "none",
-        "summary": "Safe to upgrade. Drift has no computed API-surface diff for cocoapods; this upgrade rests on prose evidence alone. Drift read the release notes ([Fix CI Failures and Improve Test Code release notes](https://github.com/layoutBox/PinLayout/releases/tag/1.10.6)) and the changelog ([CHANGELOG.md](https://github.com/layoutBox/PinLayout/blob/master/CHANGELOG.md)) for PinLayout 1.10.6 and found nothing in them that announces a breaking change. That is weaker than a clean API comparison: it means nothing was flagged, not that nothing broke. OSV has no advisory coverage for cocoapods packages, so this upgrade's effect on known vulnerabilities could not be looked up.",
-        "recommendation": "safe-to-upgrade",
-        "hasCompatibilityEvidence": true,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "clean",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": {
-          "localizationRan": true,
-          "localizationComplete": true,
-          "sourceFilesDiscovered": 58,
-          "sourceFilesIndexed": 58,
-          "sourceTruncated": false,
-          "generatedFilesSkipped": 0,
-          "oversizedSourceSkipped": 0,
-          "runtimeConfigsDiscovered": 1,
-          "runtimeConfigsIndexed": 1,
-          "runtimeConfigComplete": true
-        },
-        "surfaceAssessment": {
-          "available": false,
-          "reason": "unsupported-ecosystem",
-          "inspection": "failed",
-          "tool": "none",
-          "detail": "Drift has no computed API-surface diff for cocoapods; this upgrade rests on prose evidence alone."
-        },
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 1,
-        "gaps": [
-          "Drift has no computed API-surface diff for cocoapods; this upgrade rests on prose evidence alone. Drift read the release notes ([Fix CI Failures and Improve Test Code release notes](https://github.com/layoutBox/PinLayout/releases/tag/1.10.6)) and the changelog ([CHANGELOG.md](https://github.com/layoutBox/PinLayout/blob/master/CHANGELOG.md)) for PinLayout 1.10.6 and found nothing in them that announces a breaking change. That is weaker than a clean API comparison: it means nothing was flagged, not that nothing broke.",
-          "OSV has no advisory coverage for cocoapods packages, so this upgrade's effect on known vulnerabilities could not be looked up."
-        ],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 24610,
-      "phase": "Checked",
-      "detail": "PinLayout 1.10.5 → 1.10.6 · safe for your code · no breaking changes found — not deeply verified",
-      "done": 1,
-      "total": 3
-    },
-    {
-      "type": "progress",
-      "at": 24616,
+      "at": 165,
       "phase": "Reading release notes and changelog",
-      "detail": "FlexLayout 2.2.1 → 2.2.3",
-      "done": 1,
+      "detail": "SwiftLint 0.55.1 → 0.65.1",
+      "done": 0,
       "total": 3
     },
     {
       "type": "candidate-upsert",
-      "at": 24616,
+      "at": 165,
       "candidate": {
-        "id": "Podfile#FlexLayout@2.2.1",
-        "name": "FlexLayout",
+        "id": "Podfile#SwiftLint@0.55.1",
+        "name": "SwiftLint",
         "ecosystem": "cocoapods",
         "manifestPath": "Podfile",
         "workspace": null,
         "workspaceName": null,
-        "current": "2.2.1",
-        "latest": "2.2.1",
-        "selected": "2.2.1",
+        "current": "0.55.1",
+        "latest": "0.55.1",
+        "selected": "0.55.1",
         "safeLatest": null,
         "publishedVersions": [],
         "provenance": {
@@ -1879,25 +1849,25 @@
     },
     {
       "type": "progress",
-      "at": 24616,
+      "at": 165,
       "phase": "Comparing the public API surface",
-      "detail": "FlexLayout 2.2.1 → 2.2.3 · 1 evidence source",
-      "done": 1,
+      "detail": "SwiftLint 0.55.1 → 0.65.1 · 48 evidence sources",
+      "done": 0,
       "total": 3
     },
     {
       "type": "candidate-upsert",
-      "at": 24616,
+      "at": 165,
       "candidate": {
-        "id": "Podfile#FlexLayout@2.2.1",
-        "name": "FlexLayout",
+        "id": "Podfile#SwiftLint@0.55.1",
+        "name": "SwiftLint",
         "ecosystem": "cocoapods",
         "manifestPath": "Podfile",
         "workspace": null,
         "workspaceName": null,
-        "current": "2.2.1",
-        "latest": "2.2.1",
-        "selected": "2.2.1",
+        "current": "0.55.1",
+        "latest": "0.55.1",
+        "selected": "0.55.1",
         "safeLatest": null,
         "publishedVersions": [],
         "provenance": {
@@ -1931,25 +1901,25 @@
     },
     {
       "type": "progress",
-      "at": 24616,
-      "phase": "No breaking changes to look for",
-      "detail": "FlexLayout 2.2.1 → 2.2.3",
-      "done": 1,
+      "at": 170,
+      "phase": "Searching your code for 6 breaking changes",
+      "detail": "SwiftLint 0.55.1 → 0.65.1",
+      "done": 0,
       "total": 3
     },
     {
       "type": "candidate-upsert",
-      "at": 24616,
+      "at": 170,
       "candidate": {
-        "id": "Podfile#FlexLayout@2.2.1",
-        "name": "FlexLayout",
+        "id": "Podfile#SwiftLint@0.55.1",
+        "name": "SwiftLint",
         "ecosystem": "cocoapods",
         "manifestPath": "Podfile",
         "workspace": null,
         "workspaceName": null,
-        "current": "2.2.1",
-        "latest": "2.2.1",
-        "selected": "2.2.1",
+        "current": "0.55.1",
+        "latest": "0.55.1",
+        "selected": "0.55.1",
         "safeLatest": null,
         "publishedVersions": [],
         "provenance": {
@@ -1957,7 +1927,7 @@
           "source": "manifest"
         },
         "status": "pending",
-        "phase": "No breaking changes to look for",
+        "phase": "Searching your code for 6 breaking changes",
         "risk": "unknown",
         "summary": "",
         "recommendation": null,
@@ -1983,15 +1953,23 @@
     },
     {
       "type": "progress",
-      "at": 24616,
+      "at": 177,
+      "phase": "Indexing your code",
+      "detail": "59 files indexed · 5 direct dependencies to check",
+      "done": 0,
+      "total": 5
+    },
+    {
+      "type": "progress",
+      "at": 181,
       "phase": "Weighing what this upgrade is worth",
       "detail": "FlexLayout 2.2.1 → 2.2.3",
-      "done": 1,
+      "done": 0,
       "total": 3
     },
     {
       "type": "candidate-upsert",
-      "at": 24616,
+      "at": 181,
       "candidate": {
         "id": "Podfile#FlexLayout@2.2.1",
         "name": "FlexLayout",
@@ -2035,15 +2013,119 @@
     },
     {
       "type": "progress",
-      "at": 24618,
-      "phase": "Checking maintenance signals",
-      "detail": "FlexLayout 2.2.1 → 2.2.3",
-      "done": 1,
+      "at": 182,
+      "phase": "Weighing what this upgrade is worth",
+      "detail": "PinLayout 1.10.5 → 1.10.6",
+      "done": 0,
       "total": 3
     },
     {
       "type": "candidate-upsert",
-      "at": 24618,
+      "at": 182,
+      "candidate": {
+        "id": "Podfile#PinLayout@1.10.5",
+        "name": "PinLayout",
+        "ecosystem": "cocoapods",
+        "manifestPath": "Podfile",
+        "workspace": null,
+        "workspaceName": null,
+        "current": "1.10.5",
+        "latest": "1.10.5",
+        "selected": "1.10.5",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Weighing what this upgrade is worth",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 184,
+      "phase": "Weighing what this upgrade is worth",
+      "detail": "SwiftLint 0.55.1 → 0.65.1",
+      "done": 0,
+      "total": 3
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 184,
+      "candidate": {
+        "id": "Podfile#SwiftLint@0.55.1",
+        "name": "SwiftLint",
+        "ecosystem": "cocoapods",
+        "manifestPath": "Podfile",
+        "workspace": null,
+        "workspaceName": null,
+        "current": "0.55.1",
+        "latest": "0.55.1",
+        "selected": "0.55.1",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Weighing what this upgrade is worth",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 185,
+      "phase": "Checking maintenance signals",
+      "detail": "FlexLayout 2.2.1 → 2.2.3",
+      "done": 0,
+      "total": 3
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 185,
       "candidate": {
         "id": "Podfile#FlexLayout@2.2.1",
         "name": "FlexLayout",
@@ -2086,8 +2168,112 @@
       }
     },
     {
+      "type": "progress",
+      "at": 185,
+      "phase": "Checking maintenance signals",
+      "detail": "PinLayout 1.10.5 → 1.10.6",
+      "done": 0,
+      "total": 3
+    },
+    {
       "type": "candidate-upsert",
-      "at": 24619,
+      "at": 185,
+      "candidate": {
+        "id": "Podfile#PinLayout@1.10.5",
+        "name": "PinLayout",
+        "ecosystem": "cocoapods",
+        "manifestPath": "Podfile",
+        "workspace": null,
+        "workspaceName": null,
+        "current": "1.10.5",
+        "latest": "1.10.5",
+        "selected": "1.10.5",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking maintenance signals",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "progress",
+      "at": 186,
+      "phase": "Checking maintenance signals",
+      "detail": "SwiftLint 0.55.1 → 0.65.1",
+      "done": 0,
+      "total": 3
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 186,
+      "candidate": {
+        "id": "Podfile#SwiftLint@0.55.1",
+        "name": "SwiftLint",
+        "ecosystem": "cocoapods",
+        "manifestPath": "Podfile",
+        "workspace": null,
+        "workspaceName": null,
+        "current": "0.55.1",
+        "latest": "0.55.1",
+        "selected": "0.55.1",
+        "safeLatest": null,
+        "publishedVersions": [],
+        "provenance": {
+          "kind": "runtime",
+          "source": "manifest"
+        },
+        "status": "pending",
+        "phase": "Checking maintenance signals",
+        "risk": "unknown",
+        "summary": "",
+        "recommendation": null,
+        "hasCompatibilityEvidence": null,
+        "runtimeCompatibility": null,
+        "runtimeAnalyses": [],
+        "severity": "pending",
+        "independentActionableFindingCount": 0,
+        "actionableImpactCount": 0,
+        "actionableImpactFiles": 0,
+        "runtimeDeclarationSiteCount": 0,
+        "sourceCoverage": null,
+        "surfaceAssessment": null,
+        "runtimeChanges": [],
+        "dispositions": [],
+        "breakingCount": 0,
+        "impactCount": 0,
+        "impactFiles": 0,
+        "evidenceCount": 0,
+        "gaps": [],
+        "breaking": []
+      }
+    },
+    {
+      "type": "candidate-upsert",
+      "at": 188,
       "candidate": {
         "id": "Podfile#FlexLayout@2.2.1",
         "name": "FlexLayout",
@@ -2154,275 +2340,89 @@
     },
     {
       "type": "progress",
-      "at": 24619,
+      "at": 188,
       "phase": "Checked",
       "detail": "FlexLayout 2.2.1 → 2.2.3 · safe for your code · no breaking changes found — not deeply verified",
-      "done": 2,
-      "total": 3
-    },
-    {
-      "type": "progress",
-      "at": 27390,
-      "phase": "Reading release notes and changelog",
-      "detail": "SwiftLint 0.55.1 → 0.65.1",
-      "done": 2,
+      "done": 1,
       "total": 3
     },
     {
       "type": "candidate-upsert",
-      "at": 27390,
+      "at": 188,
       "candidate": {
-        "id": "Podfile#SwiftLint@0.55.1",
-        "name": "SwiftLint",
+        "id": "Podfile#PinLayout@1.10.5",
+        "name": "PinLayout",
         "ecosystem": "cocoapods",
         "manifestPath": "Podfile",
         "workspace": null,
         "workspaceName": null,
-        "current": "0.55.1",
-        "latest": "0.55.1",
-        "selected": "0.55.1",
+        "current": "1.10.5",
+        "latest": "1.10.6",
+        "selected": "1.10.6",
         "safeLatest": null,
-        "publishedVersions": [],
+        "publishedVersions": [
+          "1.10.6"
+        ],
         "provenance": {
           "kind": "runtime",
           "source": "manifest"
         },
-        "status": "pending",
-        "phase": "Reading release notes and changelog",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
+        "status": "clean",
+        "phase": null,
+        "risk": "none",
+        "summary": "Safe to upgrade. Drift has no computed API-surface diff for cocoapods; this upgrade rests on prose evidence alone. Drift read the release notes ([Fix CI Failures and Improve Test Code release notes](https://github.com/layoutBox/PinLayout/releases/tag/1.10.6)) and the changelog ([CHANGELOG.md](https://github.com/layoutBox/PinLayout/blob/master/CHANGELOG.md)) for PinLayout 1.10.6 and found nothing in them that announces a breaking change. That is weaker than a clean API comparison: it means nothing was flagged, not that nothing broke. OSV has no advisory coverage for cocoapods packages, so this upgrade's effect on known vulnerabilities could not be looked up.",
+        "recommendation": "safe-to-upgrade",
+        "hasCompatibilityEvidence": true,
         "runtimeCompatibility": null,
         "runtimeAnalyses": [],
-        "severity": "pending",
+        "severity": "clean",
         "independentActionableFindingCount": 0,
         "actionableImpactCount": 0,
         "actionableImpactFiles": 0,
         "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
+        "sourceCoverage": {
+          "localizationRan": true,
+          "localizationComplete": true,
+          "sourceFilesDiscovered": 58,
+          "sourceFilesIndexed": 58,
+          "sourceTruncated": false,
+          "generatedFilesSkipped": 0,
+          "oversizedSourceSkipped": 0,
+          "runtimeConfigsDiscovered": 1,
+          "runtimeConfigsIndexed": 1,
+          "runtimeConfigComplete": true
+        },
+        "surfaceAssessment": {
+          "available": false,
+          "reason": "unsupported-ecosystem",
+          "inspection": "failed",
+          "tool": "none",
+          "detail": "Drift has no computed API-surface diff for cocoapods; this upgrade rests on prose evidence alone."
+        },
         "runtimeChanges": [],
         "dispositions": [],
         "breakingCount": 0,
         "impactCount": 0,
         "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
+        "evidenceCount": 1,
+        "gaps": [
+          "Drift has no computed API-surface diff for cocoapods; this upgrade rests on prose evidence alone. Drift read the release notes ([Fix CI Failures and Improve Test Code release notes](https://github.com/layoutBox/PinLayout/releases/tag/1.10.6)) and the changelog ([CHANGELOG.md](https://github.com/layoutBox/PinLayout/blob/master/CHANGELOG.md)) for PinLayout 1.10.6 and found nothing in them that announces a breaking change. That is weaker than a clean API comparison: it means nothing was flagged, not that nothing broke.",
+          "OSV has no advisory coverage for cocoapods packages, so this upgrade's effect on known vulnerabilities could not be looked up."
+        ],
         "breaking": []
       }
     },
     {
       "type": "progress",
-      "at": 27390,
-      "phase": "Comparing the public API surface",
-      "detail": "SwiftLint 0.55.1 → 0.65.1 · 48 evidence sources",
+      "at": 188,
+      "phase": "Checked",
+      "detail": "PinLayout 1.10.5 → 1.10.6 · safe for your code · no breaking changes found — not deeply verified",
       "done": 2,
       "total": 3
     },
     {
       "type": "candidate-upsert",
-      "at": 27390,
-      "candidate": {
-        "id": "Podfile#SwiftLint@0.55.1",
-        "name": "SwiftLint",
-        "ecosystem": "cocoapods",
-        "manifestPath": "Podfile",
-        "workspace": null,
-        "workspaceName": null,
-        "current": "0.55.1",
-        "latest": "0.55.1",
-        "selected": "0.55.1",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Comparing the public API surface",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 27414,
-      "phase": "Searching your code for 6 breaking changes",
-      "detail": "SwiftLint 0.55.1 → 0.65.1",
-      "done": 2,
-      "total": 3
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 27414,
-      "candidate": {
-        "id": "Podfile#SwiftLint@0.55.1",
-        "name": "SwiftLint",
-        "ecosystem": "cocoapods",
-        "manifestPath": "Podfile",
-        "workspace": null,
-        "workspaceName": null,
-        "current": "0.55.1",
-        "latest": "0.55.1",
-        "selected": "0.55.1",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Searching your code for 6 breaking changes",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 27416,
-      "phase": "Weighing what this upgrade is worth",
-      "detail": "SwiftLint 0.55.1 → 0.65.1",
-      "done": 2,
-      "total": 3
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 27416,
-      "candidate": {
-        "id": "Podfile#SwiftLint@0.55.1",
-        "name": "SwiftLint",
-        "ecosystem": "cocoapods",
-        "manifestPath": "Podfile",
-        "workspace": null,
-        "workspaceName": null,
-        "current": "0.55.1",
-        "latest": "0.55.1",
-        "selected": "0.55.1",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Weighing what this upgrade is worth",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "progress",
-      "at": 27419,
-      "phase": "Checking maintenance signals",
-      "detail": "SwiftLint 0.55.1 → 0.65.1",
-      "done": 2,
-      "total": 3
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 27419,
-      "candidate": {
-        "id": "Podfile#SwiftLint@0.55.1",
-        "name": "SwiftLint",
-        "ecosystem": "cocoapods",
-        "manifestPath": "Podfile",
-        "workspace": null,
-        "workspaceName": null,
-        "current": "0.55.1",
-        "latest": "0.55.1",
-        "selected": "0.55.1",
-        "safeLatest": null,
-        "publishedVersions": [],
-        "provenance": {
-          "kind": "runtime",
-          "source": "manifest"
-        },
-        "status": "pending",
-        "phase": "Checking maintenance signals",
-        "risk": "unknown",
-        "summary": "",
-        "recommendation": null,
-        "hasCompatibilityEvidence": null,
-        "runtimeCompatibility": null,
-        "runtimeAnalyses": [],
-        "severity": "pending",
-        "independentActionableFindingCount": 0,
-        "actionableImpactCount": 0,
-        "actionableImpactFiles": 0,
-        "runtimeDeclarationSiteCount": 0,
-        "sourceCoverage": null,
-        "surfaceAssessment": null,
-        "runtimeChanges": [],
-        "dispositions": [],
-        "breakingCount": 0,
-        "impactCount": 0,
-        "impactFiles": 0,
-        "evidenceCount": 0,
-        "gaps": [],
-        "breaking": []
-      }
-    },
-    {
-      "type": "candidate-upsert",
-      "at": 27436,
+      "at": 188,
       "candidate": {
         "id": "Podfile#SwiftLint@0.55.1",
         "name": "SwiftLint",
@@ -2681,7 +2681,7 @@
     },
     {
       "type": "progress",
-      "at": 27436,
+      "at": 188,
       "phase": "Checked",
       "detail": "SwiftLint 0.55.1 → 0.65.1 · review required · 6 breaking changes upstream; drift found no usage in this repository but could not prove none — verify before upgrading",
       "done": 3,
