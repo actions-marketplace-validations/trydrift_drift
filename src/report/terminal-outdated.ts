@@ -157,7 +157,15 @@ export interface OutdatedView {
   /** The grouped report, and what to run next. */
   report(candidates: readonly UpgradeCandidate[], selectorFor: (c: UpgradeCandidate) => string): void;
   /** Everything is current — the short, happy ending. */
-  allCurrent(checked: number): void;
+  /**
+   * Everything Drift could check is current.
+   *
+   * `unchecked` is not decoration here. A green line clearing every
+   * dependency, printed directly above a list of twenty-five nobody looked
+   * at, is the same false completeness the rest of this report exists to
+   * refuse.
+   */
+  allCurrent(checked: number, unchecked?: number): void;
 }
 
 export function createOutdatedView(options: {
@@ -224,7 +232,12 @@ export function createOutdatedView(options: {
     settled(candidate) {
       const severity = severityOf(candidate);
       const facade = FACADE[severity];
-      const versions = `${c('gray', candidate.current)} ${c.glyph('arrow')} ${c('bold', candidate.selected)}`;
+      // An assumed version is marked wherever it is printed. Drift did not
+      // observe this one — there was no lockfile and the range admits many —
+      // it is what installing today would give you, and a reader who is not
+      // told that would take it for a fact about their checkout.
+      const currentLabel = candidate.assumed ? `${candidate.current}?` : candidate.current;
+      const versions = `${c('gray', currentLabel)} ${c.glyph('arrow')} ${c('bold', candidate.selected)}`;
       const label = `${c(facade.style, facade.glyph === 'safe' ? c.glyph('safe') : c.glyph(facade.glyph))} ${packageLink(candidate)}`;
       // The verdict, not the whole rationale: the paragraph belongs in the
       // report below, where it is next to the evidence that supports it. A
@@ -285,14 +298,18 @@ export function createOutdatedView(options: {
         // detailed groups do not use columns at all, so a shared width would be
         // set by names that are never printed beside these.
         const safeNameWidth = Math.max(...group.map((entry) => entry.name.length));
-        const safeCurrentWidth = Math.max(...group.map((entry) => entry.current.length));
+        // Same constraint as the table: the marker is part of the value
+        // being aligned, not decoration added after the column was sized.
+        const currentLabel = (entry: UpgradeCandidate): string =>
+          entry.assumed ? `${entry.current}?` : entry.current;
+        const safeCurrentWidth = Math.max(...group.map((entry) => currentLabel(entry).length));
         const safeSelectedWidth = Math.max(...group.map((entry) => entry.selected.length));
         for (const candidate of group) {
           if (detailed) detailedEntry(candidate, line, c, width, selectorFor, packageLink, where);
           else
             line(
               `  ${padEnd(packageLink(candidate), safeNameWidth)}  ` +
-                c('gray', padStart(candidate.current, safeCurrentWidth)) +
+                c('gray', padStart(currentLabel(candidate), safeCurrentWidth)) +
                 c('gray', ` ${c.glyph('arrow')} `) +
                 c('gray', padEnd(candidate.selected, safeSelectedWidth)) +
                 c('gray', `  ${where(candidate)}`),
@@ -316,14 +333,21 @@ export function createOutdatedView(options: {
       if (options.interactive && candidates.length > 0) line();
     },
 
-    allCurrent(checked) {
+    allCurrent(checked, unchecked = 0) {
       // "All 0 direct dependencies are up to date" is technically true and
       // reads as a bug. A directory with no dependencies has not been given a
       // clean bill of health; there was nothing to give one to, and the caller
       // says so on its own.
       if (checked === 0) return;
+      // With dependencies nobody could look at, "all" is the wrong word: it
+      // clears the whole manifest on the strength of the part Drift reached.
+      // Spring PetClinic is the case — five versions readable, twenty-five set
+      // by a parent POM — where "All 5 direct dependencies are up to date" read
+      // as a clean bill of health for a thirty-dependency project.
       line(
-        `${c('green', c.glyph('safe'))} All ${checked} direct dependenc${checked === 1 ? 'y is' : 'ies are'} up to date.`,
+        unchecked > 0
+          ? `${c('green', c.glyph('safe'))} The ${checked} dependenc${checked === 1 ? 'y' : 'ies'} Drift could check ${checked === 1 ? 'is' : 'are'} up to date.`
+          : `${c('green', c.glyph('safe'))} All ${checked} direct dependenc${checked === 1 ? 'y is' : 'ies are'} up to date.`,
       );
       line();
     },
@@ -347,10 +371,11 @@ function detailedEntry(
   packageLink: (c: UpgradeCandidate) => string,
   where: (c: UpgradeCandidate) => string,
 ): void {
+  const from = candidate.assumed ? `${candidate.current}?` : candidate.current;
   const target =
     candidate.selected === candidate.latest
-      ? `${candidate.current} ${c.glyph('arrow')} ${candidate.selected}`
-      : `${candidate.current} ${c.glyph('arrow')} ${candidate.selected} (latest ${candidate.latest})`;
+      ? `${from} ${c.glyph('arrow')} ${candidate.selected}`
+      : `${from} ${c.glyph('arrow')} ${candidate.selected} (latest ${candidate.latest})`;
 
   line(`  ${c('bold', packageLink(candidate))} ${c('gray', target)}`);
   line(c('gray', `    ${candidate.ecosystem} ${c.glyph('dot')} ${where(candidate)}`));
@@ -447,7 +472,10 @@ function renderTable(rows: readonly UpgradeCandidate[], c: Palette, width: numbe
   const headers = ['Package', 'Current', 'Wanted', 'Latest', 'Declared in'];
   const cells = rows.map((row) => [
     row.name,
-    row.current,
+    // Marked here rather than at print time: the column widths below are
+    // measured from these cells, so a marker appended afterwards would be
+    // one character wider than the space reserved for it.
+    row.assumed ? `${row.current}?` : row.current,
     // `safeLatest` is the newest release the manifest's own range allows —
     // exactly npm's "wanted". When there is none, the range forbids everything
     // newer, and saying so beats repeating the installed version as though it

@@ -302,6 +302,18 @@ describe('a repository with nothing to check', () => {
     view.allCurrent(38);
     assert.ok(text().includes('All 38 direct dependencies are up to date.'));
   });
+
+  test('will not clear a manifest it only partly read', () => {
+    // Spring PetClinic: five dependencies state a version, twenty-five inherit
+    // theirs from a parent POM Drift does not fetch. "All 5 direct dependencies
+    // are up to date" cleared a thirty-dependency project on the strength of
+    // the sixth of it that could be read.
+    const { view, text } = harness();
+    view.allCurrent(5, 25);
+
+    assert.ok(!text().includes('All 5'), '"all" cannot survive an unchecked remainder');
+    assert.match(text(), /5 dependencies Drift could check are up to date/);
+  });
 });
 
 describe('a terminal without the glyphs', () => {
@@ -311,5 +323,33 @@ describe('a terminal without the glyphs', () => {
     const out = text();
     assert.ok(out.includes('->'), 'the arrow degrades rather than disappearing');
     assert.ok(!/[─-➿]/.test(out), 'no box drawing or dingbats survive');
+  });
+});
+
+describe('a version Drift assumed rather than observed', () => {
+  test('is marked wherever the report prints it', () => {
+    // No lockfile means the manifest states which versions are *allowed*, never
+    // which one is installed. Drift resolves the newest release the range
+    // admits — what installing today would give you — and that number must
+    // never be presented as though a lockfile had stated it.
+    const { view, text } = harness();
+    view.report(
+      [
+        {
+          ...candidate({ name: 'cookie', current: '0.7.2', selected: '2.0.1', latest: '2.0.1' }),
+          assumed: true,
+        },
+      ],
+      () => 'cookie',
+    );
+
+    assert.match(text(), /0\.7\.2\?/, 'the assumed version carries its marker');
+  });
+
+  test('an observed version is printed plainly', () => {
+    const { view, text } = harness();
+    view.report([candidate({ name: 'cookie', current: '0.7.2', selected: '2.0.1', latest: '2.0.1' })], () => 'cookie');
+
+    assert.doesNotMatch(text(), /0\.7\.2\?/, 'a lockfile-resolved version is stated, not qualified');
   });
 });
