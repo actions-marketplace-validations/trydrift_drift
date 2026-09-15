@@ -531,6 +531,33 @@ command — `drift outdated --upgrade <name>`, or the underlying package manager
 that applies it; once that lands and is pushed, the ordinary push-triggered
 pipeline above takes over exactly as it would for a human's own bump.
 
+### `check.enabled`
+
+`boolean` — default **`false`**
+
+Whether this repository is already wrong about the versions it has installed —
+the question [`drift check`](cli.md#how-check-reports-what-is-already-wrong)
+answers locally, asked in CI.
+
+Not an upgrade question, and deliberately not part of the push-triggered
+pipeline: there is no version change to diff and no candidate to weigh. The
+version on disk exports a set of names, the code imports a set of names, and an
+import naming something that version does not export is an error that already
+exists. A build can pass while it is wrong, because a missing type export is
+invisible at runtime and a missing runtime export is invisible until the line
+runs.
+
+Off by default for the same reason as `outdated.enabled` — it has no push to
+react to and needs a `schedule` or `workflow_dispatch` trigger of its own; see
+[`examples/workflows/drift-check.yml`](../examples/workflows/drift-check.yml).
+
+Each package with a missing name becomes one code scanning alert, anchored to
+the importing line, with the other affected lines as related locations. Alerts
+are uploaded under their own `drift/check` category: GitHub treats a category
+as a replacement set, so sharing one with the diff or outdated scan would
+retire their alerts every time this one ran. This mode never commits, branches
+or opens a pull request — there is no upgrade to take, only code to correct.
+
 ### `tools.autoInstall`
 
 `boolean` — default **`true`**

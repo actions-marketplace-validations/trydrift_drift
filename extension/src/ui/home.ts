@@ -977,6 +977,9 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
       case '/recent':
         await this.analyzeRecent();
         return;
+      case '/check':
+        await this.checkInstalled();
+        return;
       case '/verify':
         await this.deepVerifyRecent();
         return;
@@ -1731,6 +1734,42 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
         );
       }
     });
+  }
+
+  /**
+   * `/check` — whether this code is already wrong about what it has installed.
+   *
+   * The answer is prose, not candidates: findings, and an account of what could
+   * not be checked. The panel's candidate table has no row shape for it, and
+   * inventing one would lose the half that matters — a clean result means every
+   * name you import exists, not that the package is used correctly.
+   */
+  private async checkInstalled(): Promise<void> {
+    if (this.busy) {
+      this.session.notice('info', this.busyMessage());
+      return;
+    }
+
+    const root = this.state.workspaceRoot ?? vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    if (!root) {
+      this.session.notice('warn', 'No repository is open, so there is nothing to check.');
+      return;
+    }
+
+    const step = this.session.step('Checking this code against the versions installed');
+
+    try {
+      const { runInstalledCheck, renderInstalledCheck } = await import('../../../src/upgrade/run-installed-check.js');
+      const run = await runInstalledCheck({ directory: root, includeDev: true });
+      step.done(
+        run.missing.length === 0
+          ? `Every name imported from ${run.checkedPackages} package${run.checkedPackages === 1 ? '' : 's'} exists`
+          : `${run.missing.length} import${run.missing.length === 1 ? '' : 's'} name something that does not exist`,
+      );
+      this.session.say(renderInstalledCheck(run));
+    } catch (error) {
+      step.fail(error instanceof Error ? error.message : String(error));
+    }
   }
 
   private async analyzeRecent(): Promise<void> {
@@ -4274,6 +4313,7 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
     const icons: Record<string, MenuItem['icon']> = {
       '/scan': 'search',
       '/recent': 'history',
+      '/check': 'shield',
       '/verify': 'shield',
       '/upgrade': 'package',
       '/upgrade-all': 'package',

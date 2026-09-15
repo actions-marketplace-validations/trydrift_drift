@@ -204,6 +204,11 @@ export const SLASH_COMMANDS: readonly SlashCommand[] = [
     description: 'Analyse the dependency change already in your git history',
   },
   {
+    name: '/check',
+    title: 'Check against installed versions',
+    description: 'Whether this code is already wrong about the versions it has installed — no upgrade involved',
+  },
+  {
     name: '/verify',
     title: 'Deep verify the last change',
     description: 'Install the change in a throwaway worktree and run this project’s own checks against it',

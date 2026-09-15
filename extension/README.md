@@ -26,6 +26,7 @@ Type `/` for commands:
 |---|---|
 | `/scan` | Check every dependency for a newer version and what would break |
 | `/recent` | Analyse the dependency change already in your git history |
+| `/check` | Whether this code is already wrong about the versions it has installed — no upgrade involved |
 | `/upgrade <package>` | Upgrade one package and check the impact |
 | `/upgrade-all` | Install every upgrade that does not affect your code |
 | `/fix [package]` | Fix the affected code — deterministically, via a recipe, or with your AI agent |
