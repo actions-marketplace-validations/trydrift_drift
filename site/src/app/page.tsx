@@ -262,8 +262,8 @@ export default function Home() {
         {/* ── The agent path ──────────────────────────────────────────── */}
         {/*
           The differentiator that is hardest to copy, and the one install line
-          that changes what the tool is. Kept to a claim, a command and the two
-          tool names — an agent user does not need a tour.
+          that changes what the tool is. Kept to a claim, a command and the
+          three tool names — an agent user does not need a tour.
         */}
         <section className="pt-16 sm:pt-24">
           <div className="rounded-2xl border border-border bg-surface/75 px-6 py-8 sm:px-10 sm:py-10">
@@ -288,6 +288,10 @@ export default function Home() {
               </li>
               <li>
                 <code className="text-foreground">explain_upgrade</code> — what changed, and the exact lines
+              </li>
+              <li>
+                <code className="text-foreground">check_installed</code> — names imported that the installed
+                version does not export
               </li>
               <li>Local stdio. No service, no account, nothing leaves the machine.</li>
             </ul>

@@ -101,6 +101,37 @@ drift fix
 
 Use `--verify` with `analyze` or `outdated` to run your project's checks against the candidate dependency in a disposable worktree.
 
+## How `check` reports what is already wrong
+
+`drift check` is the one command that asks nothing about upgrades. The version on disk exports a set of names, this repository imports a set of names, and an import naming something that version does not export is an error that already exists — no upgrade required for it to be true, and no test run to find it.
+
+It happens for ordinary reasons: a range resolved forward on a fresh install, a lockfile regenerated on another machine, a dependency bumped without anyone reading what moved. A build can pass while it is wrong, because a missing type export is invisible at runtime and a missing runtime export is invisible until the line runs.
+
+```text
+1 import in 1 file names something the installed version does not export.
+
+  src/app.js:1  GlobSync  —  not exported by glob@13.0.6
+
+Checked 2 packages against 2 files.
+```
+
+| option | |
+| --- | --- |
+| `--dir <path>` | Local checkout to check. Default: cwd |
+| `--only <package>` | Check one package instead of every dependency |
+| `--no-dev` | Skip dev/optional/peer dependencies, which are checked by default |
+| `--json` | Emit the full result as JSON |
+
+Exit code 1 when an import names something the installed version does not export, 0 otherwise — so CI can gate on it directly:
+
+```bash
+drift check --json
+```
+
+Every run also states what it could **not** check and why: dependencies with no lockfile entry to pin them, packages this repository publishes itself (a workspace member resolves from source, not the registry), a version outside its declared range, and packages whose API could not be enumerated from the published declarations. A name missing from a surface Drift cannot read is not evidence of anything, so those are reported rather than counted as clean.
+
+A clean result means every name you import exists. It does not mean you use the package correctly: the check does not follow member access through an imported object.
+
 ## How `outdated` reports upgrades
 
 `drift outdated` first lists available upgrades, then checks whether their upstream changes affect code in this repository.
