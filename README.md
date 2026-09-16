@@ -2,7 +2,7 @@
 
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/trydrift/drift/badge)](https://scorecard.dev/viewer/?uri=github.com/trydrift/drift)
 [![CI](https://github.com/trydrift/drift/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/trydrift/drift/actions/workflows/ci.yml)
-[![License: PolyForm Shield 1.0.0](https://img.shields.io/badge/license-PolyForm%20Shield%201.0.0-blue)](LICENSE.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE.md)
 
 **Dependency upgrades, checked against your code.** Drift downloads both published versions, diffs their real API, and searches your repository for the code that uses whatever changed. It keeps uncertainty visible, and it never merges for you.
 
@@ -136,18 +136,8 @@ npm, PyPI and Maven are the three measured against research corpora. Detection a
 
 ## License
 
-[PolyForm Shield 1.0.0](LICENSE.md). Drift is free and source-available — read
-it, run it, modify it, build on it, use it at work and on private code. There
-is no paid tier, no seat count and no usage limit.
-
-It is **not** an OSI-approved open-source license, which is said here rather
-than left in a file for you to discover. The one thing it does not permit is
-using Drift to build a product that competes with Drift — and that covers a
-free competitor, not only a resold one. Everything else is a permitted purpose.
-If you redistribute Drift or something built from it, pass these terms along.
-
-If your case looks unclear, [ask](https://github.com/trydrift/drift/issues)
-before assuming the answer is no.
+Drift is [MIT licensed](LICENSE.md). You may use, copy, modify, distribute,
+sublicense, and sell copies of it, subject to the license notice.
 
 ## Documentation
 

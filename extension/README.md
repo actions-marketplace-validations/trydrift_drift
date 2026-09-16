@@ -200,6 +200,5 @@ Stated plainly, because a tool that hides these hasn't earned trust:
 
 ## License
 
-PolyForm Shield 1.0.0. Drift is free and source-available — read it, run it,
-modify it, use it at work. It is not an OSI-approved open-source license: the
-one thing it does not permit is building a competing product with it.
+[MIT licensed](LICENSE.md). You may use, copy, modify, distribute, sublicense,
+and sell copies of Drift, subject to the license notice.
