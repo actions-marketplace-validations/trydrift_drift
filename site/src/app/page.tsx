@@ -293,7 +293,7 @@ export default function Home() {
                 <code className="text-foreground">check_installed</code> — names imported that the installed
                 version does not export
               </li>
-              <li>Local stdio. No service, no account, nothing leaves the machine.</li>
+              <li>Runs locally over stdio. No Drift service or account; evidence comes directly from upstream registries.</li>
             </ul>
           </div>
         </section>

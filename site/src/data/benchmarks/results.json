@@ -1,6 +1,6 @@
 {
   "$generated": "site/scripts/sync-benchmarks.mjs — do not edit; every number here is read from eval/results/<run-id>/metrics.json",
-  "generatedAt": "2026-09-11T17:18:31.273Z",
+  "generatedAt": "2026-09-16T00:52:35.105Z",
   "datasets": [
     {
       "runId": "roseau-accuracy",
@@ -26,9 +26,9 @@
           "category-accuracy"
         ]
       },
-      "driftCommit": "3a63d2e7fcb7aae4210dfa9c2fe6d18010ca810a",
+      "driftCommit": "ac9c8b852a6738755271fd8c34d5c5db3abff875",
       "driftTreeDirty": false,
-      "runDate": "2026-09-11T17:18:31.273Z",
+      "runDate": "2026-09-16T00:52:33.934Z",
       "rescoredAt": null,
       "rescoredAtCommit": null,
       "command": "npm run eval:external -- roseau",
@@ -189,9 +189,9 @@
           "category-accuracy"
         ]
       },
-      "driftCommit": "3a63d2e7fcb7aae4210dfa9c2fe6d18010ca810a",
+      "driftCommit": "ac9c8b852a6738755271fd8c34d5c5db3abff875",
       "driftTreeDirty": false,
-      "runDate": "2026-09-11T17:18:24.459Z",
+      "runDate": "2026-09-16T00:52:35.105Z",
       "rescoredAt": null,
       "rescoredAtCommit": null,
       "command": "npm run eval:external -- kong",
@@ -558,9 +558,9 @@
           "category-accuracy"
         ]
       },
-      "driftCommit": "3a63d2e7fcb7aae4210dfa9c2fe6d18010ca810a",
+      "driftCommit": "ac9c8b852a6738755271fd8c34d5c5db3abff875",
       "driftTreeDirty": false,
-      "runDate": "2026-09-11T17:18:26.270Z",
+      "runDate": "2026-09-16T00:52:32.306Z",
       "rescoredAt": null,
       "rescoredAtCommit": null,
       "command": "npm run eval:external -- kong",
