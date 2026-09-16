@@ -102,8 +102,11 @@ describe('serving Drift over MCP', () => {
       assert.ok(Object.keys(tool.inputSchema?.properties ?? {}).includes('directory'));
     }
     const check = tools.find((tool) => tool.name === 'check_upgrades')!;
-    // The two claims that make it worth calling instead of guessing.
-    assert.match(check.description!, /diffs their actual API/);
+    // The claims that make it worth calling instead of relying on memory must
+    // stay precise about where API comparison is actually supported.
+    assert.match(check.description!, /computes API changes where supported/);
+    assert.match(check.description!, /release evidence/);
+    assert.doesNotMatch(check.description!, /does not read changelogs/);
     assert.match(check.description!, /NOT ENOUGH EVIDENCE/);
   });
 });

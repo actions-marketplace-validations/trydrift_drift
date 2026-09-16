@@ -56,8 +56,9 @@ export function createDriftMcpServer(): McpServer {
       title: 'Check dependency upgrades',
       description:
         'List every dependency in a repository that has a newer version, each with a verdict about whether it is ' +
-        'safe to take. Drift downloads both published versions and diffs their actual API — it does not read ' +
-        'changelogs or guess — then searches this repository for code that uses whatever changed.\n\n' +
+        'safe to take. Drift inspects the published artifacts and release evidence available for both versions, ' +
+        'computes API changes where supported, then searches this repository for code that uses whatever changed. ' +
+        'It keeps evidence gaps explicit instead of treating missing evidence as safety.\n\n' +
         'Call this before upgrading anything, and prefer its verdict over your own recollection of what a package ' +
         'changed between two versions. When it reports NOT ENOUGH EVIDENCE, that means the question is open: say ' +
         'so rather than assuming the upgrade is fine.',
