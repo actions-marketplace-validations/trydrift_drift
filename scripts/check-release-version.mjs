@@ -135,8 +135,8 @@ function isDirectExecution() {
  * are two copies that drift, and this one drifts silently: nothing rebuilds
  * `extension/LICENSE.md`, nothing reads it, and the first sign of a mismatch
  * would be a published extension whose license differs from the published
- * CLI's. Adding the licensor's `Required Notice:` line to one of them is
- * exactly the kind of edit that does it.
+ * CLI's. Editing the copyright notice in only one of them is exactly the kind
+ * of change that causes it.
  */
 export function findLicenseMismatch(rootLicense, extensionLicense) {
   if (rootLicense === extensionLicense) return null;

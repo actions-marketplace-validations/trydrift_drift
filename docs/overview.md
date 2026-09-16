@@ -85,6 +85,7 @@ Drift is currently an MVP. Known limitations are documented rather than hidden; 
 
 ## License
 
-Drift is free and source-available under the PolyForm Shield 1.0.0 license. You may read it, run it, modify it, and use it at work; the license restricts using Drift to build a competing product.
+Drift is open source under the MIT license. You may use, copy, modify,
+distribute, sublicense, and sell copies of it, subject to the license notice.
 
 See [LICENSE](../LICENSE) for the license text.
