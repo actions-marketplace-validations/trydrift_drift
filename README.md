@@ -4,7 +4,7 @@
 [![CI](https://github.com/trydrift/drift/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/trydrift/drift/actions/workflows/ci.yml)
 [![License: PolyForm Shield 1.0.0](https://img.shields.io/badge/license-PolyForm%20Shield%201.0.0-blue)](LICENSE.md)
 
-**Dependency upgrades, checked against your code.** Drift downloads both published versions, diffs their real API, and searches your repository for the code that uses whatever changed. It never guesses, and it never merges for you.
+**Dependency upgrades, checked against your code.** Drift downloads both published versions, diffs their real API, and searches your repository for the code that uses whatever changed. It keeps uncertainty visible, and it never merges for you.
 
 ```console
 $ drift outdated
@@ -128,7 +128,7 @@ It does not follow member access through an imported object, so a clean result
 means every name you import exists — not that your use of the package is correct.
 ```
 
-That last paragraph is printed on every run, clean or not, along with a count of what could not be checked and why. Across 50 public repositories — jest, nest, eslint, prettier, react-router, vue, axios and more — it checked 372 packages and reported **zero findings**. It also declined to judge 179 packages it was asked about, because their API could not be enumerated from the published declarations: a name missing from a surface Drift cannot read is not evidence of anything, and saying so is the difference between a finding and a guess.
+That last paragraph is printed on every run, clean or not, along with a count of what could not be checked and why. In an [internal cold-cache sweep across 50 public repositories](https://github.com/trydrift/drift/pull/308) — jest, nest, eslint, prettier, react-router, vue, axios and more — Drift checked 372 packages and reported **zero findings**. It also declined to judge 179 packages it was asked about, because their API could not be enumerated from the published declarations: a name missing from a surface Drift cannot read is not evidence of anything, and saying so is the difference between a finding and a guess.
 
 ## Ecosystems
 
