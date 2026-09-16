@@ -112,6 +112,7 @@ export function deriveTitle(items: readonly ThreadItem[]): string {
 const COMMAND_NAMES: Record<string, string> = {
   scan: 'Dependency scan',
   recent: 'Recent dependency changes',
+  check: 'Check against installed versions',
   fix: 'Fix breaking changes',
   upgrade: 'Upgrade',
   review: 'Review changes',

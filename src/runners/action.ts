@@ -17,6 +17,7 @@ import {
 } from '../report/sarif.js';
 import { confidenceDisplay } from '../report/confidence.js';
 import { scanUpgrades, type UpgradeCandidate } from '../upgrade/scan.js';
+import { runInstalledCheck, renderInstalledCheck } from '../upgrade/run-installed-check.js';
 import { createLogger, type Logger, type LogLevel } from '../util/logger.js';
 import { matchesAny } from '../util/glob.js';
 import { configureHttpDiskCache } from '../util/http.js';
@@ -50,8 +51,12 @@ interface ActionInputs {
   logLevel: LogLevel;
   workspace: string;
   configPath?: string;
-  /** `diff` (default) analyses the push; `outdated` scans every installed dependency instead. */
-  scanMode?: 'diff' | 'outdated';
+  /**
+   * `diff` (default) analyses the push; `outdated` scans every installed
+   * dependency against its registry; `check` asks whether this code is
+   * already wrong about the versions it has installed — no upgrade involved.
+   */
+  scanMode?: 'diff' | 'outdated' | 'check';
   /**
    * `quick` (default) runs static analysis only; `deep` additionally
    * installs the change and runs the project's own checks before dispatching
@@ -155,6 +160,13 @@ export async function runAction(): Promise<number> {
     return runOutdatedScan(repo, effectiveConfig, github, inputs, logger);
   }
 
+  // "Is this repository already wrong about what it has installed?" — a
+  // question with no upgrade and no commit range in it, so it branches off
+  // here with the other scan that is not about this push.
+  if (inputs.scanMode === 'check') {
+    return runInstalledCheckScan(repo, effectiveConfig, github, inputs, logger);
+  }
+
   if (!matchesAny(effectiveConfig.watchBranches, repo.baseBranch)) {
     logger.info(
       `Branch \`${repo.baseBranch}\` is not in \`watchBranches\` (${effectiveConfig.watchBranches.join(', ')}); nothing to do.`,
@@ -237,7 +249,7 @@ async function uploadCodeScanning(args: {
   github: GitHubClient;
   logger: Logger;
   findings: SarifFinding[];
-  category: 'drift/diff' | 'drift/outdated';
+  category: 'drift/diff' | 'drift/outdated' | 'drift/check';
 }): Promise<void> {
   const { repo, config, github, logger, findings, category } = args;
   if (!config.codeScanning.enabled) return;
@@ -294,7 +306,7 @@ export async function createIssuesForFindings(args: {
   github: GitHubClient;
   logger: Logger;
   findings: SarifFinding[];
-  category: 'drift/diff' | 'drift/outdated';
+  category: 'drift/diff' | 'drift/outdated' | 'drift/check';
 }): Promise<void> {
   const { repo, config, github, logger, findings, category } = args;
   if (!config.codeScanning.createIssuesPerAlert) return;
@@ -426,6 +438,129 @@ async function runOutdatedScan(
 }
 
 /**
+ * The third question, asked in CI: is this repository already wrong about the
+ * versions it has installed?
+ *
+ * Not an upgrade. There is no version change to diff, no candidate to weigh
+ * and nothing to bump — the version on disk exports a set of names, the code
+ * imports a set of names, and an import naming something that version does not
+ * export is an error that already exists. A build can pass while it is wrong,
+ * because a missing type export is invisible at runtime and a missing runtime
+ * export is invisible until the line runs.
+ *
+ * Like `runOutdatedScan` this never commits, branches or opens a pull request:
+ * there is no upgrade to take, only code to correct. Unlike it, the alert is
+ * anchored to the *importing line*, because that is the defect — and one
+ * import line genuinely is representative of the alert, so the snippet is
+ * shown rather than suppressed.
+ *
+ * Its own `drift/check` category keeps GitHub's reconciliation honest. Each
+ * category is a replacement set; sharing one with the diff or outdated scan
+ * would retire their alerts on every run of this one.
+ */
+async function runInstalledCheckScan(
+  repo: RepoContext,
+  config: DriftConfig,
+  github: GitHubClient,
+  inputs: ActionInputs,
+  logger: Logger,
+): Promise<number> {
+  if (!config.check.enabled) {
+    logger.info('`check.enabled` is false in .github/drift.yml; skipping the installed-version check.');
+    return 0;
+  }
+
+  logger.info('Checking this code against the versions installed...');
+
+  try {
+    const run = await runInstalledCheck({
+      directory: inputs.workspace,
+      includeDev: inputs.dependencyScope !== 'runtime',
+    });
+
+    logger.info(
+      `Checked ${run.checkedPackages} package${run.checkedPackages === 1 ? '' : 's'} against ${run.filesRead} ` +
+        `file${run.filesRead === 1 ? '' : 's'}: ${run.missing.length} import${run.missing.length === 1 ? '' : 's'} ` +
+        `name something the installed version does not export.`,
+    );
+
+    // One alert per package, not per name: a package that renamed six exports
+    // is one thing to fix, and six alerts for it is how a Security tab stops
+    // being read. The other names ride along as related locations.
+    const byPackage = new Map<string, typeof run.missing>();
+    for (const entry of run.missing) {
+      const existing = byPackage.get(entry.packageName);
+      if (existing) existing.push(entry);
+      else byPackage.set(entry.packageName, [entry]);
+    }
+
+    const findings: SarifFinding[] = [...byPackage.entries()].map(([packageName, entries]) => {
+      const first = entries[0]!;
+      const names = [...new Set(entries.map((entry) => entry.symbol))];
+      return {
+        // Namespaced away from `drift/<ecosystem>/<name>`: this is not a claim
+        // about an upgrade, and must never reconcile against one.
+        ruleId: `drift/check/npm/${packageName}`,
+        ruleName: 'Imported name is not exported by the installed version',
+        dependency: packageName,
+        ecosystem: 'npm' as const,
+        dependencyKind: 'runtime' as const,
+        from: first.installedVersion,
+        // There is no upgrade here. The version on disk is the whole subject.
+        to: null,
+        manifestPath: 'package.json',
+        level: 'error' as const,
+        message:
+          `\`${packageName}@${first.installedVersion}\` does not export ` +
+          `${names.map((name) => `\`${name}\``).join(', ')}, but this repository imports ` +
+          `${names.length === 1 ? 'it' : 'them'}.\n\n` +
+          `This is not a pending upgrade — it is already true of the version installed. ` +
+          `A missing type export is invisible at runtime, and a missing runtime export is invisible until the line runs.\n\n` +
+          entries
+            .slice(0, 10)
+            .map((entry) => `- \`${entry.file}:${entry.line}\` — \`${entry.symbol}\` from \`${entry.specifier}\``)
+            .join('\n'),
+        primaryLocation: { file: first.file, line: first.line },
+        relatedLocations: entries.slice(1, 10).map((entry) => ({ file: entry.file, line: entry.line })),
+        // One import line is exactly what this alert is about, so its code is
+        // representative rather than an arbitrary pick out of many call sites.
+        snippetOk: true,
+        fix: {
+          description:
+            `Either the import is wrong, or the installed version is. Run \`drift check --only ${packageName}\` ` +
+            `locally to see the full account, including what could not be checked.`,
+        },
+      };
+    });
+
+    await uploadCodeScanning({ repo, config, github, logger, findings, category: 'drift/check' });
+    await createIssuesForFindings({ repo, config, github, logger, findings, category: 'drift/check' });
+
+    const summary =
+      run.missing.length === 0
+        ? `Checked ${run.checkedPackages} package${run.checkedPackages === 1 ? '' : 's'} against ${run.filesRead} file${run.filesRead === 1 ? '' : 's'}: every name imported exists in the version installed.`
+        : `${run.missing.length} import${run.missing.length === 1 ? '' : 's'} in ${new Set(run.missing.map((entry) => entry.file)).size} file${new Set(run.missing.map((entry) => entry.file)).size === 1 ? '' : 's'} name something the installed version does not export.`;
+
+    // Never dispatches a branch or a PR — there is no upgrade to apply — so
+    // `skipped` is the status whether or not it found anything.
+    await writeOutputs({ status: 'skipped' }, summary);
+    await writeJobSummary(
+      `### Drift: installed-version check\n\n${summary}\n\n` +
+        '```text\n' +
+        renderInstalledCheck(run) +
+        '\n```\n',
+    );
+
+    return 0;
+  } catch (err) {
+    logger.error(`Installed-version check failed: ${(err as Error).message}`);
+    logger.debug((err as Error).stack ?? '');
+    await writeOutputs({ status: 'failed' }, `Installed-version check failed: ${(err as Error).message}`);
+    return 1;
+  }
+}
+
+/**
  * A per-dependency table for the job summary: what's outdated, what would
  * break, how much of it actually reaches this repository, and the risk.
  *
@@ -475,7 +610,14 @@ export function readInputs(): ActionInputs {
     logLevel: (actionInput('log-level') as LogLevel) || 'info',
     workspace: process.env.GITHUB_WORKSPACE ?? process.cwd(),
     configPath: actionInput('config-path') || undefined,
-    scanMode: scanMode === 'outdated' ? 'outdated' : scanMode === 'diff' ? 'diff' : undefined,
+    scanMode:
+      scanMode === 'outdated'
+        ? 'outdated'
+        : scanMode === 'check'
+          ? 'check'
+          : scanMode === 'diff'
+            ? 'diff'
+            : undefined,
     verifyMode: verifyMode === 'deep' ? 'deep' : verifyMode === 'quick' ? 'quick' : undefined,
     dependencyScope:
       dependencyScope === 'runtime' ? 'runtime' : dependencyScope === 'runtime+dev' ? 'runtime+dev' : undefined,

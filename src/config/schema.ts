@@ -669,6 +669,32 @@ export const DriftConfigSchema = z.object({
     .prefault({}),
 
   /**
+   * Whether this repository is already wrong about the versions it has
+   * installed — the question `drift check` asks locally, asked in CI.
+   *
+   * Not an upgrade question, and deliberately not part of the push-triggered
+   * pipeline: there is no version change to diff and no candidate to weigh.
+   * The version on disk exports a set of names, the code imports a set of
+   * names, and an import naming something that version does not export is an
+   * error that already exists. A build can pass while it is wrong, because a
+   * missing type export is invisible at runtime and a missing runtime export
+   * is invisible until the line runs.
+   *
+   * Off by default, like every other proactive mode: it needs a `schedule` or
+   * a `workflow_dispatch` of its own — see
+   * `examples/workflows/drift-check.yml`. Each finding becomes a code
+   * scanning alert anchored to the importing line, under its own
+   * `drift/check` category so it never reconciles away what the other modes
+   * found. This mode never commits, branches, or opens a pull request: there
+   * is no upgrade to take, only code to correct.
+   */
+  check: z
+    .object({
+      enabled: z.boolean().default(false),
+    })
+    .prefault({}),
+
+  /**
    * Drift-owned helper analyzers (`cargo-public-api`, `japicmp`) that a
    * computed surface diff needs but does not ship.
    *

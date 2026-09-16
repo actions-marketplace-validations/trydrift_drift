@@ -96,6 +96,12 @@ inputs:
       any push. Runs automatically on a `schedule` trigger without needing
       this input; set it to trigger the same scan from `workflow_dispatch`.
       Requires `outdated.enabled: true` in drift.yml.
+      "check" asks a third question, the one `drift check` answers locally:
+      whether this code is already wrong about the versions it has
+      installed — no upgrade involved, nothing to bump. Every import naming
+      something the installed version does not export becomes a code
+      scanning alert on that line. Requires `check.enabled: true` in
+      drift.yml.
     required: false
 
   verify-mode:
