@@ -81,8 +81,15 @@ describe('MCP agent tools — planning', () => {
       assert.ok(tool, name);
       assert.ok((tool.description ?? '').length > 120, `${name} describes itself`);
     }
-    assert.match(tools.find((t) => t.name === 'plan_upgrade')!.description!, /under 2,000 tokens/);
-    assert.match(tools.find((t) => t.name === 'plan_upgrade')!.description!, /rather than reading the package changelog or API yourself/);
+    const planDescription = tools.find((t) => t.name === 'plan_upgrade')!.description!;
+    assert.match(planDescription, /under 2,300 tokens/);
+    // The plan is a head start, not a boundary. The description used to tell
+    // agents not to read the package changelog or API themselves, and measured
+    // on real upgrades that is what made them miss what Drift cannot see.
+    assert.match(planDescription, /It is not the whole job/);
+    assert.match(planDescription, /cannot see a name that\s+survived the upgrade and changed meaning/);
+    assert.match(planDescription, /run verify_upgrade until the checks pass/);
+    assert.doesNotMatch(planDescription, /rather than reading the package changelog/);
   });
 
   test('the server tells the client which tool answers which question, briefly', async () => {
@@ -347,7 +354,7 @@ describe('MCP agent tools — held plans cannot go stale or cross ranges', () =>
   test('every JSON form over MCP stays within its ceiling', async () => {
     const { call } = await sequenceHarness();
     const brief = await call('plan_upgrade', { format: 'json' });
-    assert.ok(Buffer.byteLength(brief.text) <= 2_000 * BYTES_PER_TOKEN);
+    assert.ok(Buffer.byteLength(brief.text) <= AGENT_BRIEF_BUDGET.maxTokens * BYTES_PER_TOKEN);
     const finding = await call('get_finding', { id: 'bc_a770541f05', format: 'json' });
     assert.ok(Buffer.byteLength(finding.text) <= 2_000 * BYTES_PER_TOKEN);
     const evidence = await call('get_evidence', { finding: 'bc_6843abffd2', format: 'json' });

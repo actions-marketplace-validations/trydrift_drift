@@ -234,18 +234,29 @@ export {
   createRemediationWorktree,
   removeRemediationWorktree,
   runAgentCommitsInWorktree,
+  runAgentUpgradeFix,
   runWorktreeRemediation,
+  UPGRADE_UNIT_ID,
+  upgradeFixProtectedPaths,
+  upgradeProtectedPaths,
+  wholeUpgradeUnit,
 } from './remediation/worktree-runner.js';
 export type {
+  AgentUpgradeFixOptions,
+  AgentUpgradeFixResult,
   WorktreeAgentRunOptions,
   WorktreeAgentRunResult,
   WorktreeRemediationOptions,
   WorktreeRemediationResult,
 } from './remediation/worktree-runner.js';
+export { runChecks } from './verification/checks.js';
+export type { CheckOutcome } from './verification/checks.js';
+export { composeAgentPrompt, parseScopeRequests, SCOPE_REQUEST_MARKER } from './agents/types.js';
 export { awaitTerminalCloudTask, reconcileCloudTask } from './remediation/cloud-lifecycle.js';
 export type { CloudTaskReconciliation } from './remediation/cloud-lifecycle.js';
 export type { CloudFixAgent, CloudTaskStatus } from './agents/types.js';
-export { validateCloudChangedFiles, validateAgentWorktree } from './agents/scope.js';
+export { isProtectedPath, upgradedDependencyFindings, validateAgentWorktree, validateCloudChangedFiles, validateUpgradeFix, workaroundFindings } from './agents/scope.js';
+export type { UpgradeFixOffender, UpgradeFixValidation } from './agents/scope.js';
 export type { CloudScopeValidationOptions, CloudScopeValidationResult, ScopeValidationResult } from './agents/scope.js';
 
 export { authorizeApproval, canApprove } from './approval/authorize.js';

@@ -4,7 +4,8 @@ import { delimiter, dirname, join } from 'node:path';
 import { execFile, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
 import {
-  buildFixPrompt,
+  composeAgentPrompt,
+  parseScopeRequests,
   type AgentAvailability,
   type AgentContext,
   type AgentModel,
@@ -48,6 +49,11 @@ export interface CliAgentSpec {
   buildArgs: (prompt: string) => string[];
   /** Passed on stdin instead of argv when the prompt is large. */
   promptOnStdin?: boolean;
+  /**
+   * How this CLI takes an inline settings document, when it has one. Used to
+   * install the verification guard for sessions the controller verifies.
+   */
+  settingsArgs?: (settings: Record<string, unknown>) => string[];
   /**
    * The models this subscription offers, best first.
    *
@@ -155,7 +161,14 @@ export const CLI_AGENT_SPECS: readonly CliAgentSpec[] = [
     label: 'Claude Code',
     description: "Anthropic's agentic CLI. Edits files directly.",
     command: 'claude',
-    buildArgs: () => ['-p', '--permission-mode', 'acceptEdits'],
+    // Edits, and the project's own commands. The prompt asks the agent to run
+    // the build and tests, and in print mode nobody is there to approve a
+    // command, so without `Bash` it could diagnose a fix and verify none of
+    // it — measured on a real upgrade, it said so itself. It runs in Drift's
+    // isolated worktree, never the developer's tree. Web tools stay
+    // unapproved, so it cannot browse. Gemini (`--yolo`) and Codex (its
+    // workspace-write sandbox) already run commands this way.
+    buildArgs: () => ['-p', '--permission-mode', 'acceptEdits', '--allowedTools', 'Bash'],
     promptOnStdin: true,
     // Aliases, not dated ids: `--model opus` still means the current Opus a
     // year from now. Claude Code publishes no roster file to read, so this list
@@ -173,6 +186,7 @@ export const CLI_AGENT_SPECS: readonly CliAgentSpec[] = [
       },
     ],
     modelArgs: (model) => ['--model', model],
+    settingsArgs: (settings) => ['--settings', JSON.stringify(settings)],
     efforts: CLAUDE_EFFORTS,
     // Claude Code grew a real `--effort` flag, so the reasoning budget can be
     // set directly instead of asked for in words. The prompt keywords stay as
@@ -318,16 +332,12 @@ export class CliFixAgent implements FixAgent {
     // Effort changes how hard this agent thinks about the task — never which
     // parts of it to attempt. Every impact site above is still in scope.
     const thinking = await this.thinking(task, command);
-    const prompt = [
-      buildFixPrompt(task),
-      '',
-      '## Your task',
-      '',
-      task.commit.instructions,
-      ...(thinking ? ['', thinking] : []),
-    ].join('\n');
+    const prompt = composeAgentPrompt(task, thinking);
 
-    const args = [...this.spec.buildArgs(prompt), ...(await this.selection(task, command))];
+    const args = [
+      ...this.spec.buildArgs(prompt),
+      ...(await this.selection(task, command)),
+    ];
     ctx.report(`$ ${displayCommand(command, args)}\n# cwd: ${task.workspaceRoot}`);
 
     try {
@@ -357,6 +367,7 @@ export class CliFixAgent implements FixAgent {
         status: 'applied',
         message: agentConclusion(stdout, spoken) ?? `${this.spec.label} finished.`,
         warnings: extractAgentWarnings(stdout),
+        scopeRequests: parseScopeRequests(stdout),
       };
     } catch (err) {
       return { status: 'failed', message: `${this.spec.label} failed: ${(err as Error).message}` };

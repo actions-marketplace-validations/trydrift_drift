@@ -35,7 +35,7 @@ import { fetchVersionDiff, unifiedDiffText } from './evidence/version-diff.js';
 import { runFix } from './remediation/cli-runner.js';
 import { availableChecks } from './verification/checks.js';
 import { AgentBudgetExceededError, agentBriefView, buildAgentBrief, evidenceDetail, findingDetail, renderAgentBrief, UnknownAgentIdError } from './agent-context/index.js';
-import { runAgentCommitsInWorktree } from './remediation/worktree-runner.js';
+import { runAgentUpgradeFix, wholeUpgradeUnit } from './remediation/worktree-runner.js';
 import { credentialsWithLegacyCopilot, agentConfigWithLegacyCopilot } from './agents/compat.js';
 import { defaultAgentProviderRegistry, isCloudFixAgent, type AgentProviderRegistry } from './agents/registry.js';
 import { resolveAgentSelection, type AgentSelection } from './agents/selection.js';
@@ -338,9 +338,9 @@ Options:
                               the report: only findings that reach this
                               repository, with file:line locations, the
                               checks to run and what is uncertain, under
-                              2,000 tokens. Other upstream changes are
-                              counted, not listed. With --json, the same
-                              selection as fields
+                              2,300 tokens. Other upstream changes are
+                              counted, and named when there are few. With
+                              --json, the same selection as fields
   --finding <id>              One finding from the plan in full (any id the
                               brief or the plan names), bounded
   --evidence <id>             The evidence for a finding id, or one evidence
@@ -2150,9 +2150,13 @@ async function resolveManagerForWrite(
  * itself. Like \`pr\`, this never merges and never force-pushes.
  */
 async function fixCommand(flags: Flags): Promise<number> {
-  // `fix` accepts every `analyze` option, but these three only change what
+  // `fix` accepts every `analyze` option, but these only change what
   // `analyze` prints. Accepting them here would read well and do nothing.
-  const printOnly = ['agent', 'finding', 'evidence', 'offset'].filter((key) => flags[key] !== undefined);
+  // `--agent` is both: bare, it is `analyze`'s brief switch; with a value it
+  // is `fix`'s own agent provider, so only the bare form is refused.
+  const printOnly = ['agent', 'finding', 'evidence', 'offset'].filter((key) =>
+    key === 'agent' ? flags.agent === true : flags[key] !== undefined,
+  );
   if (printOnly.length > 0) {
     return refuse(
       [`\`fix\` does not take ${printOnly.map((key) => `\`--${key}\``).join(', ')}: ${printOnly.length === 1 ? 'it only changes' : 'they only change'} what \`analyze\` prints.`],
@@ -2237,9 +2241,22 @@ async function fixCommand(flags: Flags): Promise<number> {
     githubToken: token || undefined,
     dryRun: true,
     workspace,
+    // `fix` takes every `analyze` option, `--verify` included. Without it a
+    // broken build Drift matched no call site to is invisible here, and the
+    // measured-failure path below never fires.
+    verify: { enabled: Boolean(flags.verify) && config.verify.enabled },
   });
-  if (!result.plan || result.plan.commits.length === 0) {
+  // A measured failure is work even when static analysis localized nothing:
+  // the project's own checks broke, and they say where. Stopping here is what
+  // left six of ten real upgrades untouched when this was benchmarked.
+  if (!result.plan || (result.plan.commits.length === 0 && result.plan.verification?.status !== 'failed')) {
     console.log(`\n${result.summary}\n`);
+    if (result.plan && result.plan.breakingChanges.length > 0 && !result.plan.verification) {
+      console.log(
+        'Run `drift fix --verify` to run this project\'s own checks against the upgrade: ' +
+          'a failing check goes to the agent even when Drift matched no call site.\n',
+      );
+    }
     return 0;
   }
 
@@ -2269,7 +2286,9 @@ async function fixPlanAndOpenPR(args: {
   logger.info(
     planOnly
       ? `Reviewing fix plans for ${plan.commits.length} commit(s) — nothing will be applied`
-      : `Fixing ${plan.commits.length} commit(s) on \`${plan.branchName}\` in an isolated worktree`,
+      : plan.commits.length
+        ? `Fixing ${plan.commits.length} commit(s) on \`${plan.branchName}\` in an isolated worktree`
+        : `Fixing what the project's checks report on \`${plan.branchName}\` in an isolated worktree`,
   );
 
   const fix = await runFix({
@@ -2332,7 +2351,12 @@ async function fixPlanAndOpenPR(args: {
       for (const document of fix.documents) console.log(`\n${document}\n`);
     }
 
-    if (fix.needsAgent.length > 0) {
+    // The same reason as above: with the checks measured failing and no
+    // deterministic fix having landed, an agent is owed the upgrade even when
+    // Drift planned no unit for it.
+    const measuredFailureUnfixed =
+      plan.verification?.status === 'failed' && fix.builtinResolved + fix.fixPlanResolved === 0;
+    if (fix.needsAgent.length > 0 || measuredFailureUnfixed) {
       const copilotToken =
         (typeof flags['copilot-token'] === 'string' ? flags['copilot-token'] : undefined) ??
         process.env.DRIFT_COPILOT_TOKEN;
@@ -2363,27 +2387,23 @@ async function fixPlanAndOpenPR(args: {
           logger.warn(`${selection.provider} was selected, but that provider is not available in this CLI runtime.`);
           unresolvedAgentWork = true;
         } else if (agent.capabilities.execution === 'workspace') {
-          const agentRun = await runAgentCommitsInWorktree({
-            repo,
-            plan,
-            config: agentConfig,
-            worktree: fix.worktree,
-            commits: fix.needsAgent,
-            agent,
-            logger,
-          });
-          unresolvedAgentCount = agentRun.unresolved.length;
-          if (agentRun.committed) {
-            fix.pushed = true;
-            await pushWorktreeHead();
+          // One session over the whole upgrade, given the plain task, with
+          // every changed file validated on its own. The
+          // unit-by-unit runner this replaced fixed none of ten real upgrades
+          // a plain agent fixed nearly all of; see `runAgentUpgradeFix`.
+          const agentRun = await runAgentUpgradeFix({ plan, config: agentConfig, worktree: fix.worktree, agent, logger });
+          for (const offender of agentRun.reverted) {
+            logger.warn(`Reverted ${offender.path}: ${offender.reasons.join(' ')}`);
           }
-          if (agentRun.unresolved.length > 0) {
-            for (const failure of agentRun.unresolved) {
-              logger.warn(`Commit ${failure.commit.order} remains unresolved: ${failure.message}`);
-            }
-            unresolvedAgentWork = true;
+          if (agentRun.status === 'committed') {
+            fix.pushed = true;
+            unresolvedAgentCount = 0;
+            await pushWorktreeHead();
+            logger.info(`${agent.label} fixed the upgrade across ${agentRun.kept.length} file(s).`);
           } else {
-            logger.info(`Resolved ${agentRun.resolved.length} commit(s) with ${agent.label}.`);
+            logger.warn(`${agent.label} left the upgrade unresolved: ${agentRun.message}`);
+            unresolvedAgentWork = true;
+            unresolvedAgentCount = Math.max(1, fix.needsAgent.length);
           }
         } else if (isCloudFixAgent(agent)) {
           if (!pushedBranch && !fix.pushed) {
@@ -2582,12 +2602,14 @@ async function dispatchRemainingToCloudAgent(options: {
   config: DriftConfig;
   logger: Logger;
 }): Promise<{ ok: boolean; error?: string }> {
-  if (options.commits.length === 0) return { ok: true };
-  const agentPlan = planForCommits(options.plan, options.commits);
+  // With no planned commit but a failing check, the whole upgrade goes to the
+  // agent. Only an upgrade with neither is empty.
+  if (options.commits.length === 0 && options.plan.verification?.status !== 'failed') return { ok: true };
+  const agentPlan = options.commits.length > 0 ? planForCommits(options.plan, options.commits) : options.plan;
   const result = await options.agent.run(
     {
       plan: agentPlan,
-      commit: agentPlan.commits[0]!,
+      commit: agentPlan.commits[0] ?? wholeUpgradeUnit(agentPlan),
       workspaceRoot: options.repo.workspace ?? '',
       files: [],
       customInstructions: options.config.remediation.customInstructions,

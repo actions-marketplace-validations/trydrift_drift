@@ -1,4 +1,9 @@
+# Without the trailing slash as well: `node_modules/` matches only a
+# directory, so a symlinked node_modules (a worktree borrowing another
+# checkout's install) slipped past it and was committed as a link to an
+# absolute path on one developer's machine.
 node_modules/
+node_modules
 dist/
 # action/ is intentionally NOT ignored: GitHub Actions does not run npm
 # install for node20 actions, so the bundled entrypoint must be committed.
@@ -81,3 +86,11 @@ site/capture-hang-*.json
 # already extracted into the committed trial JSON. Both stay as CI artifacts.
 eval/agent/.cache/
 eval/results/agent/raw/*/trials/*.stream.jsonl.gz
+
+# Raw agent-benchmark trials from research runs. The suites, cases and written
+# analyses are tracked; the per-trial artefacts are large and belong with the
+# branch that produced them (experimental/agent-remediation-research).
+eval/results/agent/raw/heldout-*/
+eval/results/agent/raw/v2-s*/
+eval/results/agent/raw/large-*/
+eval/results/agent/raw/brief-smoke*/

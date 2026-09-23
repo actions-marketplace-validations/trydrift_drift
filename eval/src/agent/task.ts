@@ -40,6 +40,13 @@ export const DRIFT_PREAMBLE_HEADER = [
   '',
 ].join('\n');
 
+/**
+ * The brief carries its own framing — what it is, and what it cannot see — so
+ * the harness says only where it came from. Nothing benchmark-authored steers
+ * the agent beyond this line.
+ */
+export const DRIFT_BRIEF_HEADER = ['---', ''].join('\n');
+
 export function composePrompt(task: string, preamble: string): string {
   return preamble ? `${task}\n\n${preamble}` : task;
 }
@@ -49,5 +56,5 @@ export function sha256(text: string): string {
 }
 
 export function contextKindFor(condition: Condition): 'none' | 'drift' {
-  return condition === 'baseline' ? 'none' : 'drift';
+  return condition === 'baseline' || condition === 'baseline-lean' ? 'none' : 'drift';
 }

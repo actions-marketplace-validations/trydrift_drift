@@ -6,7 +6,7 @@ import { promisify } from 'node:util';
 import * as vscode from 'vscode';
 import type { SessionEffort, TaskActivityInput } from '../session.js';
 import {
-  buildFixPrompt,
+  composeAgentPrompt,
   type AgentAvailability,
   type AgentContext,
   type AgentModel,
@@ -158,7 +158,11 @@ export const CLI_AGENT_SPECS: readonly CliAgentSpec[] = [
     label: 'Claude Code',
     description: "Anthropic's agentic CLI. Edits files directly.",
     command: 'claude',
-    buildArgs: () => ['-p', '--permission-mode', 'acceptEdits'],
+    // Edits, and the project's own commands — see `src/agents/cli.ts` for why
+    // an agent that cannot run the build verifies nothing. The panel's agent
+    // runs against the workspace or a disposable worktree, and web tools stay
+    // unapproved.
+    buildArgs: () => ['-p', '--permission-mode', 'acceptEdits', '--allowedTools', 'Bash'],
     promptOnStdin: true,
     // Aliases, not dated ids: `--model opus` still means the current Opus a
     // year from now. Claude Code publishes no roster file to read, so this list
@@ -338,14 +342,7 @@ export class CliFixAgent implements FixAgent {
     // Effort changes how hard this agent thinks about the task — never which
     // parts of it to attempt. Every impact site above is still in scope.
     const thinking = await this.thinking(task, command);
-    const prompt = [
-      buildFixPrompt(task),
-      '',
-      '## Your task',
-      '',
-      task.commit.instructions,
-      ...(thinking ? ['', thinking] : []),
-    ].join('\n');
+    const prompt = composeAgentPrompt(task, thinking);
 
     const args = [...this.spec.buildArgs(prompt), ...(await this.selection(task, command))];
     ctx.report(`$ ${displayCommand(command, args)}\n# cwd: ${task.workspaceRoot}`);

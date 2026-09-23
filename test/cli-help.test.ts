@@ -275,7 +275,7 @@ test('analyze documents the agent brief and its detail flags', async () => {
   for (const flag of ['--agent', '--finding <id>', '--evidence <id>', '--offset <n>']) {
     assert.match(out, new RegExp(flag.replace(/[<>]/g, '.')), `analyze documents ${flag}`);
   }
-  assert.match(out, /under\s+2,000 tokens/);
+  assert.match(out, /under\s+2,300 tokens/);
 });
 
 test('fix refuses the agent print flags instead of ignoring them', async () => {
@@ -286,4 +286,13 @@ test('fix refuses the agent print flags instead of ignoring them', async () => {
   assert.notEqual(code, 0);
   assert.match(err, /`fix` does not take `--agent`, `--finding`/);
   assert.match(err, /Nothing ran/);
+});
+
+test('fix takes --agent <provider>, the flag its own help documents', async () => {
+  // The bare `--agent` refusal above once caught this too, so no
+  // `drift fix --agent claude` could run at all.
+  const { code, err } = await run(['fix', '--agent', 'claude', '--finding', 'bc_x']);
+  assert.notEqual(code, 0);
+  assert.match(err, /`fix` does not take `--finding`/);
+  assert.doesNotMatch(err, /`--agent`/);
 });

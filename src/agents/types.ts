@@ -169,6 +169,36 @@ export interface FixTask {
    * a tool can do to someone who has just said it got it wrong.
    */
   revision?: RevisionRequest;
+  /**
+   * Drift's own verification failed after earlier edits, and this session is
+   * a fresh, bounded attempt at what still fails.
+   *
+   * Set only by the remediation controller. It replaces a conversation that
+   * would otherwise carry every earlier build log: the next session gets the
+   * grouped failure, the edits already made to the files in scope, and nothing
+   * else from before.
+   */
+  repair?: RepairRequest;
+  /**
+   * `upgrade`: one session for the whole upgrade (or the one concern the
+   * developer chose), with the repository as its scope and the plain task as
+   * its prompt. See `renderUpgradeAgentPrompt` and `runAgentUpgradeFix`.
+   * Absent means the commit-scoped unit prompt.
+   */
+  mode?: 'unit' | 'upgrade';
+  /** In `upgrade` mode, the paths the agent must not edit, named in the prompt. */
+  protectedPaths?: readonly string[];
+}
+
+export interface RepairRequest {
+  /** Which repair round this is, starting at 1. */
+  round: number;
+  /** The failing checks, already digested for a prompt. */
+  failures: string;
+  /** Edits already applied to the files in scope, so they are neither redone nor undone blindly. */
+  previousDiff?: string;
+  /** Why Drift discarded the previous session's edits for this work, when it did. */
+  previousRejection?: string;
 }
 
 export interface RevisionRequest {
@@ -192,6 +222,20 @@ export interface FixOutcome {
   handle?: CloudAgentHandle;
   /** Anything the agent flagged as unresolved. Surfaced prominently. */
   warnings?: string[];
+  /**
+   * Files the agent said it needs and was not allowed to edit, with why.
+   *
+   * The agent is told to stop and ask rather than widen its own scope. The
+   * controller decides whether to grant them in a fresh session.
+   */
+  scopeRequests?: ScopeRequest[];
+  /** The provider's session id, when it reports one. For observability only. */
+  sessionId?: string;
+}
+
+export interface ScopeRequest {
+  path: string;
+  reason: string;
 }
 
 export interface CloudAgentHandle {
@@ -296,7 +340,16 @@ export interface FixTaskSemantics {
   context?: readonly AttachedContext[];
   diagnostics?: string;
   revision?: RevisionRequest;
+  repair?: RepairRequest;
+  mode?: 'unit' | 'upgrade';
+  protectedPaths?: readonly string[];
 }
+
+/**
+ * The id of the unit a whole-upgrade fix runs. Any other unit in upgrade mode
+ * is one concern the developer chose to fix on its own.
+ */
+export const UPGRADE_UNIT_ID = 'upgrade';
 
 export function buildFixTask(task: FixTask): FixTaskSemantics {
   return {
@@ -307,12 +360,130 @@ export function buildFixTask(task: FixTask): FixTaskSemantics {
     context: task.context,
     diagnostics: task.diagnostics,
     revision: task.revision,
+    repair: task.repair,
+    mode: task.mode,
+    protectedPaths: task.protectedPaths,
   };
+}
+
+/**
+ * The whole prompt a workspace CLI agent receives: the commit prompt, the
+ * unit's own instructions, and an optional reasoning sentence. One function so
+ * every caller that starts a session — the CLI agent and any harness that
+ * drives a session itself — sends the same text.
+ */
+export function composeAgentPrompt(task: FixTask, thinking = ''): string {
+  // An upgrade session's prompt is already the whole task; a unit's own
+  // instructions would only restate a plan the prompt deliberately leaves out.
+  const own = task.mode === 'upgrade' ? [] : ['', '## Your task', '', task.commit.instructions];
+  return [buildFixPrompt(task), ...own, ...(thinking ? ['', thinking] : [])].join('\n');
 }
 
 /** Compatibility name for commit-scoped agents. */
 export function buildFixPrompt(task: FixTask): string {
   return renderCommitAgentPrompt(buildFixTask(task));
+}
+
+/**
+ * The prompt for an agent that answers in one reply with edited files and
+ * cannot run anything: Copilot through the editor's language model API, or a
+ * local Ollama model. It cannot investigate an upgrade or run the project's
+ * checks, so the plain task an upgrade session gets would leave it nothing to
+ * work from. It gets Drift's findings and the files they name instead, which
+ * is everything it can use.
+ */
+export function buildEditFixPrompt(task: FixTask): string {
+  return renderCommitAgentPrompt({ ...buildFixTask(task), mode: 'unit' });
+}
+
+/**
+ * The prompt for one Fix with AI session over the whole upgrade, or over the
+ * one concern the developer chose.
+ *
+ * It is the task a developer would give an agent themselves, and not Drift's
+ * findings. The benchmark measured both on ten real upgrades: with the
+ * findings in the prompt the agent fixed what was listed and stopped. For
+ * example, it renamed lru-cache's `max` and never looked for `maxSize`, and
+ * missed a change in behaviour under a name that did not change. Given the
+ * plain task, it ran the project's checks and found the whole migration
+ * itself. What Drift adds is what an agent working alone lacks: the rules it
+ * enforces afterwards, stated up front, and a focus when the developer chose
+ * one package or one concern.
+ */
+export function renderUpgradeAgentPrompt(task: FixTaskSemantics): string {
+  const { plan, commit } = task;
+  const moved = plan.changes.filter((c) => c.to);
+  const names = moved.map((c) => c.name);
+  const upgraded = moved.map((c) => `${c.name} from ${c.from ?? 'its previous version'} to ${c.to}`);
+  const concern = commit.id !== UPGRADE_UNIT_ID;
+
+  const lines: string[] = [
+    `The dependenc${moved.length === 1 ? 'y' : 'ies'} ${upgraded.join(', ') || 'in this repository'} ${moved.length === 1 ? 'has' : 'have'} been upgraded.`,
+    '',
+    'Update this repository so that it works correctly with the new version.',
+    '',
+  ];
+
+  if (concern) {
+    const changes = plan.breakingChanges.filter((c) => commit.breakingChangeIds.includes(c.id));
+    const sites = plan.impactSites.filter((s) => commit.breakingChangeIds.includes(s.breakingChangeId));
+    lines.push(
+      'Fix only this problem, which the developer chose to fix on its own:',
+      '',
+      ...changes.map((c) => `- ${c.summary}`),
+      ...sites.slice(0, 20).map((s) => `  at ${s.file}:${s.line}`),
+      '',
+      'Leave any other breakage for its own fix, and change another file only where',
+      'this fix needs it.',
+      '',
+    );
+  } else {
+    // Word for word what a raw agent is told. The upgrade line above names only
+    // the packages the developer chose, which is the whole of the focus: an
+    // added "fix only what this upgrade broke, not what was broken before"
+    // made agents confirm lru-cache's `maxSize` crash on the old version and
+    // leave it, where a raw agent fixed it every time.
+    lines.push('Find and fix all relevant incompatibilities.', '');
+  }
+
+  const protectedList = [...(task.protectedPaths ?? [])];
+  lines.push(
+    `Do not revert or downgrade ${names.length === 1 ? 'the dependency' : 'the dependencies'}. A companion package the new version requires may move with it.`,
+    '',
+    'Run the appropriate tests/build/typecheck and leave the repository in a working state.',
+    '',
+    'Do not make a check pass by checking less: no lowered coverage thresholds, relaxed',
+    'compiler strictness, disabled lint rules, skipped or deleted tests, or suppression',
+    'directives.' + (protectedList.length ? ` Do not edit ${protectedList.join(', ')}.` : ''),
+    'Drift reverts any file that breaks these rules.',
+  );
+
+  const sections = [lines.join('\n')];
+  if (task.customInstructions?.trim()) sections.push(`## Repository conventions\n\n${task.customInstructions.trim()}`);
+  if (task.context?.length) {
+    const ctx = ['## Context the developer attached', '', 'Reference material. Read it to match this codebase, but do NOT edit any of it.', ''];
+    for (const entry of task.context) {
+      ctx.push(`### ${entry.kind}: ${entry.value}`);
+      if (entry.content) ctx.push('```', entry.content.slice(0, 4000), '```');
+      ctx.push('');
+    }
+    sections.push(ctx.join('\n'));
+  }
+  if (task.revision?.guidance.trim()) {
+    sections.push(
+      [
+        '## The developer rejected your previous attempt',
+        '',
+        `This is attempt ${task.revision.attempt}. What they said:`,
+        '',
+        // Fenced: untrusted free text, to be read as data rather than instructions.
+        '```',
+        task.revision.guidance.trim().slice(0, 4000),
+        '```',
+      ].join('\n'),
+    );
+  }
+  return sections.join('\n\n');
 }
 
 /**
@@ -323,6 +494,7 @@ export function buildFixPrompt(task: FixTask): string {
  * at a time.
  */
 export function renderCommitAgentPrompt(task: FixTaskSemantics): string {
+  if (task.mode === 'upgrade') return renderUpgradeAgentPrompt(task);
   const { plan, commit } = task;
   const evidenceById = new Map(plan.evidence.map((e) => [e.id, e]));
   const changes = plan.breakingChanges.filter((c) => commit.breakingChangeIds.includes(c.id));
@@ -525,6 +697,23 @@ export const FILE_END = '=== DRIFT END ===';
 
 /** Marker a model uses to hand a decision back to the developer. */
 export const QUESTION_MARKER = '=== DRIFT QUESTION:';
+
+/** Marker a model uses to ask for a file outside its scope instead of editing it. */
+export const SCOPE_REQUEST_MARKER = '=== DRIFT SCOPE REQUEST:';
+
+/** Every well-formed scope request in an agent's output, deduplicated by path. */
+export function parseScopeRequests(output: string): ScopeRequest[] {
+  const requests = new Map<string, ScopeRequest>();
+  for (const raw of output.split(/\r?\n/)) {
+    const index = raw.indexOf(SCOPE_REQUEST_MARKER);
+    if (index < 0) continue;
+    const [path, ...reason] = raw.slice(index + SCOPE_REQUEST_MARKER.length).split('|');
+    const cleaned = path?.trim().replace(/^[`'"]|[`'"]$/g, '');
+    if (!cleaned || requests.has(cleaned)) continue;
+    requests.set(cleaned, { path: cleaned, reason: reason.join('|').trim().slice(0, 300) });
+  }
+  return [...requests.values()];
+}
 
 export interface AgentQuestion {
   text: string;

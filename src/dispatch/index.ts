@@ -10,7 +10,7 @@ import { applyDeterministicRemediation } from '../github/local-commit.js';
 import { planForCommits } from '../remediation/partition.js';
 import type { FixAgent } from '../agents/types.js';
 import { execCommand } from '../util/exec.js';
-import { runAgentCommitsInWorktree, runWorktreeRemediation } from '../remediation/worktree-runner.js';
+import { runAgentUpgradeFix, runWorktreeRemediation, wholeUpgradeUnit } from '../remediation/worktree-runner.js';
 
 /**
  * Dispatch: decide what to do with a plan, and do it.
@@ -57,13 +57,24 @@ export async function dispatch(options: DispatchOptions): Promise<DispatchResult
   // established, not ruled out. That case falls through to the same
   // canDispatch/requestApproval logic below, which already treats blockers as
   // reason to ask a human rather than to report success.
-  if (plan.commits.length === 0 && plan.blockers.length === 0) {
+  //
+  // A failing measured check is not that either: it is the project saying it
+  // broke, and it goes to an agent below whatever localization matched.
+  if (plan.commits.length === 0 && plan.blockers.length === 0 && plan.verification?.status !== 'failed') {
+    // With no breaking change found there is nothing to say but that. With
+    // breaking changes Drift could not match to any code here, "no code uses
+    // them" would be a claim Drift never established — its own verdict for
+    // that case is "could not establish whether this repository is affected".
+    const unmatched = plan.breakingChanges.length;
     logger.info('No affected code found; nothing to dispatch.');
-    await postCheckRun(options, 'success', 'No action needed');
+    await postCheckRun(options, unmatched ? 'neutral' : 'success', unmatched ? 'Review before upgrading' : 'No action needed');
     return {
       status: 'skipped',
       planId: plan.id,
-      message: 'Dependency changed, but no code in this repository uses the affected APIs.',
+      message: unmatched
+        ? `Drift found ${unmatched} breaking change(s) upstream and matched none of them to code in this repository. ` +
+          'That does not establish that none affects it. Nothing was dispatched.'
+        : 'Dependency changed, and Drift found no breaking change affecting this repository.',
     };
   }
 
@@ -113,8 +124,11 @@ export async function dispatch(options: DispatchOptions): Promise<DispatchResult
     exec: options.exec,
   });
   const remaining = plan.commits.filter((commit) => !committedIds.has(commit.id));
+  // No planned commit but a failing measured check is agent work, not
+  // "resolved": the whole upgrade goes to the agent.
+  const measuredOnly = plan.commits.length === 0 && plan.verification?.status === 'failed';
 
-  if (remaining.length === 0) {
+  if (remaining.length === 0 && !measuredOnly) {
     logger.info(`Resolved all ${plan.commits.length} commit(s) deterministically; no agent was dispatched.`);
     await postCheckRun(
       options,
@@ -154,11 +168,11 @@ export async function dispatch(options: DispatchOptions): Promise<DispatchResult
     });
   }
 
-  const agentPlan = planForCommits(plan, remaining);
+  const agentPlan = measuredOnly ? plan : planForCommits(plan, remaining);
   const result = await agent.run(
     {
       plan: agentPlan,
-      commit: agentPlan.commits[0]!,
+      commit: agentPlan.commits[0] ?? wholeUpgradeUnit(agentPlan),
       workspaceRoot: repo.workspace ?? '',
       files: [],
       customInstructions: config.remediation.customInstructions,
@@ -181,7 +195,7 @@ export async function dispatch(options: DispatchOptions): Promise<DispatchResult
     return { ...fallback, status: 'failed', message: result.message };
   }
 
-  await postCheckRun(options, 'neutral', `${agent.label} is fixing ${agentPlan.breakingChanges.length} breaking change(s)`);
+  await postCheckRun(options, 'neutral', `${agent.label} is fixing the upgrade`);
 
   const task = result.handle;
   logger.info(`Dispatched to ${agent.label}: task ${task?.id ?? 'unknown'} on ${plan.branchName}`);
@@ -228,36 +242,31 @@ async function dispatchViaWorkspaceAgent(options: DispatchOptions & { agent: Fix
   });
 
   try {
-    if (fix.needsAgent.length > 0) {
-      const agentRun = await runAgentCommitsInWorktree({
-        repo,
-        plan,
-        config,
-        worktree: fix.worktree,
-        commits: fix.needsAgent,
-        agent,
-        logger,
-        exec,
-      });
+    // A measured failure with no planned unit is still work. Without this the
+    // upgrade fell through to "Nothing to fix" and a success check on a
+    // project whose own build the upgrade had broken.
+    const measuredFailureUnfixed =
+      plan.verification?.status === 'failed' && fix.builtinResolved + fix.fixPlanResolved === 0;
+    if (fix.needsAgent.length > 0 || measuredFailureUnfixed) {
+      // One session over the whole upgrade; see `runAgentUpgradeFix` for why
+      // this replaced the unit-by-unit runner.
+      const agentRun = await runAgentUpgradeFix({ plan, config, worktree: fix.worktree, agent, logger, exec });
+      for (const offender of agentRun.reverted) {
+        logger.warn(`Reverted ${offender.path}: ${offender.reasons.join(' ')}`);
+      }
 
-      if (agentRun.unresolved.length > 0) {
-        for (const failure of agentRun.unresolved) {
-          logger.warn(`Commit ${failure.commit.order} remains unresolved: ${failure.message}`);
-        }
+      if (agentRun.status !== 'committed') {
         await postCheckRun(options, 'action_required', `${agent.label} left unresolved work`);
         return requestApproval({
           ...options,
           plan: {
             ...plan,
-            blockers: [
-              ...plan.blockers,
-              `${agent.label} could not safely resolve ${agentRun.unresolved.length} commit(s). Choose another agent or approve a manual follow-up.`,
-            ],
+            blockers: [...plan.blockers, `${agent.label} could not resolve this upgrade: ${agentRun.message}`],
           },
         });
       }
 
-      if (agentRun.committed) fix.pushed = true;
+      fix.pushed = true;
     }
 
     if (!fix.pushed) {
@@ -282,7 +291,7 @@ async function dispatchViaWorkspaceAgent(options: DispatchOptions & { agent: Fix
       };
     }
 
-    await postCheckRun(options, 'success', `${agent.label} resolved ${plan.commits.length} commit(s)`);
+    await postCheckRun(options, 'success', `${agent.label} fixed the upgrade`);
     const pr = await ensurePullRequest(options, undefined, undefined);
     return {
       status: 'dispatched',
@@ -291,8 +300,8 @@ async function dispatchViaWorkspaceAgent(options: DispatchOptions & { agent: Fix
       pullRequestNumber: pr?.number,
       pullRequestUrl: pr?.url,
       message: pr
-        ? `${agent.label} resolved ${plan.commits.length} commit(s) on \`${plan.branchName}\`, tracked in pull request #${pr.number} into \`${plan.baseBranch}\`.`
-        : `${agent.label} resolved ${plan.commits.length} commit(s) on \`${plan.branchName}\`. A pull request into \`${plan.baseBranch}\` will follow.`,
+        ? `${agent.label} fixed the upgrade on \`${plan.branchName}\`, tracked in pull request #${pr.number} into \`${plan.baseBranch}\`.`
+        : `${agent.label} fixed the upgrade on \`${plan.branchName}\`. A pull request into \`${plan.baseBranch}\` will follow.`,
     };
   } finally {
     await fix.teardown();

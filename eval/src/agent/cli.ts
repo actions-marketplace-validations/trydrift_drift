@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { admitCase, recordAdmissions } from './admission.ts';
-import { listCaseIds, loadSuite } from './cases.ts';
+import { listCaseIds, listRealCaseIds, loadSuite } from './cases.ts';
 import { ClaudeCodeProvider } from './providers/claude-code.ts';
 import { README_BLOCK_BEGIN, README_BLOCK_END, renderPublicCopy, renderReadmeBlock, renderReport } from './report.ts';
 import { rescoreRuns } from './rescore.ts';
@@ -74,7 +74,12 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
     const suite = flag(argv, 'suite');
     let ids: string[];
     if (single) ids = [single];
-    else if (suite) {
+    else if (has(argv, 'all')) {
+      // Every real case in the repository, which is how a draft suite takes in
+      // cases authored since it was last written. Synthetic cases are plumbing
+      // for the harness itself and never belong to a published suite.
+      ids = await listRealCaseIds(root);
+    } else if (suite) {
       const manifest = await loadSuite(suite, root).catch(() => null);
       ids = manifest ? manifest.cases.map((c) => c.id) : await listCaseIds(root);
     } else ids = await listCaseIds(root);
@@ -185,7 +190,7 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
   if (command === 'verify') {
     const findings = await verifyPublicClaims(root);
     if (findings.length === 0) {
-      log('verify: every public agent-benchmark claim matches eval/results/agent/latest.json');
+      log('verify: no public surface publishes the agent benchmark');
       return 0;
     }
     for (const finding of findings) console.error(`${finding.file}: ${finding.problem}`);
