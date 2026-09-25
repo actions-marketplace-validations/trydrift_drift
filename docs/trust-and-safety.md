@@ -97,6 +97,19 @@ Most importantly:
 > clearly-marked `TODO(drift):` comment, and say so in the pull request
 > description. A flagged unknown is useful; a confident guess is not.
 
+**What a local agent does on your machine.** Drift asks a Fix with AI session
+to run the project's own build, typecheck and tests and to leave the repository
+working, so a CLI agent is started the way its vendor provides for an
+unattended task. The honest statement of that: the coding agent you selected
+reads and writes files and runs the project's commands on your machine, under
+your account, while the session lasts. Drift's contribution is the boundary
+around it — an isolated worktree rather than your working tree, protected paths
+it may not touch, and validation of every file it changed before anything is
+kept or committed. Web tools are never approved, so the session does not
+browse. If you would rather nothing ran locally at all, do not select a local
+agent: the Copilot cloud path and the deterministic tiers run nothing on your
+machine.
+
 ### 6 · Human review, in the editor
 
 In the VS Code extension, an agent's edits are a **proposal**. They are written
@@ -125,7 +138,7 @@ strongest signal Drift can give a reviewer without asking them to read every
 line, and it is still their call.
 
 A group is committed only when every change in it has been kept, and the commit
-touches only the files the plan named for that group.
+touches only the files that group's fix changed and you kept.
 
 ---
 
@@ -161,14 +174,22 @@ Mitigations:
   validated against an identifier pattern.
 - `protectedPaths` blocks the highest-value targets regardless of what any
   evidence says.
-- The commit plan constrains each commit to a specific file list.
+- Every file an agent changes is validated on its own diff, and reverted if it
+  touches a protected path, weakens a test, coverage threshold, compiler
+  strictness or lint configuration, downgrades the upgraded dependency, or adds
+  a secret. `node_modules`, `.git` and `.env` files are protected whatever a
+  repository configures.
 - **A human reviews the PR before merge.** This is the backstop, and it is why
   Drift never merges.
 
-Residual risk: a sufficiently clever injection could still influence the agent's
-edits within the allowed files. The review requirement is what makes this
-tolerable rather than eliminated. Treat it as a genuine open problem, not a
-solved one.
+Agent fixes are no longer confined to the files the plan named. They were, and
+on real upgrades that confinement made them fail: a migration routinely needs a
+file the analysis never located. The trade is stated here rather than hidden:
+an agent may now edit any file outside the protected paths, so a sufficiently
+clever injection has more of the repository to reach than it did. Residual
+risk: it could influence the agent's edits anywhere outside the protected
+paths. The review requirement is what makes this tolerable rather than
+eliminated. Treat it as a genuine open problem, not a solved one.
 
 ### An unauthorized user comments `/drift apply`
 

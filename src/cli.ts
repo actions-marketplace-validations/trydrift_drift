@@ -19,7 +19,7 @@ import {
 import { runPipeline } from './pipeline.js';
 import { resolveBaseBranch, titleFor } from './plan/pull-request.js';
 import { renderPullRequestBody } from './report/markdown.js';
-import { renderAnalyzeReport } from './report/terminal-analyze.js';
+import { renderAnalyzeReport, unsettledCount } from './report/terminal-analyze.js';
 import { runAction } from './runners/action.js';
 import { main as serveWebhook } from './runners/webhook.js';
 import { sampleTelemetryEvent } from './telemetry.js';
@@ -33,7 +33,9 @@ import { createBaselineCache } from './verification/baseline-cache.js';
 import { execCommand } from './util/exec.js';
 import { fetchVersionDiff, unifiedDiffText } from './evidence/version-diff.js';
 import { runFix } from './remediation/cli-runner.js';
-import { runAgentCommitsInWorktree } from './remediation/worktree-runner.js';
+import { availableChecks } from './verification/checks.js';
+import { AgentBudgetExceededError, agentBriefView, buildAgentBrief, evidenceDetail, findingDetail, renderAgentBrief, UnknownAgentIdError } from './agent-context/index.js';
+import { runAgentUpgradeFix, wholeUpgradeUnit } from './remediation/worktree-runner.js';
 import { credentialsWithLegacyCopilot, agentConfigWithLegacyCopilot } from './agents/compat.js';
 import { defaultAgentProviderRegistry, isCloudFixAgent, type AgentProviderRegistry } from './agents/registry.js';
 import { resolveAgentSelection, type AgentSelection } from './agents/selection.js';
@@ -50,7 +52,7 @@ import {
 } from './upgrade/scan.js';
 import { opensPullRequestAsDraft, type DriftConfig, type ExplicitAgentProvider } from './config/schema.js';
 import { describeSeverity, scanTitle, severityOf } from './upgrade/severity.js';
-import { ask, confirm, text as promptText, type ChoiceInput } from './util/prompt.js';
+import { ask, canPrompt, confirm, text as promptText, type ChoiceInput } from './util/prompt.js';
 import {
   COMPLETION_SHELLS,
   completionScript,
@@ -118,7 +120,7 @@ async function isGhInstalled(): Promise<boolean> {
  * `drift fix` must never block on a browser flow nobody is there to complete.
  */
 async function tryBrowserSignIn(logger: Logger): Promise<boolean> {
-  if (!process.stdin.isTTY || !process.stdout.isTTY) return false;
+  if (!canPrompt()) return false;
   if (!(await isGhInstalled())) return false;
 
   logger.info('No GitHub token found. Opening a browser to sign in (`gh auth login`)...');
@@ -241,6 +243,8 @@ drift — dependency changes, proven and fixed
 Usage:
   drift analyze [options]     Analyse a local repository and print the report
   drift outdated [options]    Scan for available upgrades, not just past ones
+  drift check [options]       Whether this code is already wrong about the
+                              versions it has installed — no upgrade involved
   drift upgrade [options]     Install every upgrade *measured* safe for this
                               code: each one is installed in a throwaway
                               worktree and this project's own checks are run
@@ -330,6 +334,18 @@ Options:
                               request body, for pasting into an issue or a
                               review. The default is a terminal summary
   --json                      Emit the plan as JSON instead of markdown
+  --agent                     Print the brief for a coding agent instead of
+                              the report: only findings that reach this
+                              repository, with file:line locations, the
+                              checks to run and what is uncertain, under
+                              2,300 tokens. Other upstream changes are
+                              counted, and named when there are few. With
+                              --json, the same selection as fields
+  --finding <id>              One finding from the plan in full (any id the
+                              brief or the plan names), bounded
+  --evidence <id>             The evidence for a finding id, or one evidence
+                              record (ev_…), narrowed and paged
+  --offset <n>                With --evidence <ev_…>: the page to start at
   --verify                    Deep Verification: after the static (Quick
                               Scan) report, install this change in a
                               throwaway worktree and run this project's own
@@ -406,6 +422,46 @@ Exit code 1 when any candidate is affected or failed verification, so a CI job
 can gate on it directly. Exit code 0 when every candidate is safe or unchecked,
 and when there is nothing to check at all. A run that could not be made — an
 unreadable repository, a config that does not parse — is also 1.
+`.trim(),
+
+  check: `
+drift check — is this code already wrong about the versions it has installed
+
+Usage:
+  drift check [options]
+
+Options:
+  --dir <path>                Local checkout to check.   Default: cwd
+  --only <package>            Check one package instead of every dependency
+  --no-dev                    Skip dev/optional/peer dependencies (checked by
+                              default alongside runtime ones)
+  --json                      Emit the full result as JSON
+  --log-level <level>         debug | info | warn | error. Default: info
+
+Every other command asks what an upgrade would do. This one asks nothing about
+upgrades. The version on disk exports a set of names, this repository imports a
+set of names, and an import naming something that version does not export is an
+error that already exists — no upgrade required for it to be true, and no test
+run to find it.
+
+It happens for ordinary reasons: a range resolved forward on a fresh install
+and took a major with it, a lockfile was regenerated on another machine, a
+dependency was bumped without anyone reading what moved. The build can still
+pass while it is wrong, because a missing type export is invisible at runtime
+and a missing runtime export is invisible until the line runs.
+
+npm only. Reading an installed API surface is an npm capability; every other
+ecosystem is reported as not checked rather than guessed at. What could not be
+checked is always listed with the reason, because a clean answer is a claim
+about absence and absence is only as good as the search behind it.
+
+It reads the names an import binds, not what is later reached through them, so
+a clean result means every name you import exists — not that your use of the
+package is correct.
+
+Exit code 1 when any import names something the installed version does not
+export, so a CI job can gate on it. Exit code 0 otherwise, including when
+nothing could be checked.
 `.trim(),
 
   upgrade: `
@@ -659,6 +715,7 @@ the last resort, not the first.
 const COMMANDS = [
   'analyze',
   'outdated',
+  'check',
   'upgrade',
   'fix',
   'pr',
@@ -972,7 +1029,7 @@ function defaultBaselineCacheDir(): string | null {
 const OPTIONLESS_COMMANDS = new Set(['action', 'serve', 'mcp']);
 
 /** Commands that operate on a repository, and so get a repo-local run log. */
-const REPO_COMMANDS = new Set(['analyze', 'analyse', 'outdated', 'upgrade', 'fix', 'pr', 'explain']);
+const REPO_COMMANDS = new Set(['analyze', 'analyse', 'outdated', 'check', 'upgrade', 'fix', 'pr', 'explain']);
 
 async function gitHeadShort(repoRoot: string): Promise<string> {
   const result = await execCommand('git', ['rev-parse', '--short', 'HEAD'], { cwd: repoRoot, timeoutMs: 5000 });
@@ -1022,6 +1079,8 @@ async function runCommand(command: string | undefined, rest: string[]): Promise<
       return withFlagCheck('analyze', rest, analyzeCommand);
     case 'outdated':
       return withFlagCheck('outdated', rest, outdatedCommand);
+    case 'check':
+      return withFlagCheck('check', rest, checkCommand);
     case 'upgrade':
       return withFlagCheck('upgrade', rest, upgradeCommand);
     case 'fix':
@@ -1276,6 +1335,37 @@ async function analyzeCommand(flags: Flags): Promise<number> {
     return 0;
   }
 
+  // The coding agent's view. A different renderer over the same plan, not a
+  // shorter report: only what reaches this repository, inside a fixed budget,
+  // with every omitted finding and evidence record resolvable by id.
+  if (flags.agent || typeof flags.finding === 'string' || typeof flags.evidence === 'string') {
+    try {
+      if (typeof flags.finding === 'string') {
+        const detail = findingDetail(result.plan, flags.finding, { config });
+        console.log(flags.json ? JSON.stringify(detail.data) : detail.text);
+      } else if (typeof flags.evidence === 'string') {
+        const offset = typeof flags.offset === 'string' ? Number(flags.offset) : undefined;
+        const detail = evidenceDetail(result.plan, {
+          ...(flags.evidence.startsWith('ev_') || flags.evidence.startsWith('check:') ? { evidenceId: flags.evidence } : { findingId: flags.evidence }),
+          ...(offset !== undefined && Number.isFinite(offset) ? { offset } : {}),
+        });
+        console.log(flags.json ? JSON.stringify(detail.data) : detail.text);
+      } else {
+        const checks = (await availableChecks(workspace)).map((check) => ({ label: check.label, kind: check.kind }));
+        const brief = buildAgentBrief(result.plan, { config, availableChecks: checks });
+        // Compact JSON: the ceiling is measured on exactly this serialization.
+        console.log(flags.json ? JSON.stringify(agentBriefView(brief).view) : renderAgentBrief(brief, { retrieval: 'cli' }).text);
+      }
+    } catch (err) {
+      if (err instanceof UnknownAgentIdError || err instanceof AgentBudgetExceededError) {
+        logger.error(err.message);
+        return 1;
+      }
+      throw err;
+    }
+    return 0;
+  }
+
   if (flags.json) {
     console.log(JSON.stringify(result.plan, null, 2));
     return 0;
@@ -1295,14 +1385,21 @@ async function analyzeCommand(flags: Flags): Promise<number> {
   }
 
   if (!deepVerifyRequested) {
+    // Named for what it settles. A scan coming back mostly "could not
+    // establish" is the ordinary case on a real upgrade, and the useful next
+    // step is not for the reader to work through that list by hand: it is the
+    // one command that installs the upgrade and runs their own checks on it.
+    const unsettled = unsettledCount(result.plan);
     console.log(
       config.verify.enabled
-        ? "Static analysis only — not deeply verified. Re-run with --verify to install this change and run this project's own checks.\n"
+        ? unsettled > 0
+          ? `Static analysis only. \`drift analyze --verify\` installs this upgrade in a scratch copy and runs this project's own build and tests — settling ${unsettled === 1 ? 'the finding above that' : `all ${unsettled} findings above that`} nothing has ruled on.\n`
+          : "Static analysis only — not deeply verified. Re-run with --verify to install this change and run this project's own checks.\n"
         : 'Deep verification is disabled (verify.enabled: false in drift.yml).\n',
     );
   }
 
-  if (process.stdin.isTTY && result.plan.breakingChanges.length > 0) {
+  if (canPrompt() && result.plan.breakingChanges.length > 0) {
     await offerIssueBranchActions({ plan: result.plan, config, repo, github, workspace, logger, flags });
   }
 
@@ -1481,6 +1578,41 @@ function describeUnavailable(reason: Extract<IssueBranchOutcome, { kind: 'unavai
  * not chosen to install yet. See `verification/upgrade-probe.ts` for what
  * that worktree does and does not have access to.
  */
+/**
+ * Is this repository already wrong about the versions it has installed?
+ *
+ * No registry lookup, no version comparison, no upgrade: this reads the API of
+ * what is on disk and checks it against what the code imports. Deliberately
+ * not routed through `scanUpgrades`, which would pay for a full network scan
+ * and would skip every dependency already at its latest version — precisely
+ * where the question is most worth asking.
+ */
+async function checkCommand(flags: Flags): Promise<number> {
+  const workspace = resolve(typeof flags.dir === 'string' ? flags.dir : process.cwd());
+  const { runInstalledCheck, renderInstalledCheck } = await import('./upgrade/run-installed-check.js');
+
+  const run = await runInstalledCheck({
+    directory: workspace,
+    ...(typeof flags.only === 'string' ? { only: flags.only } : {}),
+    // `--no-dev` parses to the key `no-dev`, whole and hyphenated — it does
+    // not become a negated `dev`. Reading the negated form instead meant the
+    // flag was accepted and then silently ignored, which is what the
+    // help-vocabulary guard in `cli-help.test.ts` exists to catch.
+    includeDev: flags['no-dev'] !== true,
+  });
+
+  if (flags.json) {
+    console.log(JSON.stringify(run, null, 2));
+  } else {
+    console.log(`\n${renderInstalledCheck(run)}\n`);
+  }
+
+  // A finding here is a present-tense error in the checkout, so it fails a CI
+  // job. Nothing checkable is not a failure: it is an answer of "unknown", and
+  // the report says so in words rather than in an exit code.
+  return run.missing.length > 0 ? 1 : 0;
+}
+
 async function outdatedCommand(flags: Flags, options: { installSafe?: boolean } = {}): Promise<number> {
   const logLevel = (typeof flags['log-level'] === 'string' ? flags['log-level'] : 'info') as LogLevel;
   const logger = createLogger(logLevel);
@@ -1529,7 +1661,7 @@ async function outdatedCommand(flags: Flags, options: { installSafe?: boolean } 
   const view = createOutdatedView({
     palette,
     status,
-    interactive: Boolean(process.stdin.isTTY),
+    interactive: canPrompt(),
   });
 
   // Announced up front, before the first registry request, so the command has
@@ -1576,7 +1708,7 @@ async function outdatedCommand(flags: Flags, options: { installSafe?: boolean } 
       if (flags.json) return;
       toAnalyse = summary.outdated.length;
       if (summary.outdated.length === 0) {
-        view.allCurrent(summary.checked);
+        view.allCurrent(summary.checked, summary.unchecked.length);
         view.unchecked(summary.unchecked);
         return;
       }
@@ -1663,7 +1795,7 @@ async function outdatedCommand(flags: Flags, options: { installSafe?: boolean } 
     );
   }
 
-  if (result.candidates.length > 0 && process.stdin.isTTY) {
+  if (result.candidates.length > 0 && canPrompt()) {
     // Labelled, not bare names: two workspace members can both depend on
     // `react`, and a menu with `react` twice offers no way to say which. The
     // hint carries the two facts the choice actually turns on — which versions,
@@ -1991,7 +2123,7 @@ async function resolveManagerForWrite(
     hint: c.evidence.length > 0 ? `${c.fromLockfile ? 'lockfile' : 'found'}: ${c.evidence.join(', ')}` : '',
   }));
 
-  if (!process.stdin.isTTY) {
+  if (!canPrompt()) {
     logger.error(
       `More than one package manager claims ${candidate.ecosystem} in ${where} (${options.join(', ')}), ` +
         `so Drift will not guess which one may write here — the wrong choice generates a second lockfile. ` +
@@ -2025,6 +2157,19 @@ async function resolveManagerForWrite(
  * itself. Like \`pr\`, this never merges and never force-pushes.
  */
 async function fixCommand(flags: Flags): Promise<number> {
+  // `fix` accepts every `analyze` option, but these only change what
+  // `analyze` prints. Accepting them here would read well and do nothing.
+  // `--agent` is both: bare, it is `analyze`'s brief switch; with a value it
+  // is `fix`'s own agent provider, so only the bare form is refused.
+  const printOnly = ['agent', 'finding', 'evidence', 'offset'].filter((key) =>
+    key === 'agent' ? flags.agent === true : flags[key] !== undefined,
+  );
+  if (printOnly.length > 0) {
+    return refuse(
+      [`\`fix\` does not take ${printOnly.map((key) => `\`--${key}\``).join(', ')}: ${printOnly.length === 1 ? 'it only changes' : 'they only change'} what \`analyze\` prints.`],
+      ['Nothing ran, so nothing here changed.', 'For the agent brief:  drift analyze --agent'],
+    );
+  }
   const logLevel = (typeof flags['log-level'] === 'string' ? flags['log-level'] : 'info') as LogLevel;
   const logger = createLogger(logLevel);
 
@@ -2103,9 +2248,22 @@ async function fixCommand(flags: Flags): Promise<number> {
     githubToken: token || undefined,
     dryRun: true,
     workspace,
+    // `fix` takes every `analyze` option, `--verify` included. Without it a
+    // broken build Drift matched no call site to is invisible here, and the
+    // measured-failure path below never fires.
+    verify: { enabled: Boolean(flags.verify) && config.verify.enabled },
   });
-  if (!result.plan || result.plan.commits.length === 0) {
+  // A measured failure is work even when static analysis localized nothing:
+  // the project's own checks broke, and they say where. Stopping here is what
+  // left six of ten real upgrades untouched when this was benchmarked.
+  if (!result.plan || (result.plan.commits.length === 0 && result.plan.verification?.status !== 'failed')) {
     console.log(`\n${result.summary}\n`);
+    if (result.plan && result.plan.breakingChanges.length > 0 && !result.plan.verification) {
+      console.log(
+        'Run `drift fix --verify` to run this project\'s own checks against the upgrade: ' +
+          'a failing check goes to the agent even when Drift matched no call site.\n',
+      );
+    }
     return 0;
   }
 
@@ -2135,7 +2293,9 @@ async function fixPlanAndOpenPR(args: {
   logger.info(
     planOnly
       ? `Reviewing fix plans for ${plan.commits.length} commit(s) — nothing will be applied`
-      : `Fixing ${plan.commits.length} commit(s) on \`${plan.branchName}\` in an isolated worktree`,
+      : plan.commits.length
+        ? `Fixing ${plan.commits.length} commit(s) on \`${plan.branchName}\` in an isolated worktree`
+        : `Fixing what the project's checks report on \`${plan.branchName}\` in an isolated worktree`,
   );
 
   const fix = await runFix({
@@ -2198,7 +2358,12 @@ async function fixPlanAndOpenPR(args: {
       for (const document of fix.documents) console.log(`\n${document}\n`);
     }
 
-    if (fix.needsAgent.length > 0) {
+    // The same reason as above: with the checks measured failing and no
+    // deterministic fix having landed, an agent is owed the upgrade even when
+    // Drift planned no unit for it.
+    const measuredFailureUnfixed =
+      plan.verification?.status === 'failed' && fix.builtinResolved + fix.fixPlanResolved === 0;
+    if (fix.needsAgent.length > 0 || measuredFailureUnfixed) {
       const copilotToken =
         (typeof flags['copilot-token'] === 'string' ? flags['copilot-token'] : undefined) ??
         process.env.DRIFT_COPILOT_TOKEN;
@@ -2229,27 +2394,23 @@ async function fixPlanAndOpenPR(args: {
           logger.warn(`${selection.provider} was selected, but that provider is not available in this CLI runtime.`);
           unresolvedAgentWork = true;
         } else if (agent.capabilities.execution === 'workspace') {
-          const agentRun = await runAgentCommitsInWorktree({
-            repo,
-            plan,
-            config: agentConfig,
-            worktree: fix.worktree,
-            commits: fix.needsAgent,
-            agent,
-            logger,
-          });
-          unresolvedAgentCount = agentRun.unresolved.length;
-          if (agentRun.committed) {
-            fix.pushed = true;
-            await pushWorktreeHead();
+          // One session over the whole upgrade, given the plain task, with
+          // every changed file validated on its own. The
+          // unit-by-unit runner this replaced fixed none of ten real upgrades
+          // a plain agent fixed nearly all of; see `runAgentUpgradeFix`.
+          const agentRun = await runAgentUpgradeFix({ plan, config: agentConfig, worktree: fix.worktree, agent, logger });
+          for (const offender of agentRun.reverted) {
+            logger.warn(`Reverted ${offender.path}: ${offender.reasons.join(' ')}`);
           }
-          if (agentRun.unresolved.length > 0) {
-            for (const failure of agentRun.unresolved) {
-              logger.warn(`Commit ${failure.commit.order} remains unresolved: ${failure.message}`);
-            }
-            unresolvedAgentWork = true;
+          if (agentRun.status === 'committed') {
+            fix.pushed = true;
+            unresolvedAgentCount = 0;
+            await pushWorktreeHead();
+            logger.info(`${agent.label} fixed the upgrade across ${agentRun.kept.length} file(s).`);
           } else {
-            logger.info(`Resolved ${agentRun.resolved.length} commit(s) with ${agent.label}.`);
+            logger.warn(`${agent.label} left the upgrade unresolved: ${agentRun.message}`);
+            unresolvedAgentWork = true;
+            unresolvedAgentCount = Math.max(1, fix.needsAgent.length);
           }
         } else if (isCloudFixAgent(agent)) {
           if (!pushedBranch && !fix.pushed) {
@@ -2361,7 +2522,7 @@ async function resolveCliAgentSelection(args: {
     override,
     runtime: {
       surface: 'cli',
-      interactive: !args.nonInteractive && process.stdin.isTTY,
+      interactive: !args.nonInteractive && canPrompt(),
       eligibleProviders,
       credentials,
     },
@@ -2369,7 +2530,7 @@ async function resolveCliAgentSelection(args: {
 
   if (selection.source !== 'unresolved') return selection;
 
-  if (!args.nonInteractive && process.stdin.isTTY && eligibleProviders.length > 1) {
+  if (!args.nonInteractive && canPrompt() && eligibleProviders.length > 1) {
     const rows: ChoiceInput[] = eligibleProviders.map((candidate) => ({
       value: candidate,
       label: labelForAgentProvider(candidate, registry),
@@ -2448,12 +2609,14 @@ async function dispatchRemainingToCloudAgent(options: {
   config: DriftConfig;
   logger: Logger;
 }): Promise<{ ok: boolean; error?: string }> {
-  if (options.commits.length === 0) return { ok: true };
-  const agentPlan = planForCommits(options.plan, options.commits);
+  // With no planned commit but a failing check, the whole upgrade goes to the
+  // agent. Only an upgrade with neither is empty.
+  if (options.commits.length === 0 && options.plan.verification?.status !== 'failed') return { ok: true };
+  const agentPlan = options.commits.length > 0 ? planForCommits(options.plan, options.commits) : options.plan;
   const result = await options.agent.run(
     {
       plan: agentPlan,
-      commit: agentPlan.commits[0]!,
+      commit: agentPlan.commits[0] ?? wholeUpgradeUnit(agentPlan),
       workspaceRoot: options.repo.workspace ?? '',
       files: [],
       customInstructions: options.config.remediation.customInstructions,

@@ -1,0 +1,82 @@
+# Drift — is this repository already wrong about what it has installed?
+#
+# The main `drift.yml` workflow reacts to a push that changes a manifest, and
+# `drift-outdated.yml` asks what is available to take. This workflow asks the
+# third question, the one `drift check` answers locally: not what an upgrade
+# would do, but whether the code is *already* wrong about the versions on disk.
+#
+# The version installed exports a set of names, this repository imports a set
+# of names, and an import naming something that version does not export is an
+# error that already exists — no upgrade required for it to be true, and no
+# test run to find it. It happens for ordinary reasons: a range resolved
+# forward on a fresh install, a lockfile regenerated on another machine, a
+# dependency bumped without anyone reading what moved.
+#
+# It is worth running on a schedule because the build can pass while it is
+# wrong. A missing type export is invisible at runtime, and a missing runtime
+# export is invisible until the line runs — which may be in production, in a
+# branch nobody exercises, or in an error path.
+#
+# Nothing here creates a branch or opens a pull request: there is no upgrade to
+# take, only code to correct. Each package with a missing name becomes a code
+# scanning alert anchored to the importing line, under its own `drift/check`
+# category so it never retires what the other two workflows found.
+#
+# Copy this file to `.github/workflows/drift-check.yml`, and set
+# `check.enabled: true` in `.github/drift.yml` — this workflow runs on the
+# schedule below either way, but Drift itself declines to check until that
+# config flag is on, the same opt-in gate every other proactive Drift feature
+# uses.
+
+name: Drift (installed versions)
+
+on:
+  schedule:
+    # Every Monday at 08:00 UTC, an hour before the outdated scan. Adjust to
+    # taste — this is not about how often your dependencies change, but how
+    # soon you want to hear that an install resolved somewhere you did not
+    # expect.
+    - cron: '0 8 * * 1'
+
+  # Run it on demand from the Actions tab.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write # upload code scanning alerts
+
+jobs:
+  drift-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v5
+        with:
+          # This job never pushes, and never installs or executes a
+          # dependency's code — it reads published declarations and this
+          # repository's own source. See docs/trust-and-safety.md.
+          persist-credentials: false
+
+      # Restoring this matters more here than for a one-off scan: the check
+      # reads the published API surface of every installed dependency, and
+      # those are keyed by a URL naming an exact version, so a warm cache turns
+      # most of them into a filesystem read instead of a fetch.
+      - name: Restore Drift's evidence cache
+        uses: actions/cache@v4
+        with:
+          path: .drift-cache
+          key: drift-cache-${{ github.run_id }}
+          restore-keys: drift-cache-
+
+      - name: Run Drift
+        id: drift
+        uses: trydrift/drift@v0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          scan-mode: check
+          cache-dir: .drift-cache
+
+      - name: Report outcome
+        if: always()
+        run: echo "${{ steps.drift.outputs.status }}: ${{ steps.drift.outputs.summary }}"

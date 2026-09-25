@@ -1,4 +1,5 @@
 import { dirname, join } from 'node:path';
+import { downloadPom, parsePomContract, type PomContract } from '../evidence/surface/java.js';
 import { readFileSync } from 'node:fs';
 import { readFile, rm, writeFile } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
@@ -59,7 +60,7 @@ import { resolveModuleMaps } from '../localize/modules.js';
 import { buildPlan } from '../plan/index.js';
 import { dependencyEcosystemKey, upstreamUpgradeKey } from '../util/id.js';
 import { compareSeverity, describeSeverity, severityOf, type UpgradeSeverity } from './severity.js';
-import { lookupVersions, versionSourceLabel, type VersionLookup } from './versions.js';
+import { publishedVersions, lookupVersions, versionSourceLabel, type VersionLookup } from './versions.js';
 import { summarize } from './summary.js';
 import { analysisConcurrency, describeParallelism, networkConcurrency } from '../util/parallelism.js';
 import { count, measure, span } from '../util/profile.js';
@@ -76,7 +77,7 @@ import {
 import type { CheckKind } from '../detect/checks.js';
 import { applyVerification, describeVerification } from './verification.js';
 import type { CargoDependencyPlacement } from '../detect/ecosystems/types.js';
-import { versionSemantics } from '../version-semantics.js';
+import { satisfiesPackageRange, comparePackageVersions, versionSemantics } from '../version-semantics.js';
 import {
   isCompiledPythonRequirements,
   isPythonRequirementsInputFile,
@@ -160,6 +161,8 @@ export interface UpgradeCandidate {
   /** That root's display label. */
   repoLabel?: string;
   current: string;
+  /** `current` is assumed from the range, not observed. See `ScanDependency.assumed`. */
+  assumed?: boolean;
   range: string;
   safeLatest?: string;
   /**
@@ -972,6 +975,10 @@ export async function scanUpgrades(args: {
   };
 
   const all: ScanDependency[] = [];
+  // What every manifest declared but nothing could pin a version for. Carried
+  // into the scan result so the report can name it, instead of implying it
+  // was checked and found current.
+  const unresolvedDeps: UncheckedDependency[] = [];
   for (const target of targets) {
     if (!enabled.has(target.manager.ecosystem)) continue;
     report('Reading manifest', target.manifestPath);
@@ -985,9 +992,66 @@ export async function scanUpgrades(args: {
     // a scan that is working from one that is wedged. An empty row with a name
     // on it answers that immediately, and fills itself in as the answers
     // arrive.
-    const room = breadth.maxPackages > 0 ? Math.max(0, breadth.maxPackages - all.length) : found.length;
-    for (const dep of found.slice(0, room)) announce(dep, 'Waiting to be checked');
-    all.push(...found);
+    const room =
+      breadth.maxPackages > 0 ? Math.max(0, breadth.maxPackages - all.length) : found.dependencies.length;
+    for (const dep of found.dependencies.slice(0, room)) announce(dep, 'Waiting to be checked');
+    all.push(...found.dependencies);
+    unresolvedDeps.push(...found.unresolved);
+  }
+
+  // A declared range says which versions are *allowed*, never which one is
+  // installed, so a repository with no lockfile left most of itself
+  // unresolvable: 36 of Express's 44 dependencies, and three quarters of the
+  // average Python project. Nothing was wrong with refusing to invent a
+  // version — but there is one number that is not invented, and it is the one
+  // the developer would get by installing today: the newest published release
+  // the range admits. Checking that is strictly more useful than checking
+  // nothing, provided every renderer says the version was assumed and not
+  // observed, which `assumed` exists to force.
+  if (unresolvedDeps.length > 0) {
+    const stillUnresolved: UncheckedDependency[] = [];
+    await inParallel(unresolvedDeps, networkConcurrency(env), async (entry) => {
+      const ecosystem = entry.ecosystem;
+      // A dependency declared with no constraint at all is not a different
+      // problem from one declared with a loose range. Both say "whatever the
+      // registry has", and both install the newest release today. Python
+      // projects declare this way constantly (six entries in Flask alone, and
+      // 96 across a 50-repository sweep), so treating an absent constraint as
+      // a wildcard is what makes this pass useful beyond npm.
+      const range = entry.current === 'unspecified' ? '*' : entry.current;
+      const target = targets.find((candidate) => candidate.manifestPath === entry.manifestPath);
+      if (!target) {
+        stillUnresolved.push(entry);
+        return;
+      }
+      const published = await publishedVersions({
+        name: entry.name,
+        ecosystem,
+        current: range,
+        range,
+        ...(githubToken ? { githubToken } : {}),
+      }).catch(() => null);
+      const admitted = (published?.versions ?? []).filter(
+        (version) => satisfiesPackageRange(version, range, ecosystem) === true,
+      );
+      const newest = admitted.sort((a, b) => comparePackageVersions(b, a, ecosystem) ?? 0)[0];
+      if (!newest) {
+        stillUnresolved.push(entry);
+        return;
+      }
+      const dep: ScanDependency = {
+        name: entry.name,
+        kind: entry.kind,
+        current: newest,
+        range,
+        assumed: true,
+        target,
+      };
+      announce(dep, 'Waiting to be checked');
+      all.push(dep);
+    });
+    unresolvedDeps.length = 0;
+    unresolvedDeps.push(...stillUnresolved);
   }
 
   const deps = breadth.maxPackages > 0 ? all.slice(0, breadth.maxPackages) : all;
@@ -1025,7 +1089,7 @@ export async function scanUpgrades(args: {
   /** Outdated packages whose analysis has settled — phase two's progress. */
   let done = 0;
   const candidates: UpgradeCandidate[] = [];
-  const unchecked: UncheckedDependency[] = [];
+  const unchecked: UncheckedDependency[] = [...unresolvedDeps];
 
   /**
    * Prepare the test checkouts now, while the analysis is waiting on registries
@@ -2216,6 +2280,11 @@ async function analyzeUpgrade(args: {
     // (potentially differently, after a custom-`dirs` scan) from scratch.
     ...(args.allMembers ? { allMembers: args.allMembers } : {}),
     current: args.dep.current,
+    // Provenance travels with the version it qualifies: every settled
+    // candidate spreads this object, so a renderer printing `current` has the
+    // fact of how `current` was obtained in the same place, and cannot report
+    // a version nobody observed as though the lockfile had stated it.
+    ...(args.dep.assumed ? { assumed: true as const } : {}),
     range: args.dep.range,
     // Passed in, never recomputed here: `args.versions` is the list the caller
     // shows, which is capped, so deriving the in-range version from it silently
@@ -2522,6 +2591,10 @@ function pendingCandidate(args: {
     ...(args.memberName ? { workspaceName: args.memberName } : {}),
     ...(args.repoRoot ? { repoRoot: args.repoRoot, repoLabel: args.repoLabel } : {}),
     current: dep.current,
+    // Travels with the version it qualifies. Every candidate is built from
+    // this object, so a renderer that prints `current` has the provenance of
+    // `current` in the same place and cannot state an assumption as a fact.
+    ...(dep.assumed ? { assumed: true as const } : {}),
     range: dep.range,
     selected: dep.current,
     latest: dep.current,
@@ -2581,6 +2654,18 @@ export interface ScanDependency {
   kind: DependencyKind;
   cargo?: CargoDependencyPlacement;
   current: string;
+  /**
+   * `current` was not observed anywhere — it is the newest published version
+   * satisfying the declared range, which is what a fresh install would get
+   * today.
+   *
+   * A repository with no lockfile states which versions are *allowed*, never
+   * which one is installed. Reporting nothing for those was the old silence
+   * bug; reporting an assumption as an observation would be a worse one, so
+   * it travels with the number and every renderer that prints the number is
+   * obliged to say so.
+   */
+  assumed?: boolean;
   /** The constraint as written in the manifest, e.g. `^1.2.0`. */
   range: string;
   target: EcosystemTarget;
@@ -2595,15 +2680,111 @@ export interface ScanDependency {
  * is permitted, not what is on disk.
  *
  */
+/**
+ * The versions a Maven POM inherits rather than states.
+ *
+ * Maven projects routinely declare a dependency with no version at all: the
+ * number lives in a parent POM, or in a BOM imported into
+ * `dependencyManagement`. Spring Boot is the canonical case — a petclinic pom
+ * names thirty dependencies and states five versions — and reading only the
+ * file in front of us reported the other twenty-five as unresolvable.
+ *
+ * Resolution happens here rather than inside the parser because every
+ * ecosystem implements `parse(content, path)` synchronously, and fetching a
+ * parent POM is network I/O. Making that interface async to serve one
+ * ecosystem would reshape all twelve; doing it after the parse keeps every
+ * parser pure and confines the cost to Maven.
+ *
+ * Bounded and forgiving on purpose: eight levels of inheritance, and any
+ * failure to fetch leaves the dependency exactly as unresolved as it was,
+ * which is the honest answer rather than an invented version.
+ */
+async function mavenInheritedVersions(pomXml: string): Promise<Map<string, string>> {
+  const managed = new Map<string, string>();
+  const properties = new Map<string, string>();
+
+  const resolve = (value: string): string => {
+    let out = value;
+    for (let pass = 0; pass < 4 && out.includes('${'); pass += 1) {
+      out = out.replace(/\$\{([^}]+)\}/g, (whole, key: string) => properties.get(key) ?? whole);
+    }
+    return out;
+  };
+
+  const absorb = (contract: PomContract): string[] => {
+    for (const [key, value] of contract.properties) if (!properties.has(key)) properties.set(key, value);
+    const imports: string[] = [];
+    for (const [key, value] of contract.dependencyManagement) {
+      // `dependencyContracts` joins the contract with "|", version first.
+      const parts = value.split('|');
+      const version = parts[0] ?? '';
+      if (!version) continue;
+      // A BOM is imported, not inherited: its own dependencyManagement is
+      // where spring-boot-dependencies keeps the numbers everything else uses.
+      if (parts.includes('import')) imports.push(`${key}:${version}`);
+      else if (!managed.has(key)) managed.set(key, version);
+    }
+    return imports;
+  };
+
+  let contract: PomContract;
+  try {
+    contract = parsePomContract(pomXml);
+  } catch {
+    return managed;
+  }
+
+  // Coordinates still to read: imported BOMs and the parent chain. Both are
+  // read the same way — fetch the pom, take its managed versions — so they
+  // share one queue.
+  const queue: string[] = absorb(contract);
+  if (contract.parent) queue.push(contract.parent);
+
+  const seen = new Set<string>();
+  for (let depth = 0; depth < 8 && queue.length > 0; depth += 1) {
+    const next = queue.shift()!;
+    const [groupId, artifactId, rawVersion] = next.split(':');
+    if (!groupId || !artifactId || !rawVersion) continue;
+    const version = resolve(rawVersion);
+    const id = `${groupId}:${artifactId}:${version}`;
+    if (seen.has(id) || version.includes('${')) continue;
+    seen.add(id);
+
+    const attempt = await downloadPom({ groupId, artifactId }, version);
+    if (!attempt.ok) continue;
+    for (const bom of absorb(attempt.contract)) queue.push(bom);
+    if (attempt.contract.parent) queue.push(attempt.contract.parent);
+  }
+
+  for (const [key, value] of managed) managed.set(key, resolve(value));
+  return managed;
+}
+
+export interface DirectDependencies {
+  /** Declared dependencies whose current version is known, so a scan can check them. */
+  dependencies: ScanDependency[];
+  /**
+   * Declared dependencies whose current version could not be pinned down.
+   *
+   * These used to be dropped on the floor, which is the one thing this
+   * codebase refuses to do everywhere else: a repository with no lockfile
+   * got a confident verdict about a fraction of itself and no mention of
+   * the rest. Measured on 2026-09-13: 8 of 44 dependencies were scanned in
+   * the Express repository, and 5 of 30 in Spring PetClinic, each reported
+   * as though it were the whole answer.
+   */
+  unresolved: UncheckedDependency[];
+}
+
 export async function directDependencies(
   root: string,
   target: EcosystemTarget,
   includeDev: boolean,
   fs: WorkspaceFs,
-): Promise<ScanDependency[]> {
+): Promise<DirectDependencies> {
   const parser = parserFor(target.manifestPath);
   const content = await fs.readFile(join(root, target.manifestPath));
-  if (!parser || content === null) return [];
+  if (!parser || content === null) return { dependencies: [], unresolved: [] };
 
   const declared = parser.parse(content, target.manifestPath);
 
@@ -2621,7 +2802,8 @@ export async function directDependencies(
     ? ['runtime', 'dev', 'optional', 'peer']
     : ['runtime'];
 
-  const out: ScanDependency[] = [];
+  const dependencies: ScanDependency[] = [];
+  const unresolved: UncheckedDependency[] = [];
   for (const [name, entry] of declared) {
     if (!kinds.includes(entry.kind)) continue;
     const ecosystem = target.manager.ecosystem;
@@ -2630,8 +2812,29 @@ export async function directDependencies(
     const current = resolved
       ? (semantics.exactVersion(resolved) ?? semantics.parse(resolved)?.raw ?? null)
       : semantics.exactVersion(entry.version ?? '');
-    if (!current) continue;
-    out.push({
+    if (!current) {
+      // Not knowing which version you are on is not the same as being fine.
+      // Without a lockfile a range says which versions are allowed, never
+      // which one is installed, and a Maven dependency can state no version
+      // at all because a parent POM sets it. Either way there is nothing to
+      // compare against, which is a gap to declare rather than a row to drop.
+      const declaredRange = entry.version?.trim() ?? '';
+      unresolved.push({
+        name,
+        kind: entry.kind,
+        ecosystem,
+        packageManager: target.manager.id,
+        manifestPath: target.manifestPath,
+        current: declaredRange || 'unspecified',
+        reason: declaredRange
+          ? `no lockfile entry, and "${declaredRange}" is a range rather than one version`
+          : ecosystem === 'maven'
+            ? 'no version here and none in a lockfile — it is set by a parent POM or an imported BOM, which Drift does not fetch yet'
+            : 'no version declared here, and no lockfile entry to resolve one from',
+      });
+      continue;
+    }
+    dependencies.push({
       name,
       kind: entry.kind,
       ...(entry.cargo ? { cargo: entry.cargo } : {}),
@@ -2641,7 +2844,28 @@ export async function directDependencies(
     });
   }
 
-  return out;
+  // Versions this pom inherits instead of stating. Attempted only when
+  // something actually went unresolved, so a fully-pinned pom pays nothing.
+  if (unresolved.length > 0 && target.manager.ecosystem === 'maven' && target.manifestPath.endsWith('pom.xml')) {
+    const inherited = await mavenInheritedVersions(content);
+    if (inherited.size > 0) {
+      const semantics = versionSemantics('maven');
+      const stillUnresolved: UncheckedDependency[] = [];
+      for (const entry of unresolved) {
+        const inheritedVersion = inherited.get(entry.name);
+        const exact = inheritedVersion ? semantics.exactVersion(inheritedVersion) : null;
+        if (!exact) {
+          stillUnresolved.push(entry);
+          continue;
+        }
+        dependencies.push({ name: entry.name, kind: entry.kind, current: exact, range: inheritedVersion ?? exact, target });
+      }
+      unresolved.length = 0;
+      unresolved.push(...stillUnresolved);
+    }
+  }
+
+  return { dependencies, unresolved };
 }
 
 /** Rebuild the manifest/manager pairing a candidate came from. */

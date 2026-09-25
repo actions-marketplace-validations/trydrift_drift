@@ -11,7 +11,24 @@ dependency bump → what changed upstream? → where does it bite here? → is i
      detect             evidence                  localize              rationale       dispatch
 ```
 
+One command sits outside that flow. `drift check` starts with no bump at all: it
+asks whether this repository is already wrong about the versions it has
+installed. The API of the version on disk is read, every name the code imports
+is checked against it, and an import naming something that version does not
+export is an error that exists right now — nothing to upgrade, nothing to
+decide. A build can pass while it is wrong, because a missing type export is
+invisible at runtime and a missing runtime export is invisible until the line
+runs.
+
 Drift does not merge changes for you.
+
+Put another way: Drift researches what changed in a dependency and traces
+those changes into your code *before* a coding agent starts remediation.
+Instead of making the agent rediscover the migration from scratch, it hands
+the agent targeted evidence and the affected code locations. Whether that
+actually helps — fewer agent input tokens, more successful fixes, on the same
+task with the same model — is measured rather than asserted; see the
+[agent benchmark](../eval/agent/README.md).
 
 ## What Drift optimizes for
 
@@ -76,6 +93,7 @@ Drift is currently an MVP. Known limitations are documented rather than hidden; 
 
 ## License
 
-Drift is free and source-available under the PolyForm Shield 1.0.0 license. You may read it, run it, modify it, and use it at work; the license restricts using Drift to build a competing product.
+Drift is open source under the MIT license. You may use, copy, modify,
+distribute, sublicense, and sell copies of it, subject to the license notice.
 
 See [LICENSE](../LICENSE) for the license text.

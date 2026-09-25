@@ -262,8 +262,8 @@ export default function Home() {
         {/* ── The agent path ──────────────────────────────────────────── */}
         {/*
           The differentiator that is hardest to copy, and the one install line
-          that changes what the tool is. Kept to a claim, a command and the two
-          tool names — an agent user does not need a tour.
+          that changes what the tool is. Kept to a claim, a command and the
+          three tool names — an agent user does not need a tour.
         */}
         <section className="pt-16 sm:pt-24">
           <div className="rounded-2xl border border-border bg-surface/75 px-6 py-8 sm:px-10 sm:py-10">
@@ -289,7 +289,11 @@ export default function Home() {
               <li>
                 <code className="text-foreground">explain_upgrade</code> — what changed, and the exact lines
               </li>
-              <li>Local stdio. No service, no account, nothing leaves the machine.</li>
+              <li>
+                <code className="text-foreground">check_installed</code> — names imported that the installed
+                version does not export
+              </li>
+              <li>Runs locally over stdio. No Drift service or account; evidence comes directly from upstream registries.</li>
             </ul>
           </div>
         </section>
@@ -451,18 +455,13 @@ export default function Home() {
             Talk to us
           </a>
           <Link href={FEATURE_BOARD} className="transition-colors hover:text-foreground">Feature requests</Link>
-          {/*
-            Free to use, modify and build on; not OSI open source. Someone
-            deciding whether to depend on Drift should be able to learn that
-            here rather than from the licence file after they have installed it.
-          */}
           <a
             href={`${GITHUB}/blob/main/LICENSE.md`}
             target="_blank"
             rel="noreferrer"
             className="transition-colors hover:text-foreground"
           >
-            Source-available (PolyForm Shield)
+            MIT licensed
           </a>
           <span className="ml-auto">
             Every sample on this page is a real run against the linked commit.

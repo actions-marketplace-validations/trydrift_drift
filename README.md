@@ -2,9 +2,9 @@
 
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/trydrift/drift/badge)](https://scorecard.dev/viewer/?uri=github.com/trydrift/drift)
 [![CI](https://github.com/trydrift/drift/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/trydrift/drift/actions/workflows/ci.yml)
-[![License: PolyForm Shield 1.0.0](https://img.shields.io/badge/license-PolyForm%20Shield%201.0.0-blue)](LICENSE.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE.md)
 
-**Dependency upgrades, checked against your code.** Drift downloads both published versions, diffs their real API, and searches your repository for the code that uses whatever changed. It never guesses, and it never merges for you.
+**Dependency upgrades, checked against your code.** Drift downloads both published versions, diffs their real API, and searches your repository for the code that uses whatever changed. It keeps uncertainty visible, and it never merges for you.
 
 ```console
 $ drift outdated
@@ -68,6 +68,12 @@ Drift is scored against public research corpora, including two with real negativ
 
 Recall against consumer-impact corpora (BUMP, SWE-Bump, TimeMachine) is reported separately, because those are positives-only and cannot support a precision. Every number, every refusal to compute one, and the runs behind them: **[benchmarks](https://trydrift.github.io/drift/benchmarks/)**.
 
+### What Fix with AI is, and is not
+
+Detection is one question; fixing is another. **Fix with AI** hands the upgrade to the coding agent you selected, as one session over whatever you pressed it on — the whole upgrade, one package, or one concern — and then judges the result: every file the session changed is validated on its own, and a file that breaks a rule (a protected path, a weakened test or configuration, a downgraded dependency) is reverted while the rest is kept.
+
+What it does **not** do is hand the agent Drift's findings as its instructions. Measured on real upgrades with hidden compatibility tests, findings in the prompt made the agent fix what was listed and stop looking, so a session is given the task a developer would give it. Drift's analysis stays where it belongs: in the report a human reads, and in the [agent interface](docs/agent-interface.md) an agent can query when it wants it. Drift claims no accuracy or token advantage over the same agent working alone; the paired benchmark behind that statement runs on every change to this path, and its publication gates are what keep a number off this page until one earns it.
+
 ## What Drift will not tell you
 
 - **That an upgrade is safe, without evidence.** When the API surface cannot be computed, the verdict is `insufficient-evidence`, not "clean".
@@ -87,6 +93,8 @@ drift outdated
 claude mcp add drift -- npx -y @usedrift/cli mcp
 ```
 
+An agent fixing an upgrade calls `plan_upgrade` and gets a short plan (under 2,300 tokens) with only the findings that reach your code, then pulls a finding or its evidence by id when it needs more (`get_finding`, `get_evidence`), and runs your checks with `verify_upgrade`. The full report stays for people. See [the agent interface](docs/agent-interface.md); `drift analyze --agent` prints the same plan without MCP.
+
 **VS Code** — install *Drift — Safe Dependency Upgrades* (`drift.usedrift`) · [docs](extension/README.md)
 
 **GitHub Action** — copy [`examples/workflows/drift.yml`](examples/workflows/drift.yml); approval mode is the default.
@@ -103,6 +111,7 @@ claude mcp add drift -- npx -y @usedrift/cli mcp
 | --- | --- |
 | `drift outdated` | Find available upgrades and check their impact. |
 | `drift analyze` | Check a dependency change already in git. |
+| `drift check` | Whether this code is already wrong about the versions it has installed. |
 | `drift upgrade` | Install only the upgrades Drift found safe. |
 | `drift fix` | Prepare fixes, push a branch, open a PR. |
 | `drift explain <package>` | What changed in one upgrade, and where it lands. |
@@ -111,24 +120,32 @@ claude mcp add drift -- npx -y @usedrift/cli mcp
 
 Add `--verify` to install each upgrade in a scratch worktree and run your project's own checks against it.
 
+`drift check` is the one that asks nothing about upgrades. The version on disk exports a set of names, this repository imports a set of names, and an import naming something that version does not export is an error that already exists — no upgrade required for it to be true, and no test run to find it. It happens for ordinary reasons: a range resolved forward on a fresh install, a lockfile regenerated on another machine, a dependency bumped without anyone reading what moved.
+
+```console
+$ drift check
+
+1 import in 1 file names something the installed version does not export.
+
+  src/app.js:1  GlobSync  —  not exported by glob@13.0.6
+
+Checked 2 packages against 2 files.
+
+This compares the names your code imports against the API of the version on disk.
+It does not follow member access through an imported object, so a clean result
+means every name you import exists — not that your use of the package is correct.
+```
+
+That last paragraph is printed on every run, clean or not, along with a count of what could not be checked and why. In an [internal cold-cache sweep across 50 public repositories](https://github.com/trydrift/drift/pull/308) — jest, nest, eslint, prettier, react-router, vue, axios and more — Drift checked 372 packages and reported **zero findings**. It also declined to judge 179 packages it was asked about, because their API could not be enumerated from the published declarations: a name missing from a surface Drift cannot read is not evidence of anything, and saying so is the difference between a finding and a guess.
+
 ## Ecosystems
 
 npm, PyPI and Maven are the three measured against research corpora. Detection also covers Go, Cargo, NuGet, Packagist, RubyGems, Hex, Pub, Conan, vcpkg, Swift, CocoaPods, OPAM and Arduino — with capabilities per ecosystem in [supported ecosystems](docs/support.md).
 
 ## License
 
-[PolyForm Shield 1.0.0](LICENSE.md). Drift is free and source-available — read
-it, run it, modify it, build on it, use it at work and on private code. There
-is no paid tier, no seat count and no usage limit.
-
-It is **not** an OSI-approved open-source license, which is said here rather
-than left in a file for you to discover. The one thing it does not permit is
-using Drift to build a product that competes with Drift — and that covers a
-free competitor, not only a resold one. Everything else is a permitted purpose.
-If you redistribute Drift or something built from it, pass these terms along.
-
-If your case looks unclear, [ask](https://github.com/trydrift/drift/issues)
-before assuming the answer is no.
+Drift is [MIT licensed](LICENSE.md). You may use, copy, modify, distribute,
+sublicense, and sell copies of it, subject to the license notice.
 
 ## Documentation
 

@@ -176,6 +176,16 @@ export interface ViewModel {
    * occasionally swallowed the last keystroke of a fast typist.
    */
   draftToken: number;
+  /**
+   * The window is in Restricted Mode, so Drift may not run anything yet.
+   *
+   * Everything the panel offers ends in a git command, a package manager or an
+   * agent binary, so in an untrusted workspace the buttons are all dead. Saying
+   * so is the whole point of the flag: a panel that rendered its usual
+   * invitations here would be inviting the developer to press things that
+   * silently do nothing.
+   */
+  untrusted?: boolean;
   /** Host-backed views load package evidence only when its disclosure opens. */
   lazyCandidateDetails?: boolean;
   /** Namespaces the typewriter's per-message bookkeeping. */
@@ -192,6 +202,11 @@ export const SLASH_COMMANDS: readonly SlashCommand[] = [
     name: '/recent',
     title: 'Check the last dependency change',
     description: 'Analyse the dependency change already in your git history',
+  },
+  {
+    name: '/check',
+    title: 'Check against installed versions',
+    description: 'Whether this code is already wrong about the versions it has installed — no upgrade involved',
   },
   {
     name: '/verify',
@@ -314,6 +329,25 @@ export function renderBody(vm: ViewModel): string {
 /* ------------------------------------------------------------------ */
 
 function renderWelcome(vm: ViewModel, compact = false): string {
+  // Restricted Mode first, because in it none of the invitations below can be
+  // honoured: every one of them ends in a git command or a package manager.
+  // The developer usually arrives here having just dismissed VS Code's trust
+  // dialog — or having never seen it, in a Codespace that opened untrusted —
+  // and an empty panel is the one thing that cannot tell them which it was.
+  if (vm.untrusted) {
+    return `<div class="welcome ${compact ? 'compact' : ''}">
+      ${compact ? '' : `<div class="mark">${LOGO}</div>`}
+      <h2>Drift is waiting for you to trust this folder</h2>
+      <p>VS Code is in Restricted Mode, so nothing here may run a git command or read a lockfile yet — which is everything Drift does. Nothing has been analysed.</p>
+      <div class="suggestions">
+        <button data-action="command" data-command="workbench.trust.manage">
+          <span class="icon">${ICON_INFO}</span>
+          <span><b>Trust this folder</b><small>Then Drift analyses the change straight away</small></span>
+        </button>
+      </div>
+    </div>`;
+  }
+
   return `<div class="welcome ${compact ? 'compact' : ''}">
     ${compact ? '' : `<div class="mark">${LOGO}</div>`}
     <h2>Which upgrades actually break your code?</h2>
@@ -1684,8 +1718,8 @@ function renderCandidateDetail(candidate: UpgradeCandidate, plan: RemediationPla
     ${
       unmatched.length
         ? `<details class="sub" data-key="unmatched:${escapeAttr(candidate.name)}">
-            <summary>${unmatched.length} upstream change${unmatched.length === 1 ? '' : 's'} that ${unmatched.length === 1 ? 'does' : 'do'} not touch your code</summary>
-            <p class="hint">Drift found ${unmatched.length === 1 ? 'this' : 'these'} in the release notes, then searched this repository for the affected APIs and found nothing. Listed so you can check the reasoning, not because there is anything to do.</p>
+            <summary>${unmatched.length} upstream change${unmatched.length === 1 ? '' : 's'} with no local match found</summary>
+            <p class="hint">Drift found ${unmatched.length === 1 ? 'this change' : 'these changes'} upstream but located no matching use in this repository. A static search alone cannot prove the upgrade is safe; review the evidence and verification result.</p>
             ${unmatched.map((change) => renderBreak(candidate, change, plan, false, lazySections)).join('')}
           </details>`
         : ''

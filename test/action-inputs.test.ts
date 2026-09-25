@@ -42,6 +42,44 @@ describe('verify-mode input', () => {
 });
 
 /**
+ * `scan-mode` chooses which question the Action asks, and the three are not
+ * interchangeable: `diff` judges the push that triggered the run, `outdated`
+ * scans every installed dependency against its registry, and `check` asks
+ * whether the code is already wrong about the versions on disk.
+ *
+ * Only an exact literal counts. An unrecognised value must read as unset —
+ * falling through to the push-triggered default — rather than being coerced
+ * into one of the two proactive modes, each of which uploads code scanning
+ * alerts under its own replacement category. A typo that silently selected a
+ * mode would retire the alerts of the mode the workflow actually wanted.
+ */
+describe('scan-mode input', () => {
+  test('unset means the push-triggered diff, not a proactive scan', () => {
+    assert.equal(readInputs().scanMode, undefined);
+  });
+
+  test('"outdated" is read as outdated', () => {
+    process.env['INPUT_SCAN-MODE'] = 'outdated';
+    assert.equal(readInputs().scanMode, 'outdated');
+  });
+
+  test('"check" is read as check', () => {
+    process.env['INPUT_SCAN-MODE'] = 'check';
+    assert.equal(readInputs().scanMode, 'check');
+  });
+
+  test('"diff" is read as diff, explicitly', () => {
+    process.env['INPUT_SCAN-MODE'] = 'diff';
+    assert.equal(readInputs().scanMode, 'diff');
+  });
+
+  test('an unrecognised value is not silently accepted as a scan mode', () => {
+    process.env['INPUT_SCAN-MODE'] = 'installed';
+    assert.equal(readInputs().scanMode, undefined);
+  });
+});
+
+/**
  * `dependency-scope` is the Action's equivalent of the extension's
  * `drift.analysis.dependencyScope` and the CLI's `--no-dev` — it must default
  * to unset (deferring to `triggerOn.dev` in drift.yml, unchanged from before

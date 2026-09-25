@@ -31,6 +31,7 @@ import { connectAnthropic } from './analyze/llm.js';
 import { findCommunityRecipe } from './remediation/registry.js';
 import type { CommunityRecipeCandidate } from './remediation/types.js';
 import { buildPlan } from './plan/index.js';
+import { resolveMeasuredPath } from './verification/measured-path.js';
 import { buildRationale } from './rationale/index.js';
 import {
   findNodeDeclarations,
@@ -45,7 +46,7 @@ import { behaviouralFindingKind, runBehaviouralVerification } from './verificati
 import { fetchedPackageEnvironment } from './verification/environment.js';
 import { probeDependencyChange, type UpgradeVerification } from './verification/upgrade-probe.js';
 import type { VerificationDiagnostic } from './verification/diagnostics.js';
-import { applyVerificationToPlan, combineVerifications, describeVerification } from './verification/apply.js';
+import { applyVerificationToPlan, combineVerifications, describeVerification, reconcileVerificationGap } from './verification/apply.js';
 import { detectPackageManagers, type PackageManagerId } from './detect/package-manager.js';
 import type { CheckKind } from './detect/checks.js';
 import { dependencyEcosystemKey } from './util/id.js';
@@ -913,7 +914,7 @@ async function verifyPlan(
   }
 
   const combined = combineVerifications(parts);
-  if (combined) verifiedPlan = { ...verifiedPlan, verification: combined };
+  if (combined) verifiedPlan = reconcileVerificationGap({ ...verifiedPlan, verification: combined });
 
   // A verification failure is evidence of real breakage even where static
   // analysis predicted none — the exact case a green build was supposed to
@@ -1105,9 +1106,15 @@ async function measuredSitesFrom(
 
   for (const diagnostic of diagnostics) {
     if (/(^|\/)(node_modules|\.venv|venv|site-packages|target\/|dist\/|build\/)/.test(diagnostic.file)) continue;
-    let file = dir && !diagnostic.file.startsWith(`${dir}/`) ? `${dir}/${diagnostic.file}` : diagnostic.file;
+    let file: string;
     if (diagnostic.origin === 'stack-frame') {
       const resolved = await resolveStackFrameFile(workspace, dir, diagnostic.file, await moduleDirs());
+      if (!resolved) continue;
+      file = resolved;
+    } else {
+      // The invariant every other format relies on: a measured site names a
+      // real file in this checkout. See `resolveMeasuredPath`.
+      const resolved = await resolveMeasuredPath(workspace, dir, diagnostic.file);
       if (!resolved) continue;
       file = resolved;
     }

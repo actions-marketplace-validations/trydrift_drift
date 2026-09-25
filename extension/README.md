@@ -26,6 +26,7 @@ Type `/` for commands:
 |---|---|
 | `/scan` | Check every dependency for a newer version and what would break |
 | `/recent` | Analyse the dependency change already in your git history |
+| `/check` | Whether this code is already wrong about the versions it has installed — no upgrade involved |
 | `/upgrade <package>` | Upgrade one package and check the impact |
 | `/upgrade-all` | Install every upgrade that does not affect your code |
 | `/fix [package]` | Fix the affected code — deterministically, via a recipe, or with your AI agent |
@@ -86,7 +87,7 @@ In the editor:
 - the file header shows the change count and offers **Keep file** / **Undo file** / the native side-by-side diff;
 - `Alt+D` jumps to the next unresolved change.
 
-In the panel, the change list groups files by planned commit, shows `+`/`−` per file, and opens the real diff editor on click. **Keep & commit** on a group commits exactly the files the plan named for it — one commit per concern, so `git revert` and `git bisect` stay meaningful. **Undo** restores the file through the workspace API, so it lands in your normal undo stack too.
+In the panel, the change list groups files by fix, shows `+`/`−` per file, and opens the real diff editor on click. **Fix with AI** fixes exactly what you pressed it on — the whole upgrade, one package's upgrade, or one concern — and the agent may change any file that fix needs except a protected one; a file whose change breaks a rule (a protected path, a weakened test or configuration, a downgraded dependency) is reverted and the rest kept. **Keep & commit** on a group commits exactly the files that fix changed and you kept. **Undo** restores the file through the workspace API, so it lands in your normal undo stack too.
 
 Drift commits automatically once you keep a group. Shipping is a separate, explicit step — **Push branch**, or **Drift: Push the Fix Branch and Open a Pull Request**. It pushes the branch, then raises the pull request: directly through the GitHub CLI if you have one installed and signed in, and otherwise by opening GitHub's own pull request page for the branch. Drift never force-pushes and never merges.
 
@@ -149,6 +150,7 @@ Two deliberately separate actions:
 | **Drift: Conversation History** | Reopen an earlier conversation |
 | **Drift: Clear Conversation History** | Delete every saved conversation in this workspace |
 | **Drift: Check for Breaking Changes** | Analyse the dependency change in git |
+| **Drift: Check Code Against Installed Versions** | Whether this code is already wrong about the versions installed — no upgrade involved |
 | **Drift: Review Changes** | Open the panel on what's waiting |
 | **Drift: Go to Next Change** | Jump to the next unresolved hunk (`Alt+D`) |
 | **Drift: Keep All Changes** / **Undo All Changes** | Resolve everything at once |
@@ -198,6 +200,5 @@ Stated plainly, because a tool that hides these hasn't earned trust:
 
 ## License
 
-PolyForm Shield 1.0.0. Drift is free and source-available — read it, run it,
-modify it, use it at work. It is not an OSI-approved open-source license: the
-one thing it does not permit is building a competing product with it.
+[MIT licensed](LICENSE.md). You may use, copy, modify, distribute, sublicense,
+and sell copies of Drift, subject to the license notice.

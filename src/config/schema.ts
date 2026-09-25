@@ -271,7 +271,14 @@ export const DriftConfigSchema = z.object({
           model: z.string().optional(),
           effort: AGENT_EFFORT.optional(),
           fast: z.boolean().default(false),
-          timeoutSeconds: z.number().int().min(30).max(24 * 60 * 60).default(600),
+          /**
+           * How long one agent session may run. A fix is one session for the
+           * whole of what was chosen, where it used to be one per planned unit,
+           * each with this limit; and measured on ten real upgrades an agent
+           * with no Drift around it took 3 to 30 minutes, the larger ones
+           * 15 to 30. Ten minutes stopped those mid-fix.
+           */
+          timeoutSeconds: z.number().int().min(30).max(24 * 60 * 60).default(1800),
         })
         .prefault({}),
       /** Extra repo-specific guidance appended to every agent task. */
@@ -663,6 +670,32 @@ export const DriftConfigSchema = z.object({
    * dependency bump — see `runOutdatedScan` in `runners/action.ts`.
    */
   outdated: z
+    .object({
+      enabled: z.boolean().default(false),
+    })
+    .prefault({}),
+
+  /**
+   * Whether this repository is already wrong about the versions it has
+   * installed — the question `drift check` asks locally, asked in CI.
+   *
+   * Not an upgrade question, and deliberately not part of the push-triggered
+   * pipeline: there is no version change to diff and no candidate to weigh.
+   * The version on disk exports a set of names, the code imports a set of
+   * names, and an import naming something that version does not export is an
+   * error that already exists. A build can pass while it is wrong, because a
+   * missing type export is invisible at runtime and a missing runtime export
+   * is invisible until the line runs.
+   *
+   * Off by default, like every other proactive mode: it needs a `schedule` or
+   * a `workflow_dispatch` of its own — see
+   * `examples/workflows/drift-check.yml`. Each finding becomes a code
+   * scanning alert anchored to the importing line, under its own
+   * `drift/check` category so it never reconciles away what the other modes
+   * found. This mode never commits, branches, or opens a pull request: there
+   * is no upgrade to take, only code to correct.
+   */
+  check: z
     .object({
       enabled: z.boolean().default(false),
     })

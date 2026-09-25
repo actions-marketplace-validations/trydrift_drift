@@ -106,7 +106,7 @@ jobs:
           node-version: 22
           cache: npm
 
-      - uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v5
         with:
           python-version: '3.12'
 
@@ -187,7 +187,7 @@ jobs:
           node-version: 22
           cache: npm
 
-      - uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v5
         with:
           python-version: '3.12'
 
@@ -261,7 +261,7 @@ jobs:
         run: node site/scripts/validate-recordings.mjs --allow-stale --fresh-from-git
 
       - name: Open a pull request
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           commit-message: 'chore(site): re-record the landing page demos'
           title: 'chore(site): re-record the landing page demos'

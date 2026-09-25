@@ -176,6 +176,11 @@ export interface SurfaceChange {
   /** The old declaration kind, set for removals and kind changes. */
   fromKind?: string;
   toKind?: string;
+  /**
+   * The symbol the new version publishes in this one's place, when the two
+   * surfaces establish it (see {@link inferReplacement}).
+   */
+  replacement?: string;
   moduleSystem?: {
     from?: ModuleSystem;
     to?: ModuleSystem;
@@ -343,7 +348,7 @@ export function clearTypeSurfaceCache(): void {
  * cannot change, so the only way this cache can be wrong is an unbumped parser
  * change, not staleness.
  */
-const SURFACE_PARSER_VERSION = 3;
+const SURFACE_PARSER_VERSION = 6;
 
 /** Storable form of {@link TypeSurface} — `Map` is not JSON. */
 type StoredSurface = Omit<TypeSurface, 'api'> & { api: [string, SurfaceEntry][] };
@@ -428,36 +433,55 @@ async function computeTypeSurface(
   let entryPath = options.subpath
     ? await resolveSubpathTypesEntry(packageName, version, manifest, options.subpath)
     : await resolveOwnTypesEntry(packageName, version, manifest);
-  let sources = entryPath
+  let collected = entryPath
     ? await measure('surface-sources', packageName, () =>
         collectDeclarationSources(packageName, version, entryPath!),
       )
-    : [];
+    : { sources: [] as DeclarationSource[], truncated: false };
 
   // jsDelivr is the low-latency path, not the authority. If it cannot produce
   // a declaration surface, inspect the exact immutable artifact named by the
   // npm registry. A successful archive inspection can prove absence; a failed
   // download or malformed archive cannot.
-  if (!entryPath || sources.length === 0) {
+  if (!entryPath || collected.sources.length === 0) {
     const artifact = await fetchNpmArtifact(packageName, version);
     if (!artifact) throw new ArtifactUnavailableError(packageName, version);
     manifest = artifact.manifest;
-    entryPath = resolveOwnTypesEntryFromListing(packageName, manifest, artifact.files);
+    // A subpath that publishes no declarations is not the package root. `pino`
+    // ships `lib/symbols.js` and no `lib/symbols.d.ts`, so this fallback
+    // handed back `pino.d.ts` and `require('pino/lib/symbols')` was judged
+    // against the root API — which does not export `streamSym`, and reported
+    // it missing from a file that never imported the root at all. There is no
+    // surface for that entry point, and saying so is the honest answer.
+    entryPath = options.subpath
+      ? await resolveSubpathTypesEntryFromListing(manifest, options.subpath, artifact.files)
+      : resolveOwnTypesEntryFromListing(packageName, manifest, artifact.files);
     if (entryPath) {
-      sources = await measure('surface-sources', packageName, () =>
+      collected = await measure('surface-sources', packageName, () =>
         collectDeclarationSources(packageName, version, entryPath!, artifact),
       );
-      if (sources.length === 0) throw new ArtifactUnavailableError(packageName, version);
+      if (collected.sources.length === 0) throw new ArtifactUnavailableError(packageName, version);
     }
   }
 
   if (!entryPath) {
-    entryPath = await resolveDefinitelyTypedEntry(packageName, version);
+    // The subpath has to reach here too. DefinitelyTyped ships a declaration
+    // file per entry point — `@types/react-dom` publishes `client.d.ts` and
+    // `server.d.ts` beside its index — and resolving every one of them to the
+    // index meant `react-dom/client` was judged against a surface that does
+    // not export `hydrateRoot`. The own-types path above already threads it
+    // through `resolveSubpathTypesEntry`; this branch did not.
+    entryPath = await resolveDefinitelyTypedEntry(packageName, version, options.subpath);
     if (!entryPath) return null;
-    sources = await measure('surface-sources', packageName, () =>
+    collected = await measure('surface-sources', packageName, () =>
       collectDeclarationSources(packageName, version, entryPath!),
     );
   }
+  const sources = collected.sources;
+  // Whether the declaration walk read the package's whole graph. Folded into
+  // `incomplete` below, because a surface assembled from a quarter of a
+  // package cannot support a claim that a symbol is absent from it.
+  const sourcesTruncated = collected.truncated;
   count('surface.declarationFiles', sources.length);
   if (sources.length === 0) return null;
 
@@ -466,7 +490,7 @@ async function computeTypeSurface(
   // one does not contain, so aliases are resolved after every source has been
   // parsed rather than as each is read.
   const aliases: ExportAlias[] = [];
-  for (const source of sources) extractExports(source.content, source.path, api, aliases);
+  for (const source of sources) extractExports(source.content, source.path, api, aliases, packageName);
   resolveAliases(api, aliases);
   resolveInheritedMembers(api);
 
@@ -486,7 +510,12 @@ async function computeTypeSurface(
           viaDependencies: dependencyMerge.followed,
           ownSymbols,
           subpaths: subpathsOf(manifest?.exports),
-          incomplete: dependencyMerge.incomplete,
+          // Two different ways of not having read the whole API, and either is
+          // enough to make an absence meaningless: a public re-export edge that
+          // could not be expanded, or a declaration graph larger than the file
+          // budget. The second was silent until now, which is how a surface
+          // holding 25 of graphql's 116 files reported itself complete.
+          incomplete: dependencyMerge.incomplete || sourcesTruncated,
         }
       : null;
 
@@ -1014,7 +1043,33 @@ async function mergeDependencySurfaces(
   traversal: ReexportTraversal | undefined,
 ): Promise<DependencyMergeResult> {
   const declared = { ...manifest?.dependencies, ...manifest?.peerDependencies };
-  if (Object.keys(declared).length === 0) return { followed: [], attempted: false, incomplete: false };
+
+  // An `export * from '<module>'` whose package this manifest does not declare
+  // can never be followed, and dropping it silently is how a surface came back
+  // claiming to be whole while missing an entire module's exports.
+  //
+  // `@types/graceful-fs` is the case, and it is one line long:
+  //
+  //     export * from "fs";
+  //
+  // `fs` is a Node builtin, so it is in no manifest. This has to be computed
+  // before the no-dependencies return below, not after: `graceful-fs` declares
+  // no dependencies at all, so that return is the one that fires, and a check
+  // placed after it never runs for precisely the packages it exists for. The
+  // surface reported `incomplete: false` holding one symbol — `gracefulify` —
+  // and every other name it re-exports was called missing from a list that
+  // said it was complete.
+  //
+  // Only star edges count. A named re-export names what it takes, so the
+  // symbols it contributes are known even when the target is not read; a star
+  // takes everything, and what "everything" is cannot be known without it.
+  const unfollowableStar = [...externalReferences(sources, api)].some(
+    ([specifier, reference]) => reference.star && !declared[packageOfSpecifier(specifier)],
+  );
+
+  if (Object.keys(declared).length === 0) {
+    return { followed: [], attempted: false, incomplete: unfollowableStar };
+  }
 
   const depth = traversal?.depth ?? 0;
   const budget = traversal?.budget ?? { remaining: MAX_TOTAL_FOLLOWED_PACKAGES };
@@ -1034,8 +1089,9 @@ async function mergeDependencySurfaces(
       return { specifier, reference, pkg, subpath };
     })
     .filter((edge) => declared[edge.pkg]);
+
   const attempted = wanted.length > 0;
-  if (!attempted) return { followed: [], attempted: false, incomplete: false };
+  if (!attempted) return { followed: [], attempted: false, incomplete: unfollowableStar };
 
   const followed: string[] = [];
   let incomplete = false;
@@ -1166,7 +1222,7 @@ async function mergeDependencySurfaces(
     if (merged > 0) followed.push(`${entry.specifier}@${entry.resolved}`);
   }
 
-  return { followed, attempted, incomplete };
+  return { followed, attempted, incomplete: incomplete || unfollowableStar };
 }
 
 /**
@@ -1359,6 +1415,29 @@ function resolveOwnTypesEntryFromListing(
   return typeEntryCandidates(packageName, pkg).find((candidate) => files.has(candidate)) ?? null;
 }
 
+/**
+ * The declaration file for one entry point, read from the published artifact.
+ *
+ * `null` is a real answer and the reason this exists: an entry point can ship
+ * JavaScript and no declarations, and the root's `types` field describes a
+ * different module. `pino` publishes `lib/symbols.js` with no
+ * `lib/symbols.d.ts`, and falling back to `pino.d.ts` had
+ * `require('pino/lib/symbols')` judged against the root API — which does not
+ * export `streamSym`, so a name that is genuinely there was reported missing.
+ */
+function resolveSubpathTypesEntryFromListing(
+  pkg: Manifest,
+  subpath: string,
+  files: ReadonlyMap<string, ArchiveEntry>,
+): string | null {
+  const declared = typesFromExports(subpathExport(pkg?.exports, subpath));
+  const candidates = [
+    ...(declared ? expandTypesEntry(normalizePath(declared)) : []),
+    ...expandTypesEntry(normalizePath(subpath)),
+  ];
+  return [...new Set(candidates)].find((candidate) => files.has(candidate)) ?? null;
+}
+
 function typeEntryCandidates(packageName: string, pkg: Manifest | null): string[] {
   const wanted: string[] = [];
   if (pkg) {
@@ -1393,25 +1472,60 @@ function typeEntryCandidates(packageName: string, pkg: Manifest | null): string[
 export async function resolveDefinitelyTypedEntry(
   packageName: string,
   version: string,
+  subpath?: string,
 ): Promise<string | null> {
   const dtName = packageName.startsWith('@')
     ? `@types/${packageName.slice(1).replace('/', '__')}`
     : `@types/${packageName}`;
 
-  const major = /^\D*(\d+)\./.exec(version)?.[1] ?? /^\D*(\d+)$/.exec(version)?.[1];
-  if (major && (await exists(dtName, major, 'index.d.ts'))) return `@types:${dtName}@${major}`;
-  if (await exists(dtName, 'latest', 'index.d.ts')) return `@types:${dtName}@latest`;
+  // A subpath is its own declaration file, and DefinitelyTyped ships them
+  // beside the index: `@types/react-dom` publishes `client.d.ts`, `server.d.ts`
+  // and `server.edge.d.ts`. Resolving every one of them to `index.d.ts` meant
+  // `import { hydrateRoot } from 'react-dom/client'` was judged against the
+  // root entry, which does not export it — thirty-three correct imports across
+  // the corpus reported as naming something that does not exist.
+  //
+  // The subpath rides on the entry path so `definitelyTypedTarget` can hand it
+  // back to the walk as the file to start from.
+  const file = subpath ? `${subpath}.d.ts` : 'index.d.ts';
+  const suffix = subpath ? `#${subpath}` : '';
 
+  const major = /^\D*(\d+)\./.exec(version)?.[1] ?? /^\D*(\d+)$/.exec(version)?.[1];
+  if (major && (await exists(dtName, major, file))) return `@types:${dtName}@${major}${suffix}`;
+  if (await exists(dtName, 'latest', file)) return `@types:${dtName}@latest${suffix}`;
+
+  // A subpath DefinitelyTyped does not publish gets no answer, rather than the
+  // root's. Falling back looked harmless — the package still resolved — but it
+  // handed one entry point's declarations to a question asked about a
+  // different one, and nothing downstream could tell the substitute from the
+  // real thing. `require('pino/lib/symbols')` reaches an internal module with
+  // no declarations anywhere; it was judged against `@types/pino`'s root and
+  // `streamSym` was reported missing from a module that does define it.
+  //
+  // `null` here surfaces as "no declarations were readable for that entry
+  // point", which is what is actually known.
   return null;
 }
 
 /** Split `@types:@types/express@4` into the package and the range to fetch. */
-export function definitelyTypedTarget(entryPath: string): { name: string; range: string } {
-  const spec = entryPath.slice('@types:'.length);
+export function definitelyTypedTarget(entryPath: string): {
+  name: string;
+  range: string;
+  subpath?: string;
+} {
+  const raw = entryPath.slice('@types:'.length);
+  // `@types:@types/react-dom@19#client` — the subpath, when one was resolved,
+  // names the declaration file the walk must start from rather than `index`.
+  const hash = raw.indexOf('#');
+  const spec = hash === -1 ? raw : raw.slice(0, hash);
+  const subpath = hash === -1 ? undefined : raw.slice(hash + 1);
+
   const at = spec.lastIndexOf('@');
   // `lastIndexOf` lands on the version separator, never on the scope's own
   // leading `@`, because the range is always appended.
-  return at > 0 ? { name: spec.slice(0, at), range: spec.slice(at + 1) } : { name: spec, range: 'latest' };
+  const base =
+    at > 0 ? { name: spec.slice(0, at), range: spec.slice(at + 1) } : { name: spec, range: 'latest' };
+  return subpath ? { ...base, subpath } : base;
 }
 
 /**
@@ -1511,16 +1625,26 @@ async function collectDeclarationSources(
   version: string,
   entryPath: string,
   artifact?: NpmArtifact,
-): Promise<DeclarationSource[]> {
-  if (entryPath.startsWith('@types:')) {
-    const target = definitelyTypedTarget(entryPath);
-    const content = await fetchText(`${JSDELIVR_CDN}/${target.name}@${target.range}/index.d.ts`);
-    return content ? [{ path: 'index.d.ts', content }] : [];
-  }
+): Promise<{ sources: DeclarationSource[]; truncated: boolean }> {
+  // A DefinitelyTyped package is read the same way as any other. Returning its
+  // entry file alone was a silent amputation: `@types/semver` declares seven
+  // types in `index.d.ts` and publishes its entire function API through forty
+  // `import x = require("./functions/y")` re-exports in sibling files, none of
+  // which were ever fetched — so `valid`, `satisfies`, `coerce` and `gt` were
+  // absent from a surface that reported itself complete. The only thing that
+  // differs here is which CDN path the files are read from.
+  const dt = entryPath.startsWith('@types:') ? definitelyTypedTarget(entryPath) : null;
+  const cdnBase = dt ? `${dt.name}@${dt.range}` : `${packageName}@${version}`;
+  const startPath = dt ? (dt.subpath ? `${dt.subpath}.d.ts` : 'index.d.ts') : entryPath;
 
-  const listing = artifact
-    ? new Set(artifact.files.keys()) as ReadonlySet<string>
-    : await fileListing(packageName, version);
+  // A DefinitelyTyped range (`4`, `latest`) is not an exact version, so there
+  // is no file listing to ask — candidates are probed in order, which is the
+  // same path taken for any package whose listing is unavailable.
+  const listing = dt
+    ? null
+    : artifact
+      ? (new Set(artifact.files.keys()) as ReadonlySet<string>)
+      : await fileListing(packageName, version);
   let declarationBytes = 0;
 
   // Each re-export expands to five candidate paths rather than two, so the
@@ -1529,7 +1653,7 @@ async function collectDeclarationSources(
   // one fetch; without one it degrades to probing them in order, as before.
   const sources: DeclarationSource[] = [];
   const seen = new Set<string>();
-  const queue: string[][] = [[entryPath]];
+  const queue: string[][] = [[startPath]];
 
   const resolveGroup = async (candidates: readonly string[]): Promise<DeclarationSource | null> => {
     const published = listing ? (candidates.find((path) => listing.has(path)) ?? null) : undefined;
@@ -1543,7 +1667,7 @@ async function collectDeclarationSources(
         if (declarationBytes > MAX_NPM_DECLARATION_BYTES) return null;
         content = bytes.toString('utf8');
       } else {
-        content = await fetchText(`${JSDELIVR_CDN}/${packageName}@${version}/${path}`, {
+        content = await fetchText(`${JSDELIVR_CDN}/${cdnBase}/${path}`, {
           retries: 0,
         });
       }
@@ -1558,6 +1682,23 @@ async function collectDeclarationSources(
   // one wave instead — bounded, because this is still someone else's CDN, and
   // in input order, so which sources are read (and therefore which symbols win
   // a name collision) does not depend on which response happened to land first.
+  // Whether the file budget stopped this walk short of the package's real
+  // declaration graph.
+  //
+  // It routinely does. graphql's entry reaches 116 declaration files and the
+  // budget is 25, so three quarters of the package is never read — and which
+  // quarter survives is decided by breadth-first arrival order, not by
+  // anything meaningful. `./type/index.js` lands inside the budget and
+  // `GraphQLSchema` is found; `./utilities/index.js` does not and
+  // `buildSchema`, `printSchema` and thirty siblings are simply absent.
+  //
+  // Reporting that as a complete surface is the part that does real damage.
+  // `diffSurfaces` survives it because a symbol missing from *both* sides
+  // cancels out, but anything asking a single surface "does this export
+  // exist?" is told no, confidently, about an API that is right there in the
+  // package. So the walk now says when it gave up.
+  let truncated = false;
+
   while (queue.length > 0 && sources.length < MAX_FILES) {
     const wave: string[][] = [];
     while (queue.length > 0 && wave.length + sources.length < MAX_FILES) {
@@ -1572,6 +1713,9 @@ async function collectDeclarationSources(
     );
 
     for (const source of resolved) {
+      // A file that resolved and was then dropped for want of budget is a
+      // symbol set this surface does not contain and cannot account for.
+      if (source && sources.length >= MAX_FILES) truncated = true;
       if (!source || sources.length >= MAX_FILES) continue;
       sources.push(source);
       for (const specifier of relativeReExports(source.content)) {
@@ -1580,17 +1724,52 @@ async function collectDeclarationSources(
       for (const specifier of tripleSlashReferences(source.content)) {
         queue.push(resolveRelative(source.path, specifier));
       }
+      for (const specifier of relativeImports(source.content)) {
+        queue.push(resolveRelative(source.path, specifier));
+      }
     }
   }
 
-  return sources;
+  // Anything still queued is a file the walk knew about and never read — but
+  // only if it is genuinely unread. The queue holds candidate *groups*, five
+  // speculative paths per re-export (`./x.d.ts`, `./x/index.d.ts`, …), and a
+  // group whose every path was already visited represents no unread file at
+  // all. Counting those as truncation marked zod and yaml incomplete when
+  // their graphs had been read in full, which refused perfectly good surfaces
+  // and — through the `writeComputed` gate — stopped caching them too.
+  const residualUnread = queue.some((group) => group.some((path) => !seen.has(path)));
+  if (residualUnread) truncated = true;
+
+  return { sources, truncated };
 }
 
 /** How many declaration files of one package are fetched at once. */
 const DECLARATION_FETCH_CONCURRENCY = 8;
 
-/** How many declaration files one package's surface is assembled from. */
-const MAX_FILES = 25;
+/**
+ * How many declaration files one package's surface is assembled from.
+ *
+ * Was 25, which is below what ordinary packages need, and the shortfall was
+ * silent. Measured against real ones:
+ *
+ *   graphql@17.0.2   25 files -> 275 symbols, truncated   150 -> 590, complete
+ *   zod@4.5.4        25 files -> 955 symbols, truncated   150 -> 1261, complete
+ *   yaml@2.9.0       25 files -> 107 symbols, truncated   150 -> 111, complete
+ *
+ * graphql alone reaches 116 files. At 25 it lost `buildSchema`, `parse` and
+ * `execute` — three of the most-imported names in the package — and reported
+ * the result as a complete API.
+ *
+ * Raising it looks like it should cost more and costs less. A truncated
+ * surface is never persisted (see the `writeComputed` gate: it refuses
+ * anything `incomplete`), so every scan re-fetched those 25 files from the CDN
+ * again, every time, forever. A complete surface is written once and read from
+ * disk after that. The one-off 1.7s replaces a recurring 0.77s.
+ *
+ * The environment override exists so the next person to question this number
+ * can measure it the way it was measured, rather than argue about it.
+ */
+const MAX_FILES = Number(process.env.DRIFT_MAX_DECLARATION_FILES) || 150;
 
 /**
  * `export * from './x'` / `export { a } from './x'` — relative targets only.
@@ -1603,9 +1782,91 @@ const MAX_FILES = 25;
 export function relativeReExports(content: string): string[] {
   const out = new Set<string>();
   const pattern =
-    /\bexport\s+(?:type\s+)?(?:\*(?:\s+as\s+\w+)?|\{[^}]*\})\s+from\s+['"](\.[^'"]+)['"]/g;
+    // Whitespace after `export` and around `from` is optional: a minified
+    // declaration file writes `export{x}from"./y"`, and requiring a space made
+    // every re-export in such a file invisible. `\bexport\b` still refuses to
+    // match inside an identifier like `exporttype`.
+    /\bexport\b\s*(?:type\b\s*)?(?:\*(?:\s+as\s+\w+)?|\{[^}]*\})\s*from\s*['"](\.[^'"]+)['"]/g;
+  for (const match of content.matchAll(pattern)) out.add(match[1]!);
+
+  // `import semverValid = require("./functions/valid")` — TypeScript's
+  // import-equals form, which a declaration file pairs with a plain
+  // `export { semverValid as valid }` further down. No `export … from`
+  // statement is ever written, so matching only that form saw a file with
+  // nothing to follow: `@types/semver` publishes its entire function API
+  // through forty of these, and its surface came back holding the seven types
+  // its entry file happens to declare. The name bound here is resolved by
+  // `collectExportSpecifiers` once the target file has been read; this is only
+  // what puts the target in the queue.
+  const importEquals = /\bimport\s+[A-Za-z_$][\w$]*\s*=\s*require\((['"])(\.[^'"]+)\1\)/g;
+  for (const match of content.matchAll(importEquals)) out.add(match[2]!);
+
+  return [...out];
+}
+
+/**
+ * `import { Socket } from "./socket.js"`, when this file re-exports the binding.
+ *
+ * socket.io-client's entry file imports `Socket`, `Manager` and `SocketOptions`
+ * from siblings and publishes them in one `export { … }` list carrying no
+ * `from` clause. `collectExportSpecifiers` files those as aliases to resolve
+ * once every file is read, but nothing ever queued the file that declares them,
+ * so `resolveAliases` had nothing to resolve against — and `Socket`, the type
+ * most of that package's users name, was missing from a surface that reported
+ * itself complete.
+ *
+ * Only files holding such a list are followed. Queueing every relative import
+ * would spend the declaration-file budget on files contributing nothing but
+ * private locals, and exhausting that budget marks the surface incomplete —
+ * trading a wrong answer for no answer rather than for a right one.
+ */
+export function relativeImports(content: string): string[] {
+  // An `export { … }` with no `from` is the only form that produces an alias
+  // needing another file to resolve it.
+  // The whitespace belongs *inside* the lookahead. Written as `\}\s*(?!from)`
+  // the `\s*` backtracks to zero width, the lookahead then sits on the space
+  // rather than on `from`, and `export { x } from './y'` — which needs no
+  // alias resolved — matched anyway.
+  if (!/\bexport\b\s*\{[^}]*\}(?!\s*from)/.test(content)) return [];
+
+  const out = new Set<string>();
+  const pattern = /\bimport\b[^'"]*?\bfrom\s*['"](\.[^'"]+)['"]/g;
   for (const match of content.matchAll(pattern)) out.add(match[1]!);
   return [...out];
+}
+
+/**
+ * The bodies of `declare module 'pkg' { … }` blocks belonging to this package.
+ *
+ * Restricted to blocks naming the package under analysis, because the same
+ * syntax is how a package *augments someone else's* module — `declare module
+ * 'express' { interface Request { user: User } }`. Crediting those would put
+ * `Request` in this package's surface and let the check answer "yes, that
+ * export exists" about a package that never published it, which is a wrong
+ * answer in the direction that hides real breakage.
+ *
+ * A DefinitelyTyped package declares the module it provides types *for*, so
+ * `@types/react` is matched against `declare module 'react'` as well.
+ */
+function ambientModuleBodies(content: string, packageName?: string): string[] {
+  if (!packageName) return [];
+
+  const owned = new Set([packageName, packageName.replace(/^@types\//, '')]);
+  const bodies: string[] = [];
+  const pattern = /\bdeclare\s+module\s+['"]([^'"]+)['"]\s*\{/g;
+
+  for (let match = pattern.exec(content); match; match = pattern.exec(content)) {
+    const open = content.indexOf('{', match.index);
+    const close = matchingBraceOffset(content, open);
+    if (open < 0 || close < 0) continue;
+    // A subpath entry (`declare module 'pkg/config'`) is still this package.
+    const declared = match[1]!;
+    if (owned.has(declared) || [...owned].some((name) => declared.startsWith(`${name}/`))) {
+      bodies.push(content.slice(open + 1, close));
+    }
+    pattern.lastIndex = close + 1;
+  }
+  return bodies;
 }
 
 /**
@@ -1673,6 +1934,7 @@ export function extractExports(
   fileName: string,
   into: SurfaceApi = new Map(),
   aliases: ExportAlias[] = [],
+  packageName?: string,
 ): SurfaceApi {
   const locals = new Map<string, SurfaceEntry>();
 
@@ -1690,14 +1952,45 @@ export function extractExports(
   };
 
   void fileName;
-  for (const parsed of declarationEntries(content)) {
+
+  // Every pattern below reads declarations, and a comment is not one. Masked
+  // rather than stripped so that `signature` slices keep their offsets.
+  const source = maskComments(content);
+
+  for (const parsed of declarationEntries(source)) {
     add(locals, parsed.entry);
     if (parsed.exported) add(into, parsed.entry);
   }
 
-  collectExportSpecifiers(content, locals, into, aliases);
-  collectExportAssignments(content, locals, into);
-  collectDefaultExports(content, locals, into);
+  // Inside `declare module 'pkg' { … }` every declaration is exported whether
+  // or not it says so, and the rest of this parser only credits a symbol whose
+  // `export` keyword is written out. mongoose is the case that matters: its
+  // API is split across twenty-five `types/*.d.ts` files reached by
+  // triple-slash reference, each re-opening `declare module 'mongoose'` and
+  // declaring a bare `class Document` / `namespace Types`. All of it parsed as
+  // private locals, so the surface came back holding 604 symbols and still
+  // reported `Document` — the type most of the package's users name — as
+  // absent, which is the most confident kind of wrong.
+  for (const body of ambientModuleBodies(source, packageName)) {
+    for (const parsed of declarationEntries(body)) add(into, parsed.entry);
+    // `declare module 'cypress' { interface CypressNpmApi { … } const cypress:
+    // CypressNpmApi; export = cypress }`.
+    //
+    // This block is the package speaking about itself, so its `export =`
+    // outranks one in a file the package merely bundles. cypress ships
+    // `cy-blob-util`, `cy-bluebird`, `lodash` and `sinon` declarations beside
+    // its own, one of those claimed `default` first, and the ordinary guard —
+    // first writer wins — then locked out the real module. `defineConfig`, the
+    // one export a `cypress.config.js` actually names, existed nowhere in a
+    // 223-symbol surface.
+    collectExportAssignments(body, locals, into, { override: true });
+  }
+
+  collectNamespaceImports(source, locals);
+  collectStarAsReExports(source, into);
+  collectExportSpecifiers(source, locals, into, aliases);
+  collectExportAssignments(source, locals, into);
+  collectDefaultExports(source, locals, into);
   // Within one file, bases are already all known. A surface assembled from
   // several files resolves again in `fetchTypeSurface`, once every source has
   // been read; doing it here as well is what makes `extractExports` usable on
@@ -1748,6 +2041,101 @@ export interface ExportAlias {
 }
 
 /**
+ * `import * as z from './x'` — a namespace binding that is later exported.
+ *
+ * zod's entry file is the whole case for this. It ends:
+ *
+ *   import * as z from "./v4/classic/external.js";
+ *   export * from "./v4/classic/external.js";
+ *   export { z, z as default };
+ *
+ * The star export expands and contributes 891 symbols, so the surface looks
+ * healthy — and `z`, the one name essentially every consumer of zod imports,
+ * is not among them. `collectExportSpecifiers` looks `z` up in `locals`, finds
+ * nothing (a namespace binding declares no type), files it as an unresolved
+ * alias, and `resolveAliases` drops it. The surface then reports itself
+ * complete while missing the package's entry point, and thirteen correct
+ * imports in this very repository were reported as errors because of it.
+ *
+ * What the namespace object *is* cannot be resolved here: it stands for every
+ * export of another module, which may not even have been read yet. But that it
+ * **exists** is not in doubt — the file says so. That is exactly the
+ * distinction {@link SurfaceEntry.shapeUnknown} carries, and this is its first
+ * producer on the npm side (the Python provider is the other). `diffSurfaces`
+ * treats such an entry as present and compares none of its shape, so this can
+ * never manufacture a `kind-changed` or `signature-changed` finding — it can
+ * only stop a real export from being called missing.
+ */
+function collectNamespaceImports(content: string, locals: SurfaceApi): void {
+  const bind = (name: string): void => {
+    if (locals.has(name)) return;
+    locals.set(name, {
+      name,
+      kind: 'namespace',
+      signature: '',
+      members: [],
+      requiredMembers: [],
+      shapeUnknown: true,
+    });
+  };
+
+  for (const match of content.matchAll(/\bimport\s+\*\s+as\s+([A-Za-z_$][\w$]*)\s+from\s+['"][^'"]+['"]/g)) {
+    bind(match[1]!);
+  }
+
+  // `import { d as UserConfig } from "./types-CYHmmaKd.mjs"`, paired further
+  // down with `export { …, UserConfig, defineConfig }`.
+  //
+  // A bundler that mangles its chunk exports publishes every public name this
+  // way: `tsdown` imports `d as UserConfig` and `t as defineConfig` from two
+  // generated chunks and re-exports them from its entry. The export statement
+  // names `UserConfig`, no declaration in this file declares it, and the
+  // target file exports `d` — so the alias resolved to nothing and both names
+  // a consumer actually writes were reported absent from a 106-symbol surface.
+  //
+  // The binding is shape-unknown for the same reason the `import =` form is:
+  // what `d` refers to lives in another file under another name. That it is
+  // exported under this name is certain, which is all a presence check needs.
+  for (const match of content.matchAll(
+    /\bimport\s+(?:type\s+)?\{([^}]+)\}\s+from\s+['"][^'"]+['"]/g,
+  )) {
+    for (const { exported } of exportBindings(match[1] ?? '')) bind(exported);
+  }
+
+  // `import semverValid = require("./functions/valid")`, paired further down
+  // with `export { semverValid as valid }`. This is how `@types/semver`
+  // publishes its entire function API — forty of them — and why `valid`,
+  // `satisfies`, `coerce` and `gt` were absent from its surface.
+  //
+  // The binding cannot be resolved to the target's own declaration, and that
+  // is not a shortcut being taken here. `functions/valid.d.ts` ends in
+  // `export = valid`, which `collectExportAssignments` deliberately republishes
+  // under `default` rather than its internal name — so forty sibling files each
+  // contribute a `default` key to one flat surface and collide, and picking the
+  // right one back out is not possible from this side. What *is* certain is
+  // that the module exists and is exported under the name the export statement
+  // gives it, which is precisely a shape-unknown entry: no false absence, and
+  // no invented shape to compare.
+  for (const match of content.matchAll(/\bimport\s+([A-Za-z_$][\w$]*)\s*=\s*require\(['"][^'"]+['"]\)/g)) {
+    bind(match[1]!);
+  }
+
+  // `import KEYS from "./visitor-keys.js"` paired with `export { KEYS }`.
+  // A default import binds a name the file then re-exports, and
+  // `eslint-visitor-keys` publishes `KEYS` exactly that way: the export
+  // statement names it, no declaration in this file declares it, and it was
+  // dropped as an unresolvable alias — so a surface of three symbols omitted
+  // the one most consumers import.
+  // The name may stand alone (`import KEYS from './k'`) or lead a named
+  // clause (`import KEYS, { other } from './k'`), and both bind it.
+  for (const match of content.matchAll(
+    /\bimport\s+(?!type\s)([A-Za-z_$][\w$]*)\s*(?:,\s*\{[^}]*\})?\s+from\s+['"][^'"]+['"]/g,
+  )) {
+    bind(match[1]!);
+  }
+}
+
+/**
  * `export { a, b as c }` — the half of a package's surface a declaration-only
  * walk used to miss entirely.
  *
@@ -1760,13 +2148,51 @@ export interface ExportAlias {
  * — additions are non-breaking by construction — and reported that a 3 → 4
  * major upgrade touched nothing this repository uses.
  */
+/**
+ * `export * as JSONOutput from "./schema.js"` — a whole module published as one
+ * name.
+ *
+ * `typedoc` publishes `JSONOutput` and `OptionDefaults` exactly this way, two
+ * barrels deep. Every sibling in the same statements resolved, so the surface
+ * looked healthy at 282 symbols while the two names that form its serialization
+ * and defaults API were absent.
+ *
+ * The file is already queued for reading by `relativeReExports`; what was
+ * missing is anything binding the *name*. Its members are that file's exports,
+ * which this side cannot see — so the entry is shape-unknown rather than empty,
+ * which would read as a namespace that exports nothing.
+ */
+function collectStarAsReExports(content: string, into: SurfaceApi): void {
+  // `export type * as ESTree from './estree.ts'` is the same publication with
+  // the values left out, and `meriyah` uses exactly that form for the namespace
+  // `prettier` imports from it.
+  const pattern = /\bexport\b\s*(?:type\b\s*)?\*\s+as\s+([A-Za-z_$][\w$]*)\s*from\s*['"][^'"]+['"]/g;
+
+  for (const match of content.matchAll(pattern)) {
+    const name = match[1]!;
+    if (into.has(name)) continue;
+    into.set(name, {
+      name,
+      kind: 'namespace',
+      signature: '',
+      members: [],
+      requiredMembers: [],
+      shapeUnknown: true,
+    });
+  }
+}
+
 function collectExportSpecifiers(
   content: string,
   locals: SurfaceApi,
   into: SurfaceApi,
   aliases: ExportAlias[],
 ): void {
-  const pattern = /\bexport\s+(?:type\s+)?\{([^}]+)\}(?:\s+from\s+['"][^'"]+['"])?\s*;/g;
+  // `ansis` ships its whole colour API as one minified `export{a as default,
+  // Ansis,…,a as blue,a as magenta,…};` with no space after `export`. Requiring
+  // one left its surface holding the two `export type` aliases it happens to
+  // spell out, and every colour it actually publishes was reported missing.
+  const pattern = /\bexport\b\s*(?:type\b\s*)?\{([^}]+)\}(?:\s*from\s*['"][^'"]+['"])?\s*;/g;
   for (const match of content.matchAll(pattern)) {
     for (const { exported, local } of exportBindings(match[1] ?? '')) {
       if (into.has(exported)) continue;
@@ -1801,7 +2227,12 @@ function resolveAliases(api: SurfaceApi, aliases: readonly ExportAlias[]): void 
  * namespace by assignment. Treating only `export declare` as public made Drift
  * fetch Phaser's `.d.ts` successfully and still report "no declarations".
  */
-function collectExportAssignments(content: string, locals: SurfaceApi, into: SurfaceApi): void {
+function collectExportAssignments(
+  content: string,
+  locals: SurfaceApi,
+  into: SurfaceApi,
+  options: { override?: boolean } = {},
+): void {
   // The trailing semicolon is optional. `export = LRUCache` with no semicolon
   // is valid TypeScript and is what `lru-cache@7` ships; requiring one meant
   // its entire API — a `declare class` plus a `declare namespace`, the whole
@@ -1822,7 +2253,9 @@ function collectExportAssignments(content: string, locals: SurfaceApi, into: Sur
     // 8 -> 13, where there are 13). Nothing is lost -- a named import off an
     // `export =` namespace (`import { Glob } from 'glob'`) still matches,
     // because `default.Glob` contributes the bare leaf `Glob`.
-    republishAs('default', match[1]!, locals, into);
+    republishAs('default', match[1]!, locals, into, options.override);
+    // `export = chai` where `chai`'s type is named rather than written inline.
+    adoptNamedTypeMembers('default', match[1]!, locals, into, options.override);
   }
 }
 
@@ -1834,13 +2267,67 @@ function collectExportAssignments(content: string, locals: SurfaceApi, into: Sur
  * conventional name too (`LRUCache`), and dropping it would lose a real symbol
  * to gain a synthetic one.
  */
-function republishAs(published: string, local: string, locals: SurfaceApi, into: SurfaceApi): void {
+/**
+ * `declare const chai: Chai.ChaiStatic; export = chai;`
+ *
+ * The module's whole API is the members of a type declared elsewhere in the
+ * file, so the published `default` entry carries the const's own (empty)
+ * member list. `import { assert } from 'chai'` — how eslint's eight hundred
+ * test files reach it — was therefore reported as naming something chai does
+ * not export.
+ *
+ * Only a bare named type is followed, and only when the entry has no members
+ * of its own: a union or an intersection is not one type's member list, and
+ * guessing at which half a name came from would be inventing an answer.
+ */
+function adoptNamedTypeMembers(
+  published: string,
+  local: string,
+  locals: SurfaceApi,
+  into: SurfaceApi,
+  override = false,
+): void {
+  const entry = into.get(published);
+  if (!entry || (entry.members.length > 0 && !override)) return;
+
   const declared = locals.get(local);
-  if (declared && !into.has(published)) into.set(published, renameEntry(declared, published));
+  if (!declared) return;
+
+  // A declaration needs no semicolon, and without one the statement scan runs
+  // past it: cypress writes `const cypress: CypressNpmApi` and then, on the
+  // next line, `export = cypress`, so the recorded signature reads
+  // `const cypress: CypressNpmApi export = cypress }`. Anchoring the type name
+  // to the end of that never matched, and `default` kept the members of an
+  // unrelated interface instead.
+  //
+  // The trailing clause is dropped rather than the anchor loosened, so a union
+  // or an intersection is still refused: those are not one type's member list,
+  // and picking a side would be inventing an answer.
+  const signature = declared.signature
+    .replace(/\s*\bexport\s*=[\s\S]*$/, '')
+    .replace(/\s*\}\s*$/, '')
+    .trim();
+  const typeName = /:\s*([A-Za-z_$][\w$.]*)\s*;?\s*$/.exec(signature)?.[1];
+  const target = typeName ? locals.get(typeName) : undefined;
+  if (!target) return;
+
+  entry.members = [...target.members];
+  entry.requiredMembers = [...target.requiredMembers];
+}
+
+function republishAs(
+  published: string,
+  local: string,
+  locals: SurfaceApi,
+  into: SurfaceApi,
+  override = false,
+): void {
+  const declared = locals.get(local);
+  if (declared && (override || !into.has(published))) into.set(published, renameEntry(declared, published));
   for (const entry of locals.values()) {
     if (!entry.name.startsWith(`${local}.`)) continue;
     const name = `${published}.${entry.name.slice(local.length + 1)}`;
-    if (!into.has(name)) into.set(name, renameEntry(entry, name));
+    if (override || !into.has(name)) into.set(name, renameEntry(entry, name));
   }
 }
 
@@ -1919,6 +2406,7 @@ function declarationEntries(content: string): ParsedDeclaration[] {
     'variable',
     entries,
   );
+  collectVariableDeclarators(content, entries);
   collectSimpleDeclarations(
     content,
     /\b(export\s+)?(?:declare\s+)?type\s+([A-Za-z_$][\w$]*)\b/g,
@@ -1981,7 +2469,48 @@ function collectNamespaces(
 
     collectNamespaceDeclarations(body, name, exported, entries);
     collectNamespaces(body, name, exported, entries);
+    collectNamespaceExportSpecifiers(body, name, exported, entries);
     pattern.lastIndex = close + 1;
+  }
+}
+
+/**
+ * `declare namespace N { export { X } }` — a name the namespace publishes but
+ * does not declare.
+ *
+ * `@fastify/ajv-compiler` declares `StandaloneValidator` at file scope, lists
+ * it in `export { StandaloneValidator }` inside `declare namespace AjvCompiler`,
+ * and ends with `export = AjvCompiler`. Only declarations inside the body were
+ * collected, so `AjvCompiler.StandaloneValidator` never existed for
+ * `republishAs` to copy to `default.StandaloneValidator`, and a named import of
+ * it was reported as missing.
+ *
+ * The entry is shape-unknown: the declaration it refers to lives outside this
+ * body, and naming a shape here would be inventing one. Presence is what an
+ * export list establishes, and presence is what this records.
+ */
+function collectNamespaceExportSpecifiers(
+  body: string,
+  prefix: string,
+  exported: boolean,
+  entries: ParsedDeclaration[],
+): void {
+  const direct = withoutNestedNamespaces(body);
+
+  for (const match of direct.matchAll(/\bexport\b\s*\{([^}]+)\}\s*;?/g)) {
+    for (const { exported: name } of exportBindings(match[1] ?? '')) {
+      entries.push({
+        exported,
+        entry: {
+          name: `${prefix}.${name}`,
+          kind: 'namespace',
+          signature: '',
+          members: [],
+          requiredMembers: [],
+          shapeUnknown: true,
+        },
+      });
+    }
   }
 }
 
@@ -2176,6 +2705,153 @@ function typeParameterEnd(content: string, open: number): number {
   return -1;
 }
 
+/**
+ * The same source with every comment blanked out, character for character.
+ *
+ * The declaration patterns match `[^{;]*` between a name and its opening
+ * brace, and that crosses newlines — so a doc comment containing the word
+ * `class` starts a match that runs all the way to the *next real*
+ * declaration's brace and swallows it. `@grpc/grpc-js` writes "A class for
+ * storing metadata" above `export declare class Metadata`, and the parser came
+ * away with a class named `for` and no `Metadata` at all. The two type aliases
+ * beside it parsed normally, so the surface looked perfectly healthy while
+ * missing the one symbol most of that package's users name.
+ *
+ * Comments become spaces rather than being removed, because every `signature`
+ * is sliced out of this string by offset and shortening it would corrupt all
+ * of them. Newlines are kept for the same reason.
+ */
+export function maskComments(content: string): string {
+  let out = '';
+  let i = 0;
+
+  while (i < content.length) {
+    const char = content[i]!;
+    const next = content[i + 1];
+
+    if (char === '/' && next === '*') {
+      const end = content.indexOf('*/', i + 2);
+      const stop = end < 0 ? content.length : end + 2;
+      for (let j = i; j < stop; j++) out += content[j] === '\n' ? '\n' : ' ';
+      i = stop;
+      continue;
+    }
+
+    if (char === '/' && next === '/') {
+      while (i < content.length && content[i] !== '\n') {
+        out += ' ';
+        i += 1;
+      }
+      continue;
+    }
+
+    // A string may contain `//` or `/*` and is not a comment.
+    if (char === '"' || char === "'" || char === '`') {
+      out += char;
+      i += 1;
+      while (i < content.length) {
+        const inner = content[i]!;
+        out += inner;
+        i += 1;
+        if (inner === '\\') {
+          if (i < content.length) {
+            out += content[i];
+            i += 1;
+          }
+          continue;
+        }
+        if (inner === char) break;
+      }
+      continue;
+    }
+
+    out += char;
+    i += 1;
+  }
+
+  return out;
+}
+
+/**
+ * `declare const Ansis: new (o?: N) => A, a: A, fg: Q;` — every name but the first.
+ *
+ * One `const` statement can introduce several bindings, and the declaration
+ * pattern captures only the identifier next to the keyword. `ansis@4.3.1`
+ * declares its entire runtime this way and then publishes it through one
+ * renaming export list (`export{a as blue, a as magenta, …}`): `a` was never
+ * recorded as a local, so every one of those aliases resolved to nothing and
+ * the package's whole colour API was reported missing.
+ *
+ * Splitting on commas has to respect nesting, or `const x: Map<string, number>`
+ * would split inside the type argument list and invent a binding called
+ * `number`. The depth rules are `declarationEndOffset`'s, including its
+ * treatment of `=>` as an arrow rather than the close of a type-argument list.
+ */
+function collectVariableDeclarators(content: string, entries: ParsedDeclaration[]): void {
+  const pattern = /\b(export\s+)?(?:declare\s+)?(?:const|let|var)\s+[A-Za-z_$][\w$]*/g;
+
+  for (const match of content.matchAll(pattern)) {
+    const start = match.index ?? 0;
+    const statement = content.slice(start, declarationEndOffset(content, start));
+
+    for (const declarator of trailingDeclarators(statement)) {
+      const members = variableMembers(declarator);
+      const name = /^\s*([A-Za-z_$][\w$]*)/.exec(declarator)?.[1];
+      if (!name) continue;
+
+      entries.push({
+        exported: Boolean(match[1]),
+        entry: {
+          name,
+          kind: 'variable',
+          signature: collapse(`declare const ${declarator.trim()}`),
+          members: members.map((member) => member.name),
+          requiredMembers: members.filter((member) => member.required).map((member) => member.name),
+        },
+      });
+    }
+  }
+}
+
+/** The declarators of a `const`/`let`/`var` statement after the first. */
+function trailingDeclarators(statement: string): string[] {
+  const head = /^\s*(?:export\s+)?(?:declare\s+)?(?:const|let|var)\s+/.exec(statement);
+  if (!head) return [];
+
+  let paren = 0;
+  let bracket = 0;
+  let brace = 0;
+  let angle = 0;
+  const parts: string[] = [];
+  let current = '';
+
+  for (let i = head[0].length; i < statement.length; i++) {
+    const char = statement[i]!;
+
+    if (char === '(') paren += 1;
+    else if (char === ')') paren -= 1;
+    else if (char === '[') bracket += 1;
+    else if (char === ']') bracket -= 1;
+    else if (char === '<') angle += 1;
+    else if (char === '>' && statement[i - 1] !== '=') angle = Math.max(0, angle - 1);
+    else if (char === '{') brace += 1;
+    else if (char === '}') brace -= 1;
+    else if (paren <= 0 && bracket <= 0 && brace <= 0 && angle <= 0) {
+      if (char === ',') {
+        parts.push(current);
+        current = '';
+        continue;
+      }
+      if (char === ';') break;
+    }
+
+    current += char;
+  }
+  parts.push(current);
+
+  return parts.slice(1).filter((part) => part.trim() !== '');
+}
+
 function collectSimpleDeclarations(
   content: string,
   pattern: RegExp,
@@ -2191,7 +2867,8 @@ function collectSimpleDeclarations(
     // as one thing. It also closes a gap of its own: a member dropped from a
     // type alias was previously invisible, because only interfaces and classes
     // had members to diff at all.
-    const members = kind === 'type' ? aliasMembers(declaration) : [];
+    const members =
+      kind === 'type' ? aliasMembers(declaration) : kind === 'variable' ? variableMembers(declaration) : [];
 
     entries.push({
       exported: Boolean(match[1]),
@@ -2215,7 +2892,29 @@ function collectSimpleDeclarations(
  * `member-removed` findings the moment anything else about them moved.
  */
 function aliasMembers(declaration: string): Array<{ name: string; required: boolean }> {
-  const assignment = declaration.indexOf('=');
+  return literalTypeMembers(declaration, '=');
+}
+
+/**
+ * `declare const execa: { sync(file: string): Result; … }` — the members of a
+ * const whose type is written inline rather than named.
+ *
+ * `execa@5` publishes its whole API this way and exports it with `export =`,
+ * so `sync` is reachable only as a member of the default export. Reading
+ * members for type aliases but not for variables left that `default` entry
+ * with an empty member list, and `import { sync } from 'execa'` — the form
+ * jest's own test utilities use — was reported as naming something the package
+ * does not export. `chai`'s `assert` is the same shape.
+ */
+function variableMembers(declaration: string): Array<{ name: string; required: boolean }> {
+  return literalTypeMembers(declaration, ':');
+}
+
+function literalTypeMembers(
+  declaration: string,
+  separator: string,
+): Array<{ name: string; required: boolean }> {
+  const assignment = declaration.indexOf(separator);
   if (assignment < 0) return [];
 
   const rest = declaration.slice(assignment + 1);
@@ -2354,8 +3053,18 @@ function enumMembers(body: string): Array<{ name: string; required: boolean }> {
 
 function typeMembers(body: string, classBody: boolean): Array<{ name: string; required: boolean }> {
   const members: Array<{ name: string; required: boolean }> = [];
+  // A generic method is followed by `<`, not by `(` or `:`, and admitting only
+  // the latter two dropped every one of them from every interface and class
+  // Drift reads. cypress declares `defineConfig<ComponentDevServerOpts = any>(
+  // config: …)` one line above the plain `defineComponentFramework(config: …)`:
+  // the plain one was a member, the generic one did not exist, and
+  // `cypress.config.js`'s only import was reported as naming something the
+  // package does not export.
+  //
+  // The cost was never limited to presence checks — a generic method removed
+  // between two versions was invisible to the diff as well, on both sides.
   const pattern =
-    /(?:^|[;\n])\s*((?:public|protected|private|readonly|static|abstract|declare|override)\s+)*(#?[A-Za-z_$][\w$]*)(\?)?\s*(\(|:)/g;
+    /(?:^|[;\n])\s*((?:public|protected|private|readonly|static|abstract|declare|override)\s+)*(#?[A-Za-z_$][\w$]*)(\?)?\s*(\(|:|<)/g;
 
   for (const match of body.matchAll(pattern)) {
     const modifiers = match[1] ?? '';
@@ -2363,6 +3072,8 @@ function typeMembers(body: string, classBody: boolean): Array<{ name: string; re
     if (name === 'constructor' || modifiers.includes('private') || name.startsWith('#')) continue;
     members.push({
       name,
+      // A generic method is a method: `<` marks a type-parameter list, never a
+      // property annotation, so it is required exactly as `(` is.
       required: classBody ? match[4] === ':' && !match[3] : !match[3],
     });
   }
@@ -2458,12 +3169,112 @@ export function entryPointMoved(
   };
 }
 
+/**
+ * The symbol a removed one was renamed or moved to, when the two published
+ * surfaces say so on their own.
+ *
+ * Drift computed both surfaces to find the removal; until now it threw the new
+ * one away and reported "`x` is no longer exported" with nothing to migrate to.
+ * That left its deterministic tiers dead (a codemod needs a target), left every
+ * brief descriptive, and left agents reading the package's own source to find
+ * the replacement — measured at 5.3% of agent input tokens and a quarter of all
+ * model calls in Drift's agent benchmark.
+ *
+ * Deliberately conservative: only an unambiguous candidate counts, in this
+ * order, and anything with more than one match at a level is dropped rather
+ * than guessed.
+ *
+ * 1. **Same declaration, new name.** The signature text matches once the names
+ *    are removed — `function sync(pattern: string): string[]` becoming
+ *    `function globSync(pattern: string): string[]`.
+ * 2. **The package name merged into it.** `sync` → `globSync` for `glob`,
+ *    `parse` → `yamlParse` for `yaml`: the new name is the old one with the
+ *    package's own name attached, which is what a package does when it stops
+ *    exporting a namespace object and starts exporting flat functions.
+ *
+ * A third rule — "the old name is the tail of exactly one new name" — was
+ * tried and removed: on vue 2 → 3 it read `Vue` as replaced by `CompatVue`,
+ * an internal compatibility symbol, and Drift's codemod tier then rewrote
+ * `new Vue({...})` to `new CompatVue({...})` when the actual migration is
+ * `createApp(App).mount(...)`. A plausible-looking name is not evidence.
+ *
+ * A wrong replacement is worse than none, so a caller must still verify: the
+ * fix Drift applies from it is compiled and tested like any other.
+ */
+export function inferReplacement(
+  removed: SurfaceEntry,
+  added: readonly SurfaceEntry[],
+  packageName?: string,
+): SurfaceEntry | null {
+  if (removed.shapeUnknown || added.length === 0) return null;
+  // A qualified name (`@vue/shared#IfAny`) is not something a consumer can
+  // write in place of the old symbol.
+  const plain = (entry: SurfaceEntry) => /^[A-Za-z_$][\w$]*$/.test(baseName(entry.name)) && !/[#/]/.test(entry.name);
+  const base = baseName(removed.name);
+  if (base.length < 3 || !/^[A-Za-z_$][\w$]*$/.test(base)) return null;
+
+  // Only a *distinctive* declaration can identify a symbol by its shape. An
+  // interface's signature is often just `interface Name`, which normalises to
+  // nothing and made nineteen unrelated winston interfaces all "match" the one
+  // interface the new version added.
+  const bySignature = added.filter(
+    (entry) =>
+      plain(entry) &&
+      entry.kind === removed.kind &&
+      distinctiveShape(removed) &&
+      distinctiveShape(entry) &&
+      normalizeSignature(removed.signature, removed.name) === normalizeSignature(entry.signature, entry.name) &&
+      sameMembers(removed, entry),
+  );
+  if (bySignature.length === 1) return bySignature[0]!;
+
+  const alias = (packageName ?? '').replace(/^@[^/]+\//, '').replace(/[^A-Za-z0-9]/g, '').toLowerCase();
+  if (alias) {
+    const merged = added.filter((entry) => {
+      if (!plain(entry)) return false;
+      const candidate = baseName(entry.name).toLowerCase();
+      return candidate === `${alias}${base.toLowerCase()}` || candidate === `${base.toLowerCase()}${alias}`;
+    });
+    if (merged.length === 1) return merged[0]!;
+  }
+
+  return null;
+}
+
+/** Whether a declaration says enough about itself to identify the symbol by shape alone. */
+function distinctiveShape(entry: SurfaceEntry): boolean {
+  const signature = entry.signature ?? '';
+  if (signature.includes('(') && signature.replace(/\s+/g, '').length >= 20) return true;
+  return entry.members.length >= 2;
+}
+
+function sameMembers(a: SurfaceEntry, b: SurfaceEntry): boolean {
+  if (a.members.length === 0 && b.members.length === 0) return true;
+  const left = [...a.members].sort().join(',');
+  const right = [...b.members].sort().join(',');
+  return left === right;
+}
+
+function baseName(name: string): string {
+  return name.split('.').pop() ?? name;
+}
+
+/** A declaration's shape with its own name taken out, so two names can be compared by what they declare. */
+function normalizeSignature(signature: string, name: string): string {
+  const base = baseName(name);
+  return signature
+    .replace(new RegExp(`\\b${base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'g'), '\u0000')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export function diffSurfaces(
   before: SurfaceApi,
   after: SurfaceApi,
-  context: { beforeComplete?: boolean; afterComplete?: boolean } = {},
+  context: { beforeComplete?: boolean; afterComplete?: boolean; packageName?: string } = {},
 ): SurfaceChange[] {
   const changes: SurfaceChange[] = [];
+  const added = [...after.entries()].filter(([key]) => !before.has(key)).map(([, entry]) => entry);
 
   for (const [key, oldEntry] of before) {
     const newEntry = after.get(key);
@@ -2483,6 +3294,7 @@ export function diffSurfaces(
       // still reported — traversal limits never hid those.
       if (context.afterComplete === false && oldEntry.via) continue;
 
+      const replacement = inferReplacement(oldEntry, added, context.packageName);
       changes.push({
         kind: 'export-removed',
         // A shape-unknown symbol going missing is still a real removal —
@@ -2490,9 +3302,10 @@ export function diffSurfaces(
         // but its `kind` was never real, so it is not quoted as one.
         symbol: name,
         detail: oldEntry.shapeUnknown
-          ? `\`${name}\` is no longer exported${origin}.`
-          : `\`${name}\` is no longer exported (was ${withArticle(oldEntry.kind)})${origin}.`,
+          ? `\`${name}\` is no longer exported${origin}.${replacement ? ` The new version exports \`${replacement.name}\` in its place.` : ''}`
+          : `\`${name}\` is no longer exported (was ${withArticle(oldEntry.kind)})${origin}.${replacement ? ` The new version exports \`${replacement.name}\` in its place.` : ''}`,
         before: oldEntry.signature,
+        ...(replacement ? { after: replacement.signature, replacement: replacement.name } : {}),
         ...(oldEntry.shapeUnknown ? {} : { fromKind: oldEntry.kind }),
       });
       continue;

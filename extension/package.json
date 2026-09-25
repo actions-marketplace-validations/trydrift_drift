@@ -2,9 +2,9 @@
   "name": "usedrift",
   "displayName": "Drift — Safe Dependency Upgrades",
   "description": "Find which dependency upgrades affect your code, see the evidence, and prepare reviewable fixes with deterministic transforms, community recipes, or your existing AI agent.",
-  "version": "0.1.3",
+  "version": "0.1.12",
   "publisher": "drift",
-  "license": "SEE LICENSE IN LICENSE.md",
+  "license": "MIT",
   "author": "Drift (https://github.com/trydrift/drift)",
   "engines": {
     "vscode": "^1.95.0"
@@ -30,8 +30,8 @@
   ],
   "capabilities": {
     "untrustedWorkspaces": {
-      "supported": false,
-      "description": "Drift runs git commands and can invoke local AI agent binaries, so it requires a trusted workspace."
+      "supported": "limited",
+      "description": "Drift runs git commands and can invoke local AI agent binaries, so it analyses nothing until you trust this folder. It starts anyway, to tell you that rather than leaving the panel empty."
     }
   },
   "contributes": {
@@ -47,6 +47,12 @@
         "title": "Scan Dependencies for Upgrades",
         "category": "Drift",
         "icon": "$(search)"
+      },
+      {
+        "command": "drift.checkInstalled",
+        "title": "Check Code Against Installed Versions",
+        "category": "Drift",
+        "icon": "$(verified)"
       },
       {
         "command": "drift.fixAll",
@@ -502,9 +508,9 @@
         },
         "drift.agent.timeoutSeconds": {
           "type": "number",
-          "default": 600,
+          "default": 1800,
           "minimum": 30,
-          "description": "How long to let an agent work on a single commit before giving up.",
+          "description": "How long to let one Fix with AI session run before giving up. One session fixes what you chose — the whole upgrade, a package, or one concern — so larger upgrades need longer.",
           "order": 5
         },
         "drift.analysis.runOnStartup": {
@@ -769,17 +775,17 @@
     "publish:pre": "npx --yes @vscode/vsce publish --pre-release --no-dependencies"
   },
   "devDependencies": {
-    "@types/node": "^22.10.5",
-    "@types/vscode": "^1.95.0",
+    "@types/node": "^26.4.1",
+    "@types/vscode": "1.95.0",
     "esbuild": "^0.28.1",
-    "typescript": "^5.7.3"
+    "typescript": "^7.0.2"
   },
   "dependencies": {
     "@octokit/rest": "^22.0.1",
     "highlight.js": "^11.11.1",
     "semver": "^7.6.3",
-    "yaml": "^2.7.0",
-    "zod": "^4.4.3"
+    "yaml": "^2.9.1",
+    "zod": "^4.6.2"
   },
   "repository": {
     "type": "git",

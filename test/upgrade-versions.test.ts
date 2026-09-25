@@ -57,13 +57,13 @@ describe('version lookup: the three honest outcomes', () => {
     const pip = PACKAGE_MANAGERS.find((manager) => manager.id === 'pip')!;
     const opam = PACKAGE_MANAGERS.find((manager) => manager.id === 'opam')!;
 
-    const python = await directDependencies('/repo', {
+    const { dependencies: python } = await directDependencies('/repo', {
       manager: pip,
       dir: '',
       manifestPath: 'requirements.in',
       lockfilePath: 'requirements.txt',
     }, true, fs);
-    const ocaml = await directDependencies('/repo', {
+    const { dependencies: ocaml } = await directDependencies('/repo', {
       manager: opam,
       dir: '',
       manifestPath: 'demo.opam',
@@ -72,6 +72,33 @@ describe('version lookup: the three honest outcomes', () => {
 
     assert.equal(python[0]?.current, '3.11');
     assert.equal(ocaml[0]?.current, 'v0.17.0');
+  });
+
+  test('a dependency with no resolvable version is reported, never dropped', async () => {
+    // Without a lockfile a range says which versions are *allowed*, never which
+    // one is installed, so there is nothing to compare an upgrade against. That
+    // is a gap to declare, not a row to delete: dropping them silently meant a
+    // fresh clone of Express reported on 8 of its 44 dependencies and said
+    // nothing whatsoever about the other 36.
+    const files = new Map([['/repo/package.json', JSON.stringify({ dependencies: { express: '^4.18.0' } })]]);
+    const fs = {
+      readFile: async (path) => files.get(path) ?? null,
+      readDirectory: async () => [],
+      isDirectory: async () => false,
+    };
+    const npm = PACKAGE_MANAGERS.find((manager) => manager.id === 'npm')!;
+
+    const { dependencies, unresolved } = await directDependencies(
+      '/repo',
+      { manager: npm, dir: '', manifestPath: 'package.json', lockfilePath: null },
+      true,
+      fs,
+    );
+
+    assert.deepEqual(dependencies, [], 'nothing can be checked without a resolved version');
+    assert.equal(unresolved.length, 1);
+    assert.equal(unresolved[0]?.name, 'express');
+    assert.match(unresolved[0]?.reason ?? '', /range/);
   });
 
   test('published versions preserve exact registry identity across ecosystem grammars', () => {
@@ -392,5 +419,27 @@ describe('scan title: a run that could not check something never claims it did',
     const safe = { status: 'clean', breakingCount: 0, impactCount: 0, impactFiles: 0, recommendation: 'safe' };
     assert.match(scanTitle([safe], 10, 2), /require review/);
     assert.match(scanTitle([safe], 10, 0), /all safe/);
+  });
+});
+
+describe('Maven names its own release rather than implying one', () => {
+  test('the release pointer wins over the highest version under Maven ordering', async () => {
+    // commons-io publishes `20030203.000550` alongside `2.22.0`. Maven's own
+    // ComparableVersion ranks the date-style version higher — correctly, it is
+    // the larger number — so deriving "latest" from the list recommended a 2003
+    // artifact as the upgrade from 2.22.0 and computed 1,785 breaking changes
+    // against it. Central states the answer in maven-metadata.xml; this pins
+    // that we ask it.
+    const result = await lookupVersions({
+      name: 'commons-io:commons-io',
+      ecosystem: 'maven',
+      current: '2.22.0',
+      range: '2.22.0',
+    });
+
+    assert.notEqual(result.outcome, 'unchecked', 'Central answers for commons-io');
+    if (result.outcome === 'outdated') {
+      assert.doesNotMatch(result.latest, /^\d{8}\./, 'a date-style version is never the release');
+    }
   });
 });

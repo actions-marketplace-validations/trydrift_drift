@@ -1,8 +1,12 @@
+import { readFileSync } from 'node:fs';
+
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 
 import { runScan, renderScan, renderExplanation } from '../upgrade/explain.js';
+import { runInstalledCheck, renderInstalledCheck } from '../upgrade/run-installed-check.js';
+import { AgentPlanSession, registerAgentTools } from './agent-tools.js';
 
 /**
  * Drift as a tool a coding agent can call.
@@ -24,9 +28,48 @@ import { runScan, renderScan, renderExplanation } from '../upgrade/explain.js';
  * `util/logger.ts`), which is why it is safe to pass one in at all.
  */
 
-/** Build the server, wired to `scanUpgrades`. Exported for tests. */
-export function createDriftMcpServer(): McpServer {
-  const server = new McpServer({ name: 'drift', version: '0.1.0' });
+/**
+ * The version an agent's client shows beside "drift" in its list of servers.
+ *
+ * Read from the package rather than written here. A hardcoded string is one
+ * more thing every release has to remember, and this one was forgotten: it
+ * still said 0.1.0 while the published CLI was 0.1.5, so every editor that
+ * connected was told a version that had not existed for five releases.
+ */
+function serverVersion(): string {
+  try {
+    const pkg = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')) as {
+      version?: string;
+    };
+    return pkg.version ?? '0.0.0';
+  } catch {
+    return '0.0.0';
+  }
+}
+
+/**
+ * What a client tells its model about this server before any tool is called.
+ *
+ * Claude Code places server instructions in the model's context and loads the
+ * tools themselves only on demand, so this is where an agent learns which tool
+ * answers which question. Kept to a few sentences: it is paid for on every turn
+ * of every session that has Drift connected, whether or not Drift is used.
+ */
+export const SERVER_INSTRUCTIONS =
+  'Drift analyses dependency upgrades from the published artifacts of both versions and searches this repository for ' +
+  'code that uses what changed. When asked to make a dependency upgrade work, call plan_upgrade first: it returns a ' +
+  'short plan with the findings that reach this repository and their file:line locations, so there is no need to read ' +
+  "the package's changelog or API yourself. Use get_finding or get_evidence only when the plan is not enough, and " +
+  'verify_upgrade to run the checks. To decide whether to upgrade at all, use check_upgrades or explain_upgrade.';
+
+/**
+ * Build the server, wired to `scanUpgrades`. Exported for tests.
+ *
+ * `session` holds the agent tools' plans; tests pass one with a fixture
+ * planner so the protocol can be exercised without running an analysis.
+ */
+export function createDriftMcpServer(session?: AgentPlanSession): McpServer {
+  const server = new McpServer({ name: 'drift', version: serverVersion() }, { instructions: SERVER_INSTRUCTIONS });
 
   server.registerTool(
     'check_upgrades',
@@ -34,8 +77,9 @@ export function createDriftMcpServer(): McpServer {
       title: 'Check dependency upgrades',
       description:
         'List every dependency in a repository that has a newer version, each with a verdict about whether it is ' +
-        'safe to take. Drift downloads both published versions and diffs their actual API — it does not read ' +
-        'changelogs or guess — then searches this repository for code that uses whatever changed.\n\n' +
+        'safe to take. Drift inspects the published artifacts and release evidence available for both versions, ' +
+        'computes API changes where supported, then searches this repository for code that uses whatever changed. ' +
+        'It keeps evidence gaps explicit instead of treating missing evidence as safety.\n\n' +
         'Call this before upgrading anything, and prefer its verdict over your own recollection of what a package ' +
         'changed between two versions. When it reports NOT ENOUGH EVIDENCE, that means the question is open: say ' +
         'so rather than assuming the upgrade is fine.',
@@ -97,6 +141,40 @@ export function createDriftMcpServer(): McpServer {
       return { content: [{ type: 'text', text: renderExplanation(candidates[0], name) }] };
     },
   );
+
+  server.registerTool(
+    'check_installed',
+    {
+      title: 'Check this code against the versions installed',
+      description:
+        'Whether this repository is already wrong about the dependency versions it has on disk — not whether an ' +
+        'upgrade would break it. Drift reads the API of each installed version and checks every name the code ' +
+        'imports against it, so an import naming something that version does not export is an error that exists ' +
+        'right now, with no upgrade involved.\n\n' +
+        'Use this when a build fails on a missing export, after a lockfile changed, or before blaming code you ' +
+        'did not touch. It reports what it could not check and why, and a clean result means every name imported ' +
+        'exists — not that the package is used correctly, since it does not follow member access through an ' +
+        'imported object.',
+      inputSchema: {
+        directory: z
+          .string()
+          .optional()
+          .describe('Repository to check. Defaults to the current working directory.'),
+        only: z.string().optional().describe('Restrict the check to one package name.'),
+        includeDev: z.boolean().optional().describe('Include dev/optional/peer dependencies. Default true.'),
+      },
+    },
+    async ({ directory, only, includeDev }) => {
+      const run = await runInstalledCheck({
+        directory: directory ?? process.cwd(),
+        ...(only ? { only } : {}),
+        includeDev: includeDev ?? true,
+      });
+      return { content: [{ type: 'text', text: renderInstalledCheck(run) }] };
+    },
+  );
+
+  registerAgentTools(server, session);
 
   return server;
 }

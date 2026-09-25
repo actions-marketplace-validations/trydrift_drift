@@ -16,7 +16,7 @@ import { loadWorkspaceConfig, runAnalysis, resolveScanChoices } from '../analyze
 import { deepVerify, type AnalysisOptions } from '../../../src/analysis.js';
 import { describeVerification } from '../../../src/verification/apply.js';
 import { envWithShellPath } from '../shell-path.js';
-import { clearedByCompiler, runFix, type FixResult } from '../fix.js';
+import { clearedByCompiler, foldForWholeUpgrade, runFix, typecheckFailed, type FixResult } from '../fix.js';
 import type { CandidateStateChange, DriftState, RepoRoot } from '../state.js';
 import type { NestedProject } from '../../../src/detect/nested.js';
 import {
@@ -135,6 +135,7 @@ type Incoming =
   | { type: 'stop' }
   | { type: 'signIn' }
   | { type: 'showReport' }
+  | { type: 'command'; command: string }
   | { type: 'openFile'; file: string; line: number }
   | { type: 'openUrl'; url: string }
   | { type: 'openDiff'; path: string }
@@ -195,6 +196,17 @@ function runCommand(
  * three characters finds the file you meant.
  */
 /** Workspace memento key for "which package manager owns this ecosystem". */
+/**
+ * The only VS Code command the panel may ask the host to run.
+ *
+ * The panel renders repository content — changelog prose, package names, diff
+ * text — so a `command` message that carried its own command id would be a
+ * path from that content to arbitrary commands. The untrusted welcome needs
+ * exactly one, so exactly one is named here and the message is checked against
+ * it rather than trusted.
+ */
+const TRUSTED_COMMAND = 'workbench.trust.manage';
+
 const MANAGER_KEY = 'drift.packageManagers';
 
 const EXCLUDED_FROM_CONTEXT = '**/{node_modules,.git,dist,out,build,coverage,.next,.turbo,.venv,__pycache__}/**';
@@ -384,7 +396,21 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
     // happens, which is the difference between a tool that looks busy and one
     // that looks stuck.
     if (vscode.workspace.getConfiguration('drift').get<boolean>('analysis.runOnStartup', true)) {
-      void this.scanOnStartup();
+      // Restricted Mode: a scan reads lockfiles and shells out to package
+      // managers, so it may not start yet. The panel says that instead of
+      // sitting there looking idle, and the scan starts itself the moment the
+      // developer answers VS Code's trust dialog — which is the point they
+      // expect Drift to get on with it.
+      if (vscode.workspace.isTrusted) {
+        void this.scanOnStartup();
+      } else {
+        const granted = vscode.workspace.onDidGrantWorkspaceTrust(() => {
+          granted.dispose();
+          this.paint();
+          void this.scanOnStartup();
+        });
+        this.disposables.push(granted);
+      }
     }
   }
 
@@ -777,6 +803,20 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
         await this.refreshIdentity();
         await this.refreshAgents();
         return;
+      case 'command':
+        // Exactly one command, named here rather than taken from the message.
+        // The panel renders repository content — a changelog, a package name, a
+        // diff — so a webview that could ask the host to run whatever command
+        // it liked would be a way for that content to run commands. The trust
+        // button is the only reason this exists, and it is the only thing it
+        // can do.
+        if (message.command !== TRUSTED_COMMAND) {
+          this.output.error(`Drift: refused to run "${message.command}" from the panel.`);
+          return;
+        }
+        await vscode.commands.executeCommand(TRUSTED_COMMAND);
+        return;
+
       case 'showReport':
         DriftReportPanel.show(this.state);
         return;
@@ -936,6 +976,9 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
         return;
       case '/recent':
         await this.analyzeRecent();
+        return;
+      case '/check':
+        await this.checkInstalled();
         return;
       case '/verify':
         await this.deepVerifyRecent();
@@ -1161,6 +1204,9 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
   /** Called on activation when the setting allows, and by `/scan`. */
   async scanOnStartup(): Promise<void> {
     if (this.scanned) return;
+    // Nothing a scan does is allowed in an untrusted workspace, and failing
+    // halfway through would read as a broken project rather than a locked one.
+    if (!vscode.workspace.isTrusted) return;
     await this.scan();
   }
 
@@ -1467,7 +1513,7 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
       let found: UpgradeCandidate[] = [];
       const nestedGitRepos: NestedProject[] = [];
       /** Dependencies whose version lookup never returned. Never silently dropped. */
-      const unlooked: UncheckedDependency[] = [];
+      const unlooked: (UncheckedDependency & { repoLabel?: string })[] = [];
       let checked = 0;
       let failures = 0;
 
@@ -1572,7 +1618,7 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
           );
 
           checked += result.checked;
-          unlooked.push(...result.unchecked);
+          unlooked.push(...result.unchecked.map((dependency) => ({ ...dependency, ...(repoLabel ? { repoLabel } : {}) })));
           nestedGitRepos.push(...result.nestedGitRepos);
         } catch (err) {
           failures += 1;
@@ -1630,11 +1676,9 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
       // skipped" is something they will assume was unimportant — and the whole
       // point of tracking these separately is that they are not.
       if (unlooked.length > 0) {
-        const lines = unlooked.map((dep) => `- \`${dep.name}\` (${dep.current}) — ${dep.reason}`);
         this.session.notice(
           'warn',
-          `${unlooked.length} dependenc${unlooked.length === 1 ? 'y' : 'ies'} could not be checked for upgrades. ` +
-            `This is not the same as being up to date:\n\n${lines.join('\n')}`,
+          uncheckedNotice(unlooked),
         );
       }
 
@@ -1688,6 +1732,42 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
         );
       }
     });
+  }
+
+  /**
+   * `/check` — whether this code is already wrong about what it has installed.
+   *
+   * The answer is prose, not candidates: findings, and an account of what could
+   * not be checked. The panel's candidate table has no row shape for it, and
+   * inventing one would lose the half that matters — a clean result means every
+   * name you import exists, not that the package is used correctly.
+   */
+  private async checkInstalled(): Promise<void> {
+    if (this.busy) {
+      this.session.notice('info', this.busyMessage());
+      return;
+    }
+
+    const root = this.state.workspaceRoot ?? vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    if (!root) {
+      this.session.notice('warn', 'No repository is open, so there is nothing to check.');
+      return;
+    }
+
+    const step = this.session.step('Checking this code against the versions installed');
+
+    try {
+      const { runInstalledCheck, renderInstalledCheck } = await import('../../../src/upgrade/run-installed-check.js');
+      const run = await runInstalledCheck({ directory: root, includeDev: true });
+      step.done(
+        run.missing.length === 0
+          ? `Every name imported from ${run.checkedPackages} package${run.checkedPackages === 1 ? '' : 's'} exists`
+          : `${run.missing.length} import${run.missing.length === 1 ? '' : 's'} name something that does not exist`,
+      );
+      this.session.say(renderInstalledCheck(run));
+    } catch (error) {
+      step.fail(error instanceof Error ? error.message : String(error));
+    }
   }
 
   private async analyzeRecent(): Promise<void> {
@@ -3246,21 +3326,17 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
       return;
     }
 
-    if (plan.commits.length === 0 || plan.impactSites.length === 0) {
-      // "Upgrading is all that is needed" is a compatibility claim, and a
-      // runtime requirement Drift could not resolve produces exactly this
-      // shape -- no commits, no sites -- without having established it.
-      const runtimeUnresolved = (plan.rationale ?? []).some(
-        (entry) =>
-          entry.assessment.runtimeCompatibility === 'unknown' ||
-          entry.assessment.runtimeCompatibility === 'partial',
-      );
-      const hasReview = (plan.dispositions ?? []).some((d) => d.state === 'review-only' || d.state === 'unknown');
-      this.session.say(
-        runtimeUnresolved || hasReview
-          ? 'There is nothing for an agent to edit, but this upgrade carries a runtime requirement Drift could not check against this repository. Confirm the runtime version you build and deploy on before upgrading.'
-          : 'There is nothing for an agent to edit — no code in this repository uses the APIs that changed. Upgrading is all that is needed.',
-      );
+    // No planned unit and no localized site is not the same as nothing to fix.
+    // A static search that found no call site says nothing about what the
+    // compiler will say once the new version is installed, and on six of ten
+    // real upgrades benchmarked with nothing planned, the build was broken.
+    // So "nothing to edit" is only said here when there is also no typecheck
+    // that could measure it; otherwise the upgrade is installed and measured
+    // below, and the answer comes from the compiler.
+    const nothingPredicted = plan.commits.length === 0 || plan.impactSites.length === 0;
+    const canMeasure = (await availableChecks(ctx.root, memberDirsOf(plan)[0] ?? '')).some((check) => check.kind === 'typecheck');
+    if (nothingPredicted && !canMeasure) {
+      this.session.say(nothingToEditMessage(plan, false));
       return;
     }
 
@@ -3316,7 +3392,7 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
     // rather than predicted: what the project's own compiler says is broken now
     // that the versions have moved. Gathered here, grouped, and handed to the
     // agent alongside Drift's analysis rather than left for a human to read.
-    const diagnostics = upgraded
+    const diagnostics = upgraded || nothingPredicted
       ? await this.gatherDiagnostics(ctx.root, plan)
       : undefined;
 
@@ -3348,8 +3424,12 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
       }
     }
 
-    if (plan.commits.length === 0) {
+    if (plan.commits.length === 0 && !typecheckFailed(diagnostics)) {
       this.state.set({ kind: 'findings', plan, at: Date.now() });
+      if (nothingPredicted) {
+        this.session.say(nothingToEditMessage(plan, diagnostics !== undefined));
+        return;
+      }
       this.session.say(
         clearedCount > 0
           ? // Says which stage got it wrong, rather than only that something
@@ -3391,12 +3471,18 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
       : '';
     const committing =
       commitMode === 'auto'
-        ? 'Each concern is committed as soon as it is finished.'
+        ? 'The fix is committed as soon as it is finished.'
         : 'Nothing is committed until you keep it.';
+    // One agent session for what was chosen — these packages' upgrade — with
+    // Drift's findings as its starting points, drawn as the rows it will run.
+    const work = foldForWholeUpgrade(plan);
+    const sites = (plan.dispositions ?? []).reduce((count, disposition) => count + disposition.actionableSites.length, 0);
     const tasks = this.session.tasks(
-      `${this.agentLabel()} is fixing ${(plan.dispositions ?? []).reduce((count, disposition) => count + disposition.actionableSites.length, 0)} site${(plan.dispositions ?? []).reduce((count, disposition) => count + disposition.actionableSites.length, 0) === 1 ? '' : 's'}`,
-      `${plan.commits.length} commit${plan.commits.length === 1 ? '' : 's'}, one per concern, across ${files} file${files === 1 ? '' : 's'}, ${landing}. ${committing}${evidence}`,
-      buildTaskGroups(plan),
+      sites > 0
+        ? `${this.agentLabel()} is fixing the upgrade, starting from ${sites} site${sites === 1 ? '' : 's'} Drift found`
+        : `${this.agentLabel()} is fixing what the typecheck reports`,
+      `One session for ${namesOf(plan.changes.map((change) => change.name))}${files > 0 ? `, starting from ${files} file${files === 1 ? '' : 's'}` : ''}, ${landing}. It may change any file the upgrade needs except protected ones, and only what this upgrade broke. ${committing}${evidence}`,
+      buildTaskGroups(work),
     );
 
     // A fix is the most specific thing this panel does, so it takes the title
@@ -3417,7 +3503,7 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
     await this.run(async (token) => {
       result = await runFix({
         state: this.state,
-        plan,
+        plan: work,
         review: this.review,
         permission: this.session.permission,
         branchMode,
@@ -3435,7 +3521,7 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
         onActivity: (commit, activity) => tasks.activity(`c${commit.order}`, activity),
         // Agent chatter belongs against the concern it is about, not in a
         // separate log the developer has to correlate by hand.
-        onLog: (message) => tasks.note(activeGroupId(plan, this.state), message.slice(0, 120)),
+        onLog: (message) => tasks.note(activeGroupId(work, this.state), message.slice(0, 120)),
         progress: { report: () => undefined },
         token,
         ...(options.revision ? { revision: options.revision } : {}),
@@ -4231,6 +4317,7 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
     const icons: Record<string, MenuItem['icon']> = {
       '/scan': 'search',
       '/recent': 'history',
+      '/check': 'shield',
       '/verify': 'shield',
       '/upgrade': 'package',
       '/upgrade-all': 'package',
@@ -6090,6 +6177,7 @@ export class DriftHomeView implements vscode.WebviewViewProvider, vscode.Disposa
       // old thread does not retype a message it already typed months ago.
       conversationId: this.conversationId,
       lazyCandidateDetails: true,
+      untrusted: !vscode.workspace.isTrusted,
     };
   }
 }
@@ -6200,6 +6288,28 @@ function toChoice(entry: DiscoveredAgent): AgentChoice {
  * one task per breaking change per file, naming the line — which is the level at
  * which a developer can check the claim rather than take it on faith.
  */
+/**
+ * What to say when nothing needs editing, and on what authority. Measured
+ * means the project's typecheck passed against the upgraded version; without
+ * that, "upgrading is all that is needed" is only as good as a static search,
+ * and says so.
+ */
+function nothingToEditMessage(plan: RemediationPlan, measured: boolean): string {
+  // "Upgrading is all that is needed" is a compatibility claim, and a runtime
+  // requirement Drift could not resolve produces exactly this shape -- no
+  // commits, no sites -- without having established it.
+  const runtimeUnresolved = (plan.rationale ?? []).some(
+    (entry) =>
+      entry.assessment.runtimeCompatibility === 'unknown' ||
+      entry.assessment.runtimeCompatibility === 'partial',
+  );
+  const hasReview = (plan.dispositions ?? []).some((d) => d.state === 'review-only' || d.state === 'unknown');
+  if (runtimeUnresolved || hasReview) return 'There is nothing for an agent to edit, but this upgrade carries a runtime requirement Drift could not check against this repository. Confirm the runtime version you build and deploy on before upgrading.';
+  return measured
+    ? 'Your typecheck passes against the upgraded version, and no code in this repository uses the APIs that changed. Upgrading is all that is needed.'
+    : 'Drift found no code in this repository that uses the APIs that changed, and this project has no typecheck Drift can run to confirm it. There is nothing for an agent to edit from the analysis alone.';
+}
+
 function buildTaskGroups(plan: RemediationPlan): TaskGroup[] {
   const changeById = new Map(plan.breakingChanges.map((change) => [change.id, change]));
 
@@ -6401,10 +6511,8 @@ function bySeverity(a: UpgradeCandidate, b: UpgradeCandidate): number {
 /**
  * The sentence above the results.
  *
- * Leads with how many upgrades touch this repository, because that is the number
- * that decides what the developer does next. The count of upstream breaking
- * changes is not mentioned here at all — it is available on each package, where
- * it has the context that makes it meaningful.
+ * Names affected, safe, review-only, and unchecked counts separately. Upstream
+ * breaking-change counts belong on each package, where they have context.
  */
 /**
  * A few package names, for a title that has to fit on one line.
@@ -6420,26 +6528,19 @@ function namesOf(names: readonly string[]): string {
   return `${unique.slice(0, 2).join(', ')} +${unique.length - 2}`;
 }
 
-function headline(
+export function headline(
   candidates: readonly UpgradeCandidate[],
   checked: number,
-  /**
-   * Dependencies whose version lookup never returned, so they never became
-   * candidates. Counted into the caveat below rather than left out: a
-   * dependency Drift could not reach is not one it found nothing wrong with.
-   */
+  /** Dependencies whose version lookup never returned, so they never became candidates. */
   unlooked = 0,
 ): string {
-  // A failed verification has no located call site, but it is measured
-  // evidence of breakage — folded in with `affected` here so it is never
-  // counted toward `safe` below. The bug this guards against: `zod` and
-  // `typescript` were once called safe from the exact same kind of gap,
-  // just upstream of this function instead of in it.
-  const affected =
-    candidates.filter((c) => severityOf(c) === 'affected' || severityOf(c) === 'verification-failed').length;
-  const uncertain = candidates.filter((candidate) =>
+  const affected = candidates.filter((candidate) => severityOf(candidate) === 'affected').length;
+  // A failed project check can establish breakage without locating a call site.
+  const verificationFailed = candidates.filter((candidate) => severityOf(candidate) === 'verification-failed').length;
+  const errors = candidates.filter((candidate) => severityOf(candidate) === 'error').length;
+  const review = candidates.filter((candidate) =>
     ['review-required', 'runtime-unresolved', 'localization-incomplete', 'evidence-missing'].includes(severityOf(candidate)),
-  ).length + unlooked;
+  ).length;
 
   // Rows a manifest produced that nothing has looked at yet. They are counted
   // separately and never folded into `safe`: while a scan is running the list
@@ -6456,32 +6557,44 @@ function headline(
     );
   }
 
-  const safe = candidates.length - affected - (uncertain - unlooked);
-  const scope = checked > 0 ? ` out of ${checked} checked` : '';
+  const codeClear = candidates.filter((candidate) =>
+    severityOf(candidate) === 'clean' || severityOf(candidate) === 'upstream-only',
+  ).length;
+  const scope = checked > 0 ? ` among ${checked} dependencies scanned` : '';
 
   if (candidates.length === 0) {
     return unlooked > 0
-      ? `No newer versions available for the dependencies Drift could check. ${unlooked} could not be checked at all.`
+      ? `No newer versions available for the dependencies Drift could check. ${unlooked} dependency declaration${unlooked === 1 ? '' : 's'} could not be checked.`
       : 'No newer versions available.';
   }
 
-  // Never folded into "safe". A headline that counts an unverified upgrade as
-  // safe is the same claim that put zod 4 and typescript 7 into this
-  // repository, one level further up the page.
-  const caveat =
-    uncertain === 0
-      ? ''
-      : ` ${uncertain} ${uncertain === 1 ? 'requires review before upgrading' : 'require review before upgrading'}.`;
+  const facts = [`**${candidates.length} upgrade${candidates.length === 1 ? '' : 's'} available**${scope}.`];
+  if (affected > 0) facts.push(`${affected} affect${affected === 1 ? 's' : ''} code in this repository.`);
+  if (verificationFailed > 0) facts.push(`${verificationFailed} fail${verificationFailed === 1 ? 's' : ''} this repository's checks with the upgrade installed.`);
+  if (codeClear > 0) facts.push(`${codeClear} ${codeClear === 1 ? 'has' : 'have'} no code impact found.`);
+  if (review > 0) facts.push(`${review} ${review === 1 ? 'requires' : 'require'} review before upgrading.`);
+  if (errors > 0) facts.push(`${errors} could not be analyzed.`);
+  if (unlooked > 0) facts.push(`${unlooked} dependency declaration${unlooked === 1 ? '' : 's'} could not be checked for upgrades.`);
+  return facts.join(' ');
+}
 
-  if (affected === 0 && safe === candidates.length) {
-    return `**${candidates.length} upgrade${candidates.length === 1 ? '' : 's'} available**${scope}, and none of them affect code in this repository. Safe to take.`;
+/** Group repeated registry failures while retaining every declaration's location. */
+export function uncheckedNotice(dependencies: readonly (UncheckedDependency & { repoLabel?: string })[]): string {
+  const groups = new Map<string, { dependency: UncheckedDependency & { repoLabel?: string }; paths: Set<string> }>();
+  for (const dependency of dependencies) {
+    const key = JSON.stringify([dependency.repoLabel, dependency.ecosystem, dependency.name, dependency.current, dependency.reason]);
+    const group = groups.get(key);
+    if (group) group.paths.add(dependency.manifestPath);
+    else groups.set(key, { dependency, paths: new Set([dependency.manifestPath]) });
   }
-
-  if (affected === 0) {
-    return `**${candidates.length} upgrade${candidates.length === 1 ? '' : 's'} available**${scope}. ${safe === 0 ? 'None' : `${safe}`} affect${safe === 1 ? 's' : ''} code in this repository.${caveat}`;
-  }
-
-  return `**${affected} of ${candidates.length} upgrade${candidates.length === 1 ? '' : 's'}**${scope} affect${affected === 1 ? 's' : ''} code in this repository.${safe > 0 ? ` ${safe} ${safe === 1 ? 'is' : 'are'} safe to take as-is.` : ''}${caveat}`;
+  const lines = [...groups.values()].map(({ dependency, paths }) => {
+    const locations = [...paths].sort();
+    const label = `\`${dependency.name}\` (${dependency.current})${dependency.repoLabel ? ` in ${dependency.repoLabel}` : ''}`;
+    return `- ${label} — ${dependency.reason} Declared in ${locations.length} manifest${locations.length === 1 ? '' : 's'}:\n` +
+      locations.map((path) => `  - \`${path}\``).join('\n');
+  });
+  return `${dependencies.length} dependency declaration${dependencies.length === 1 ? '' : 's'} could not be checked for upgrades. ` +
+    `This is not the same as being up to date:\n\n${lines.join('\n')}`;
 }
 
 function combinePlans(repo: RepoContext, config: DriftConfig, plans: RemediationPlan[]): RemediationPlan {

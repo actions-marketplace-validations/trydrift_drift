@@ -1,8 +1,8 @@
 {
   "name": "@usedrift/cli",
-  "version": "0.1.3",
+  "version": "0.1.12",
   "description": "Find which dependency upgrades affect your code, show the evidence, and prepare reviewable fixes from the command line.",
-  "license": "SEE LICENSE IN LICENSE.md",
+  "license": "MIT",
   "author": "Drift (https://github.com/trydrift/drift)",
   "type": "module",
   "repository": {
@@ -32,6 +32,13 @@
     "README.md"
   ],
   "scripts": {
+    "benchmark:agent": "npm run build && node --experimental-strip-types eval/src/agent/cli.ts run",
+    "benchmark:agent:aggregate": "node --experimental-strip-types eval/src/agent/cli.ts aggregate",
+    "benchmark:agent:report": "node --experimental-strip-types eval/src/agent/cli.ts report",
+    "benchmark:agent:rescore": "node --experimental-strip-types eval/src/agent/cli.ts rescore",
+    "benchmark:agent:smoke": "npm run build && node --experimental-strip-types eval/src/agent/cli.ts run --suite smoke --runs 1",
+    "benchmark:agent:validate": "npm run build && node --experimental-strip-types eval/src/agent/cli.ts validate-cases",
+    "benchmark:agent:verify": "node --experimental-strip-types eval/src/agent/cli.ts verify",
     "build": "tsc -p tsconfig.json",
     "build:action": "node scripts/build-action.mjs",
     "build:all": "npm run build && npm run build:action",
@@ -40,9 +47,9 @@
     "docs:support": "npm run build && node scripts/generate-support-doc.mjs",
     "eval:accuracy:audit": "npm run build && node --experimental-strip-types eval/src/audit.ts",
     "eval:bench": "npm run build && node --experimental-strip-types eval/src/cli/bench.ts",
-    "eval:compare": "node --experimental-strip-types eval/src/external/compare.ts",
     "eval:cases:import": "node --experimental-strip-types eval/src/corpus/import-fixture.ts",
     "eval:cases:reproduce": "node --experimental-strip-types eval/src/cli/reproduce.ts",
+    "eval:compare": "node --experimental-strip-types eval/src/external/compare.ts",
     "eval:corpus:mine": "node --experimental-strip-types eval/src/cli/mine.ts",
     "eval:deterministic": "npm run build && node --experimental-strip-types eval/src/run.ts --ci",
     "eval:external": "npm run build && node --experimental-strip-types eval/src/external/cli.ts",
@@ -54,28 +61,28 @@
     "prepublishOnly": "npm run build",
     "release:check": "node scripts/release-check.mjs",
     "release:version": "node scripts/check-release-version.mjs",
-    "test:release": "node --test scripts/check-release-version.test.mjs scripts/release-workflow.test.mjs scripts/set-version.test.mjs",
-    "version:set": "node scripts/set-version.mjs",
     "serve": "node dist/runners/webhook.js",
     "smoke:packed-cli": "node scripts/smoke-test-packed-cli.mjs",
     "test": "npm run build && node --test --experimental-strip-types \"test/*.test.ts\"",
+    "test:release": "node --test scripts/check-release-version.test.mjs scripts/release-workflow.test.mjs scripts/set-version.test.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "verify:action-bundle": "node scripts/verify-action-bundle.mjs",
-    "verify:workflow": "npm run build && node scripts/build-workflow.mjs --check"
+    "verify:workflow": "npm run build && node scripts/build-workflow.mjs --check",
+    "version:set": "node scripts/set-version.mjs"
   },
   "dependencies": {
-    "@graphql-inspector/core": "^7.1.3",
+    "@graphql-inspector/core": "^8.0.0",
     "@modelcontextprotocol/sdk": "^1.30.0",
     "@octokit/rest": "^22.0.1",
     "@octokit/webhooks": "^14.2.0",
-    "graphql": "^16.14.2",
+    "graphql": "^17.0.2",
     "semver": "^7.6.3",
     "typescript": "^7.0.2",
     "yaml": "^2.7.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/node": "^22.10.5",
+    "@types/node": "^26.4.1",
     "@types/semver": "^7.5.8",
     "esbuild": "^0.28.1",
     "fast-check": "^4.9.0"
@@ -94,6 +101,6 @@
     "developer-tools"
   ],
   "optionalDependencies": {
-    "@anthropic-ai/sdk": "^0.68.0"
+    "@anthropic-ai/sdk": "^0.125.0"
   }
 }

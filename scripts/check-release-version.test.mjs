@@ -24,7 +24,7 @@ const aligned = {
  * extension carrying different terms from the published CLI.
  */
 test('identical license copies -> passes', () => {
-  assert.equal(findLicenseMismatch('PolyForm Shield\n', 'PolyForm Shield\n'), null);
+  assert.equal(findLicenseMismatch('MIT License\n', 'MIT License\n'), null);
 });
 
 test('a license copy that drifted -> fails, and says how to fix it', () => {
@@ -38,7 +38,7 @@ test('a license copy that drifted -> fails, and says how to fix it', () => {
 });
 
 test('a whitespace-only difference still fails, because the shipped bytes differ', () => {
-  assert.ok(findLicenseMismatch('PolyForm Shield\n', 'PolyForm Shield\n\n'));
+  assert.ok(findLicenseMismatch('MIT License\n', 'MIT License\n\n'));
 });
 
 test('all six version fields match, no tag given -> passes', () => {

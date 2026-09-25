@@ -1,6 +1,6 @@
 {
   "$generated": "site/scripts/sync-benchmarks.mjs — do not edit; every number here is read from eval/results/<run-id>/metrics.json",
-  "generatedAt": "2026-09-09T10:56:26.438Z",
+  "generatedAt": "2026-09-16T00:52:35.105Z",
   "datasets": [
     {
       "runId": "roseau-accuracy",
@@ -26,9 +26,9 @@
           "category-accuracy"
         ]
       },
-      "driftCommit": "c45d9d01ede15838d924fe9f5eb51c66632623b4",
+      "driftCommit": "ac9c8b852a6738755271fd8c34d5c5db3abff875",
       "driftTreeDirty": false,
-      "runDate": "2026-09-09T10:56:09.551Z",
+      "runDate": "2026-09-16T00:52:33.934Z",
       "rescoredAt": null,
       "rescoredAtCommit": null,
       "command": "npm run eval:external -- roseau",
@@ -189,9 +189,9 @@
           "category-accuracy"
         ]
       },
-      "driftCommit": "c45d9d01ede15838d924fe9f5eb51c66632623b4",
+      "driftCommit": "ac9c8b852a6738755271fd8c34d5c5db3abff875",
       "driftTreeDirty": false,
-      "runDate": "2026-09-09T10:56:26.438Z",
+      "runDate": "2026-09-16T00:52:35.105Z",
       "rescoredAt": null,
       "rescoredAtCommit": null,
       "command": "npm run eval:external -- kong",
@@ -558,9 +558,9 @@
           "category-accuracy"
         ]
       },
-      "driftCommit": "c45d9d01ede15838d924fe9f5eb51c66632623b4",
+      "driftCommit": "ac9c8b852a6738755271fd8c34d5c5db3abff875",
       "driftTreeDirty": false,
-      "runDate": "2026-09-09T10:56:01.699Z",
+      "runDate": "2026-09-16T00:52:32.306Z",
       "rescoredAt": null,
       "rescoredAtCommit": null,
       "command": "npm run eval:external -- kong",
@@ -990,8 +990,8 @@
       "driftCommit": "65686d9a777678e2c43e6049b7024f2230e399cc",
       "driftTreeDirty": true,
       "runDate": "2026-09-07T11:20:24.156Z",
-      "rescoredAt": null,
-      "rescoredAtCommit": null,
+      "rescoredAt": "2026-09-11T16:42:20.022Z",
+      "rescoredAtCommit": "c9644ed9ba7b1a7a1c98af91e173aa74d4a25b69",
       "command": "npm run eval:external -- bump",
       "platform": "darwin/x64, Node v24.20.0",
       "notes": "Detection only, and the commit pair is real. BUMP records the commit that changed the version in `pom.xml`, so its parent is the pre-update state — this run diffs the two revisions a developer actually received rather than a bump the harness applied. Drift reads `pom.xml` directly, so nothing has to be built for the manifest diff, evidence retrieval and localization to run exactly as they do for a user.\n\nNo precision and no false-positive rate: every record is a reproduced *breaking* update, and the corpus contains no non-breaking control updates to measure one against.",
@@ -1152,6 +1152,40 @@
             "denominator": 14,
             "value": 0
           }
+        },
+        "stratum: static-signal-possible": {
+          "dependency-update detection rate": {
+            "numerator": 385,
+            "denominator": 411,
+            "value": 0.9367396593673966
+          },
+          "affected-repository identification rate": {
+            "numerator": 315,
+            "denominator": 411,
+            "value": 0.7664233576642335
+          },
+          "consumer localization rate": {
+            "numerator": 274,
+            "denominator": 411,
+            "value": 0.6666666666666666
+          }
+        },
+        "stratum: no-api-surface-delta": {
+          "dependency-update detection rate": {
+            "numerator": 110,
+            "denominator": 140,
+            "value": 0.7857142857142857
+          },
+          "affected-repository identification rate": {
+            "numerator": 71,
+            "denominator": 140,
+            "value": 0.5071428571428571
+          },
+          "consumer localization rate": {
+            "numerator": 8,
+            "denominator": 140,
+            "value": 0.05714285714285714
+          }
         }
       },
       "intervals": {
@@ -1259,8 +1293,8 @@
       "driftCommit": "0de69bc20a560df43f0b21b6f9c5387c4d3b2cd1",
       "driftTreeDirty": true,
       "runDate": "2026-09-07T20:19:56.217Z",
-      "rescoredAt": null,
-      "rescoredAtCommit": null,
+      "rescoredAt": "2026-09-11T19:25:59.293Z",
+      "rescoredAtCommit": "8aa0690ba8bc9372dbac1a734f3dcd546a3c4e7f",
       "command": "npm run eval:external -- timemachine",
       "platform": "darwin/x64, Node v24.20.0",
       "notes": "Detection only, on a manifest pair this harness assembles — and that construction is the weakest in this benchmark, so it is stated on every case rather than left to be inferred. The repository is fetched at its exact historical commit; the after-state repins the requirements the project itself declares to the versions the dataset records as resolving at the migration date. It is *not* built from `patch` or `gold_patch`, which are the developer's migration and are ground truth — reading the upgrade out of the fix would hand Drift the answer and call the result detection. Only declared requirements are repinned; the rest of the resolved set is the transitive closure, and writing it into a manifest would invent declarations the project never made.\n\nNo precision and no false-positive rate: every task is a migration that fails, and the corpus contains no migrations that succeed.\n\n**Not installed here: `uv`.** TimeMachine's own reproduction is a container per task built against a date-filtered PyPI index, which is what preserves the historical resolution each task depends on. Without it the oracle was not run and no repair question was asked — those outcomes are absent from every case record rather than recorded as failures, because Drift was never asked and did not fail.",
@@ -1270,7 +1304,8 @@
       "notRun": 0,
       "scored": 68,
       "excluded": {
-        "reproduction-failed": 32
+        "no-dependency-update": 31,
+        "reproduction-failed": 1
       },
       "missingRequirements": {},
       "negativeControls": 0,

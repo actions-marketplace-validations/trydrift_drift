@@ -175,7 +175,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     }),
   );
 
-  await initialise(state, home);
+  // Not awaited. VS Code resolves a contributed view only once its extension
+  // has finished activating, so anything awaited here is time the panel spends
+  // blank — and the first run is open-ended: it walks the repository, analyses
+  // the change, then waits on a notification that settles only when somebody
+  // clicks it. Once that notification has hidden itself in the notification
+  // centre nobody does, and the panel stayed empty for as long as it went
+  // unanswered.
+  void initialise(state, home).catch((error: unknown) => {
+    output.error(`Drift: startup failed: ${error instanceof Error ? error.message : String(error)}`);
+  });
 }
 
 /**
@@ -226,6 +235,19 @@ async function initialise(state: DriftState, home: DriftHomeView): Promise<void>
   const folders = vscode.workspace.workspaceFolders ?? [];
   if (folders.length === 0) {
     state.set({ kind: 'no-repo' });
+    return;
+  }
+
+  // Restricted Mode. Everything below this line shells out — git for the repo
+  // identity, the package managers for the manifests, the agent binaries for a
+  // fix — so none of it may run yet, and attempting it would report a perfectly
+  // good repository as broken. Wait for the developer to answer VS Code's trust
+  // dialog instead, then start the first run as if the window had just opened.
+  if (!vscode.workspace.isTrusted) {
+    const granted = vscode.workspace.onDidGrantWorkspaceTrust(() => {
+      granted.dispose();
+      void initialise(state, home).catch(() => undefined);
+    });
     return;
   }
 
@@ -321,6 +343,34 @@ function registerCommands(
   register('drift.nextChange', () => reviewUi.revealNext());
   register('drift.reviewChanges', () => home.reveal());
   register('drift.scanDependencies', () => home.scanDependencies());
+  // A different question from the scan above: not "what could I upgrade to"
+  // but "is this code already wrong about what it has". The answer is prose —
+  // findings, and an account of what could not be checked — so it goes to the
+  // output channel verbatim rather than into the panel's candidate table,
+  // which has no row shape for it.
+  register('drift.checkInstalled', async () => {
+    // The checkout's path, not its git facts: `activeRoot.repo` is a
+    // `LocalRepoInfo` (branch, shas, slug) and carries no directory.
+    const root = state.workspaceRoot;
+    if (!root) {
+      void vscode.window.showInformationMessage('Drift: no repository is open.');
+      return;
+    }
+    output.show(true);
+    output.info('Checking this code against the versions installed…');
+    try {
+      const { runInstalledCheck, renderInstalledCheck } = await import('../../src/upgrade/run-installed-check.js');
+      const run = await runInstalledCheck({ directory: root, includeDev: true });
+      for (const line of renderInstalledCheck(run).split('\n')) output.info(line);
+      void vscode.window.showInformationMessage(
+        run.missing.length === 0
+          ? `Drift: every name imported from ${run.checkedPackages} package${run.checkedPackages === 1 ? '' : 's'} exists in the version installed.`
+          : `Drift: ${run.missing.length} import${run.missing.length === 1 ? '' : 's'} name something the installed version does not export.`,
+      );
+    } catch (error) {
+      output.error(`Drift: the installed-version check failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  });
   register('drift.newSession', () => home.newSession());
   register('drift.history', () => home.showHistory());
   register('drift.clearHistory', () => home.clearHistory());
