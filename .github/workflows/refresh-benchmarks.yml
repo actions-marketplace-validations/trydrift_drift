@@ -78,7 +78,7 @@ jobs:
             needsUv: true
 
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - if: github.event_name == 'workflow_dispatch' && inputs.run_id != '' && inputs.run_id != matrix.runId
         run: echo "SKIP=1" >> "$GITHUB_ENV"
@@ -174,7 +174,7 @@ jobs:
       # files, which a merge would silently revert. The results are the only
       # thing this job adds, and their manifests already record the build that
       # produced them.
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
 
